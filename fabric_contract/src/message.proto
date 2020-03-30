@@ -1,0 +1,14 @@
+syntax = "proto3";
+package datatypes;
+
+message Arguments {
+  string fnname = 1;
+  string txid = 2;
+  string channelid = 3;
+  repeated string args = 4;
+}
+
+message Return {
+  int32 code = 1;       // 0 is success, anything is error
+  string data = 2;
+}
