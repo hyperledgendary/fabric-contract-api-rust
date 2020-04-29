@@ -1,31 +1,18 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
+
+//! This is the runtime componet that marshalls the WAPC calls 
 use prost::Message;
 use std::str;
-use crate::contractapi::ledger::Context;
-
-#[link(wasm_import_module = "wapc")]
-extern "C" {
-    pub fn __log(ptr: *const u8, len: usize);
-}
+use crate::contractapi::context::Context;
+use crate::contractapi::contractmanager::*;
 
 extern crate wapc_guest as guest;
 use guest::prelude::*;
 
-use crate::runtime::fakecontract::FakeContract;
-
-
-wapc_handler!(handle_wapc);
-
-pub fn handle_wapc(operation: &str, msg: &[u8]) -> CallResult {
-    match operation {
-        "contract" => handle_tx_invoke(msg),
-        _ => Err("Unkown function being called".into()),
-    }
-}
-
 // Include the `items` module, which is generated from items.proto.
+// TODO: Rename this from items
 pub mod items {
     include!(concat!(env!("OUT_DIR"), "/datatypes.rs"));
 }
@@ -33,59 +20,67 @@ pub mod items {
 use items::Arguments;
 use items::Return;
 
-#[inline(never)]
+/// General function to log messages
+#[link(wasm_import_module = "wapc")]
+extern "C" {
+    pub fn __log(ptr: *const u8, len: usize);
+}
+
+// register the callback handler for the wapc calls
+wapc_handler!(handle_wapc);
+
+pub fn handle_wapc(operation: &str, msg: &[u8]) -> CallResult {
+    match operation {
+        "contract" => handle_tx_invoke(msg),
+       // could add other functions for administration
+        _ => Err("Unkown function being called".into()),
+    }
+}
+
+#[inline(never)]   // not sure why this is not inlined?
 pub fn log(s: &str) {
     unsafe {
         __log(s.as_ptr(), s.len());
     }
 }
 
-fn runtime_host_call(cmd: String, data: Vec<u8>) -> String {
+fn _runtime_host_call(cmd: String, data: Vec<u8>) -> String {
     log(&format!("Making host call{}::{}",cmd,str::from_utf8(&data).unwrap())[..]);
     let res = host_call("wapc", &cmd[..],&data).unwrap();
     format!("{:?}",res)
 }
 
+/// handle_tx_invoke called with the buffer that contains the request 
+/// of what transaction function should be invoked
 fn handle_tx_invoke(msg: &[u8]) -> CallResult {
-    log("[rust] handler_tx_invoke");
-   
+    log("handler_tx_invoke");  
 
-    let ctx = Context::new(runtime_host_call);
-    let c = FakeContract{};
+    let ctx = Context::new(log);
 
     // decode the message
-
     let args = Arguments::decode(msg).unwrap();
     log(&args.args.join(","));
-    // c.before_transaction(ctx);
-    // let res = c.my_first_transaction(&ctx,String::from_utf8(msg.to_vec()).unwrap());
-    let a = args.args[0].clone();
+    
     let operation = args.fnname;
-    let res;
     log(&operation[..]);
-    if operation == "create_asset" {
-        log("create_asset");
-        res = c.create_asset(ctx, a);
-    } else {
-        log("get_asset");
-        res = c.get_asset(ctx,a);
-    }
 
-    // c.after_transaction(ctx);
-    //  str::from_utf8(&res[..]).unwrap().to_string(),
-    log("[rust] afterTransactions");
+    // pass over to the contract manager to route
+    log("making the routing calll");
+    let _r = ContractManager::route(ctx,String::from("AssetContract"),operation,args.args);
+    
+    log("afterTransactions");
     let ret = Return {
-        data : res,
+        data : String::from("Hello"),
         code: 200,
     };
     let mut buffer = vec![];
 
     // encoding response
-    log("[rust]encoding response");
+    log("encoding response");
     if let Err(encoding_error) = ret.encode(&mut buffer) {
         panic!("Failed to encode {:?}",encoding_error);
     }
-    log("[rust] done invoke");
+    log("done invoke");
     Ok(buffer)
 
 }

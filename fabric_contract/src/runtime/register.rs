@@ -1,5 +1,9 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ */
 use std::collections::HashMap;
 use crate::contractapi::contract::*;
+
 
 pub struct ContractRuntime {
    contracts: HashMap<String,Box<dyn Contract>>,

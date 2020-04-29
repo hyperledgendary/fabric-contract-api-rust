@@ -1,24 +1,25 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
-
-#[derive(Debug)]
-// #[derive(Copy)]
 pub struct Context {
     tx_id: std::string::String,
-    callback: fn(String,Vec<u8>) -> String,
+    logfn : fn(&str),
+    // callback: fn(String,Vec<u8>) -> String,  // next step to add in the callback logic
 }
 
 impl Context {
-    pub fn new(callback: fn(String,Vec<u8>) -> String) -> Context {
+    pub fn new(logfn: fn(&str)) -> Context {
         Context {
             tx_id: "01234567890".to_string(),
-            callback : callback,
+            logfn,
         }
     }
 
     pub fn create_state(&mut self, key: String, data: Vec<u8>) {
         println!("[createState] {}  {:?}", key, data);
-        (&self.callback)(String::from("create state"),data);
+        // (&self.callback)(String::from("create state"),data);
     }
 
     pub fn retrieve_state(&mut self, key: String) -> Box<String> {
@@ -28,5 +29,9 @@ impl Context {
 
     pub fn get_txid(&mut self) -> &std::string::String {
         return &self.tx_id;
+    }
+
+    pub fn log(&self, data: String) {
+        (self.logfn)(&data[..]);
     }
 }
