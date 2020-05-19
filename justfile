@@ -4,8 +4,12 @@
 wasm:
     cargo build --target wasm32-unknown-unknown
 
+amd64:
+    cargo build
+
+
 docs:
-    cargo docs --no-deps
+    cargo doc --no-deps --target-dir ./docs
 
 # use expand with the expand crate when debugging macros
 expand:

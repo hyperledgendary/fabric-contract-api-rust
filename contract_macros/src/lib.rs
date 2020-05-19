@@ -8,18 +8,23 @@ extern crate proc_macro;
 // Bring in quite a lot of different crates, noteably the syn crate for handling the 
 // AST.
 // Suspect that a lot of these aren't actually needed
-use proc_macro2::TokenStream;
+//use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{
-    parse::Error, parse_macro_input, parse_quote, punctuated::Punctuated, spanned::Spanned, FnArg,
-    Generics, Ident, ImplItem, ImplItemMethod, ItemImpl, ReturnType, Token, Type, TypeTuple,
+    parse_macro_input, 
 };
-use quote::ToTokens;
-use quote::TokenStreamExt;
+
+// use syn::{
+//     parse::Error, parse_macro_input, parse_quote, punctuated::Punctuated, spanned::Spanned, FnArg,
+//     Generics, Ident, ImplItem, ImplItemMethod, ItemImpl, ReturnType, Token, Type, TypeTuple,
+// };
+
+//use quote::ToTokens;
+//use quote::TokenStreamExt;
 
 // our procedural macro to mark the implementations of the contract structs
 #[proc_macro_attribute]
-pub fn contract_impl(args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+pub fn contract_impl(_args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
     // parse the incoming AST, we don't wish to modify the existing code so immediately
     // quote! this to ensure it's in the output.
@@ -42,7 +47,7 @@ pub fn contract_impl(args: proc_macro::TokenStream, input: proc_macro::TokenStre
         match i {
             
             syn::ImplItem::Method(ref method) => {
-                let mut method = method.clone();
+                let method = method.clone();
                 let name = &method.sig.ident;
                 method_fns.push(syn::Ident::new(&format!("{}",name), name.span()));
                 method_names.push(ident_to_litstr(name));
@@ -101,3 +106,24 @@ fn ident_to_litstr(ident: &syn::Ident) -> syn::LitStr {
 }
 
 
+#[proc_macro_derive(DataType)]
+pub fn hello_macro_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream  {
+    // Construct a representation of Rust code as a syntax tree
+    // that we can manipulate
+    let ast = syn::parse(input).unwrap();
+
+    // Build the trait implementation
+    impl_hello_macro(&ast)
+}
+
+fn impl_hello_macro(ast: &syn::DeriveInput) -> proc_macro::TokenStream {
+    let name = &ast.ident;
+    let gen = quote! {
+        impl DataType for #name {
+            fn hello_macro() {
+                println!("Hello, Macro! My name is {}!", stringify!(#name));
+            }
+        }
+    };
+    gen.into()
+}

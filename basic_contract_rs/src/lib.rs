@@ -11,8 +11,10 @@
 //! and there is limited scope for logging at stage in
 //! the lifecyle
 mod assetcontract;
+mod myasset;
 
-use fabric_contract::contractapi::contractmanager::*;
+
+use fabric_contract::contract::ContractManager;
 use assetcontract::AssetContract;
 
 // The macro to indicate the function that will be used to register the contracts.
