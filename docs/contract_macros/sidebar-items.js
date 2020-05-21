@@ -1,1 +1,1 @@
-initSidebarItems({"attr":[["contract_impl",""]],"derive":[["DataType",""]]});
+initSidebarItems({"attr":[["contract_impl","Use this macro to mark the impl of the contract functions"],["transaction","Use this to mark the functions that are considered to be transaction functions"]],"derive":[["DataType","Use this to mark the structs that serve as complex data types"]]});

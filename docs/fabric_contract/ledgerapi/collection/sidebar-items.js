@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["CollectionName","CollectionName Can be either the "],["KeyQueryHandler",""]],"struct":[["Collection",""]],"trait":[["CollectionIterator",""]]});

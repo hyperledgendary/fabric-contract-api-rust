@@ -4,14 +4,40 @@
 
 use crate::ledgerapi::state::*;
 
-/// CollectionName
-/// Can be either the 
+/// Collection Name
+/// 
+/// An enumeration that be one of 
+/// 
+/// - World for the ledger's world state
+/// - Private(<string>) for a private data collection with the given name
+/// - Organization<mspid> for an organizations implicit private data collection
+/// 
+/// Note for the ogranization the underlying prefix of _implict_org is automatically added
 pub enum CollectionName {
     World, Private(String), Organization(String)
 }
 
+/// Key Queryhandler
+/// 
+/// Enumeration to define the Key Range queries that can take place. 
+/// TODO: Check if these are inclusive or execlusice
+/// TODO: Not included all as that could return just too much data
+/// 
 pub enum KeyQueryHandler {
-    Range(String, String), RangeFrom(String), RangeTo(String)
+   /// Range(string,string) The start and end keys  
+   Range(String, String),
+
+   /// RangeFrom(string)    From the given key to the end
+   RangeFrom(String),
+
+   /// RangeTo(string)      From the start to the given key 
+   RangeTo(String)
+}
+
+/// Specify the Rich Query Handler
+pub enum RichQueryHandler {
+    /// The query string to pass to the state database (currently only supported for CouchDB)
+    Query(String)
 }
 
 pub struct Collection {
@@ -20,61 +46,88 @@ pub struct Collection {
 
 impl Collection {
 
-    // pub fn retrieve(&self, _key: String) -> Result<T,String> {
-    //     todo!("getstate")
-    // }
-
-    // pub fn create(&self, _value: T) -> Result<State<T>,String> {
-    //     todo!("getstate")
-    // }
-
-    // pub fn update(&self, _value: T) -> Result<State<T>,String> {
-    //     todo!("getstate")
-    // }
-
-    // pub fn delete(&self, _value: T) -> Result<(),String> {
-    //     todo!("getstate")
-    // }
-
-    pub fn new(name: CollectionName) -> Collection {
-        Collection {
-            name
-        }
+    pub fn retrieve<T: ToState>(&self, key: String) -> Result<T,String> {
+         todo!("getstate")
     }
 
+    pub fn create<T: ToState>(&self, value: T) -> Result<State,String> {
+         todo!("create")
+    }
+
+    pub fn update<T: ToState>(&self, _value: T) -> Result<State,String> {
+         todo!("getstate")
+    }
+
+    pub fn delete<T: ToState>(&self, _value: T) -> Result<(),String> {
+         todo!("getstate")
+    }
+
+
+    /// Does this key exist
     pub fn state_exists(&self, key: String) -> bool {
         true
     }
     
+    /// Return the state for this key
+    /// 
     pub fn get_state(&self, key: String) -> State {
         todo!("getstate")
     }
 
+    /// Creates the state
+    /// 
+    /// If it it already exists, this is an error
     pub fn create_state(&self, key: String, data: Vec<u8>) -> State { 
        State::new(key,data)
     }
 
+    /// Update the states
+    /// 
+    /// If it doesn't exist, this is an error
     pub fn update_state(&self, key: String, data: Vec<u8>) -> State {
         todo!("update")
     }
 
-    pub fn delete_state(&self, key: String) -> State{
+    /// Deletes the key 
+    pub fn delete_state(&self, key: String) -> State {
         todo!("update")
     }
 
-    // pub fn get_states(handler: KeyQueryHandler) -> CollectionIterator {
-    //     todo!("getstates");
+    /// Performs a key range query
+    /// 
+    /// # Example
+    /// 
+    /// ``` 
+    /// collection.get_states(KeyQueryHandler::Range("Car001","Car002"));
+    /// ```
+    pub fn get_states(handler: KeyQueryHandler) -> String{
+         todo!("getstates");
     //     // https://users.rust-lang.org/t/how-to-return-an-iterator/25133/3
-    // }
+    }
+
+    pub fn query_states(handler: RichQueryHandler) -> String {
+        todo!("getstates");
+    }
 }
 
+/// Collection Iterator
+/// 
+/// Standard Rust iterator over the returned states
 pub trait CollectionIterator : Iterator {
 
+    /// sets the paging size
     fn set_paging_size(pagesize: u32);
+
+    /// number of fetched states
     fn get_fetched_count() -> u32;
 
+    /// set the bookmark to a previous returned value
     fn set_bookmark(bookmark: String);
-    fn get_bookmnark() -> String;
 
-    // close.... hope this can be done automatiacally....
+    /// get currentmark
+    fn get_bookmark() -> String;
+
+    // close
+    // hope this can be done automatiacally....
+    // 
 }

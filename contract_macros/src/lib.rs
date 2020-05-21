@@ -2,8 +2,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #![recursion_limit = "128"]
-
+// #![feature(proc_macro_diagnostic,param_attrs)]
 extern crate proc_macro;
+
 
 // Bring in quite a lot of different crates, noteably the syn crate for handling the 
 // AST.
@@ -11,7 +12,7 @@ extern crate proc_macro;
 //use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{
-    parse_macro_input, 
+    parse_macro_input, AttributeArgs,ItemFn,
 };
 
 // use syn::{
@@ -22,7 +23,30 @@ use syn::{
 //use quote::ToTokens;
 //use quote::TokenStreamExt;
 
-// our procedural macro to mark the implementations of the contract structs
+
+// #[proc_macro_attribute]
+// pub fn transient(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+//     println!("attr: \"{}\"", attr.to_string());
+//     println!("item: \"{}\"", item.to_string());
+//     item
+// }
+
+/// Use this macro to mark the impl of the contract functions
+/// 
+/// 
+/// # Example
+/// 
+/// ```
+///  
+/// #[contract_impl]
+/// impl MyContract {
+/// 
+///     pub fn my_asset_fn() { 
+///         OK(())
+///     }
+/// 
+/// }
+/// 
 #[proc_macro_attribute]
 pub fn contract_impl(_args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
@@ -105,9 +129,63 @@ fn ident_to_litstr(ident: &syn::Ident) -> syn::LitStr {
     syn::LitStr::new(&ident.to_string()[..],proc_macro2::Span::call_site())
 }
 
+/// Use this to mark the functions that are considered to be transaction functions
+/// 
+/// Arguments to this provide the ability to indicate 
+/// - that this function is intended to be evaluated or submitted
+/// - which arguments are from the set of transient data
+/// 
+/// # Example
+/// 
+/// This shoulds a transaction function that will will be marked as to be 'submitted'
+/// ```
+/// #[transaction]
+/// pub fn createAsset()...
+/// 
+/// /// This shoulds a transaction function that will will be marked as to be 'submitted'
+/// ```
+/// #[transaction]
+/// pub fn createAsset()...
+/// 
+/// #[transaction(submit)]
+/// pub fn createAsset()...
+/// ```
+/// 
+/// ```
+/// This shoulds a transaction function that will will be marked as to be 'evaluated'
+/// ```
+/// #[transaction(evaluate)]
+/// pub fn createAsset()...
+/// 
+/// ```
+/// 
+/// #[transaction(tranisent = {price, owner} )]
+/// pub fn createAsset(id: String, price: u32, owner: String ) ...alloc
+/// ```
+/// 
+#[proc_macro_attribute]
+pub fn transaction(_args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    input
+}
 
+
+///
+/// Use this to mark the structs that serve as complex data types
+/// 
+/// # Example
+/// 
+/// ```
+/// #[derive(DataType)]
+/// pub struct MyAsset {
+///     assetid: String
+/// }
+/// 
+/// pub fn get_asset() -> Result<MyAsset,String> { ... }
+/// 
+/// ```
+/// 
 #[proc_macro_derive(DataType)]
-pub fn hello_macro_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream  {
+pub fn data_type_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream  {
     // Construct a representation of Rust code as a syntax tree
     // that we can manipulate
     let ast = syn::parse(input).unwrap();

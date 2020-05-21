@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#![feature(proc_macro_hygiene, decl_macro, param_attrs)]
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -11,9 +12,10 @@ use fabric_contract::contract::*;
 
 use crate::myasset::*;
 
-
 // macros for marking up the contract
 use contract_macros::contract_impl;
+use contract_macros::transaction;
+
 
 /// Structure for the AssetContract, on which implemenation transaction functions will be added
 pub struct AssetContract {
@@ -38,17 +40,19 @@ impl Contract for AssetContract {
 #[contract_impl]
 impl AssetContract {
 
+    
     pub fn new() -> AssetContract {
         AssetContract {           
         }
     }
-
-    pub fn asset_exists(my_assset_id: String) -> Result<bool,String> {
+    
+    #[transaction]
+    pub fn asset_exists( assset_id:  String) -> Result<bool,String> {
         let ledger = Ledger::access_ledger();
 
         let world = ledger.get_collection(CollectionName::World);
 
-        Ok(world.state_exists(my_assset_id))
+        Ok(world.state_exists(assset_id))
 
     }
 

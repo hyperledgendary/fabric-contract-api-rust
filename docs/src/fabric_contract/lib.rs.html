@@ -24,20 +24,66 @@
 <span id="24">24</span>
 <span id="25">25</span>
 <span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
  */</span>
+
+<span class="doccomment">//! This is the main crate for providing support for writing Smart Contracts to work with </span>
+<span class="doccomment">//! Hyperledger Fabric. </span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! Any rust contract must be compiled to target Wasm. They can then be run in the Wasm chaincode</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! In addition to this crate, there is the `contract_macros` crate that contains the macros needed</span>
+<span class="doccomment">//! </span>
 
 <span class="kw">mod</span> <span class="ident">contractapi</span>;
 <span class="kw">mod</span> <span class="ident">ledgerapi</span>;
 <span class="kw">mod</span> <span class="ident">blockchainapi</span>;
 <span class="kw">mod</span> <span class="ident">runtimeapi</span>;
 
+<span class="doccomment">/// Module to provide &#39;runtime&#39; services.</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// Services available are</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// - Registering the contracts available at start</span>
+<span class="doccomment">/// - Logging</span>
+<span class="doccomment">/// </span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">runtime</span> {
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">runtimeapi</span>::<span class="ident">ContractRuntime</span> <span class="kw">as</span> <span class="ident">ContracRuntime</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">runtimeapi</span>::<span class="ident">ContractRuntime</span> <span class="kw">as</span> <span class="ident">ContractRuntime</span>;
 }
 
+<span class="doccomment">/// Module to provide APIs to write contracts and interact with the ledger</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// TODO: Split this into two modules?</span>
+<span class="doccomment">///</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">contract</span> {
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">ledger</span>::<span class="ident">Ledger</span> <span class="kw">as</span> <span class="ident">Ledger</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contract</span>::<span class="ident">Contract</span> <span class="kw">as</span> <span class="ident">Contract</span>;
@@ -48,6 +94,14 @@
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">collection</span>::<span class="ident">CollectionName</span> <span class="kw">as</span> <span class="ident">CollectionName</span>;
 }
 
+<span class="doccomment">/// Module to provide APIs to get information about Fabric</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// It is not intended to be full chain access utility but the important</span>
+<span class="doccomment">/// aspects required for </span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// - Current executing transactions</span>
+<span class="doccomment">/// - Events to be added to the read/write set of the tranasction</span>
+<span class="doccomment">/// - Invoking chaincode on other channels</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">blockchain</span> {
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">blockchainapi</span>::<span class="ident">transaction</span>::<span class="ident">Transaction</span> <span class="kw">as</span> <span class="ident">Transaction</span>;
 }</pre></div>

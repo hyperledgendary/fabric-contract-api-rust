@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Ledger","Ledger representing high level concept of the Fabric Blockchain network"]]});

@@ -34,12 +34,57 @@
 <span id="34">34</span>
 <span id="35">35</span>
 <span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
  */</span>
 
 <span class="doccomment">/// Represents a transaction </span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// This can be used to obtain information about the current transaction</span>
+<span class="doccomment">/// that trigger a contract function to be executed.</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// Timestamp and MSPID are two important fields</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// TODO: Check for others to be added</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// # Example</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// ```</span>
+<span class="doccomment">/// pub fn myTransactionFn(){</span>
+<span class="doccomment">///   let tx = Transaction::current_transaction()</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">///   let id = tx.get_id();</span>
+<span class="doccomment">///   let timestamp = tx.get_timestamp();</span>
+<span class="doccomment">///   let mspid = tx.get_mspid();</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">/// ```</span>
 <span class="doccomment">///  </span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Transaction</span> {
 
@@ -53,20 +98,27 @@
         }
     }
 
-
     <span class="doccomment">/// Gets the transaction id</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// Full transaction id</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;get_id&quot;</span>)
     }
 
+    <span class="doccomment">/// Gets the timestamp of this transaction</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// Format is ISO - need better type here</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_timestamp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;get_id&quot;</span>)
     }
 
+    <span class="doccomment">/// The MSP Identifier of the originating organization</span>
+    <span class="doccomment">/// </span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_mspid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;get_id&quot;</span>)
     }
 
+    <span class="doccomment">/// Get the current transaction</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">current_transaction</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Transaction</span> {
         <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;get_id&quot;</span>)
     }

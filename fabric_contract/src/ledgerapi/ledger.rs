@@ -71,7 +71,7 @@ impl Ledger {
     ///    let private_collection = ledger.get_collection(CollectionName::Private(String::from("my_private_details")));
     /// ```
     pub fn get_collection(&self, name: CollectionName) -> Collection {
-         Collection::new(name)
+         todo!("get_collection")
     }   
 
 }

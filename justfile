@@ -9,7 +9,8 @@ amd64:
 
 
 docs:
-    cargo doc --no-deps --target-dir ./docs
+    cargo doc --no-deps --open
+    cp -r ./target/doc/* ./docs/
 
 # use expand with the expand crate when debugging macros
 expand:

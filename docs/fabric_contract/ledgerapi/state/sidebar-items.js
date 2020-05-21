@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["State","A State is the combination of key and value that are contained within a collection."]],"trait":[["DataType",""]]});
