@@ -10,7 +10,7 @@ amd64:
 
 docs:
     cargo doc --no-deps --open
-    cp -r ./target/doc/* ./docs/
+    cp -r ./target/doc/* ./docs/apidoc/
 
 # use expand with the expand crate when debugging macros
 expand:

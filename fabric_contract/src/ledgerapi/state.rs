@@ -105,4 +105,5 @@ pub trait ToState {
 
 fn temp() {
     let s = State::new("Key".to_string(),"Value".to_string().into_bytes());
+    let s1 = State::from(("Key".to_string(),"Value".to_string().into_bytes()));
 }

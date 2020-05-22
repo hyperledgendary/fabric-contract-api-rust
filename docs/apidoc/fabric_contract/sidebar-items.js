@@ -1,0 +1,1 @@
+initSidebarItems({"macro":[["launch_handler",""]],"mod":[["blockchain","Module to provide APIs to get information about Fabric"],["contract","Module to provide APIs to write contracts and interact with the ledger"],["error",""],["runtime","Module to provide 'runtime' services."]]});

@@ -44,6 +44,9 @@ pub fn log(s: &str) {
     }
 }
 
+/// The API calls made by the users contract implementation via the Collection, State interfaces etc..
+/// get rounted to here. They are then passed over the Wasm boundary to be sent off (somehow) to the peer
+/// 
 fn _runtime_host_call(cmd: String, data: Vec<u8>) -> String {
     log(&format!("Making host call{}::{}",cmd,str::from_utf8(&data).unwrap())[..]);
     let res = host_call("wapc", &cmd[..],&data).unwrap();
@@ -57,7 +60,7 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
 
     let ctx = Context::new(log);
 
-    // decode the message
+    // decode the message and arguments
     let args = Arguments::decode(msg).unwrap();
     log(&args.args.join(","));
     
@@ -75,7 +78,7 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
     };
     let mut buffer = vec![];
 
-    // encoding response
+    // encoding response from the transaction
     log("encoding response");
     if let Err(encoding_error) = ret.encode(&mut buffer) {
         panic!("Failed to encode {:?}",encoding_error);

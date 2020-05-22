@@ -1,5 +1,4 @@
 #![allow(dead_code)]
-#![feature(proc_macro_hygiene, decl_macro, param_attrs)]
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -9,6 +8,7 @@
 //! 
 
 use fabric_contract::contract::*;
+use fabric_contract::error::*;
 
 use crate::myasset::*;
 
@@ -35,6 +35,8 @@ impl Contract for AssetContract {
     
 }
 
+
+
 // transient
 
 #[contract_impl]
@@ -47,9 +49,8 @@ impl AssetContract {
     }
     
     #[transaction]
-    pub fn asset_exists( assset_id:  String) -> Result<bool,String> {
+    pub fn asset_exists(assset_id:  String) -> Result<bool,ContractError> {
         let ledger = Ledger::access_ledger();
-
         let world = ledger.get_collection(CollectionName::World);
 
         Ok(world.state_exists(assset_id))
@@ -58,8 +59,9 @@ impl AssetContract {
 
     /// creates an asset
     /// 
+    #[transaction(transient = { value })]
     pub fn create_asset(&self, my_assset_id: String, value: String) -> Result<(),String> {
-        // ctx.log(format!("within the create_asset transactions {}:{}",my_assset_id,value));
+      
         // get the collection that is backed by the world state
         let ledger = Ledger::access_ledger();
         let world = ledger.get_collection(CollectionName::World);
@@ -80,6 +82,7 @@ impl AssetContract {
     }
 
     /// reads an asset and returns the value
+    #[transaction(evaluate)]
     pub fn read_asset(&self, my_assset_id: String) -> Result<String,String> {
         let ledger = Ledger::access_ledger();
         let world = ledger.get_collection(CollectionName::World);

@@ -14,6 +14,8 @@ mod contractapi;
 mod ledgerapi;
 mod blockchainapi;
 mod runtimeapi;
+pub mod error;
+pub use error::*;
 
 /// Module to provide 'runtime' services.
 /// 
