@@ -1,29 +1,34 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-#![recursion_limit = "128"]
-// #![feature(proc_macro_diagnostic,param_attrs)]
-extern crate proc_macro;
+#![allow(unused_variables)]
+#![allow(dead_code)]
+#![allow(unused_imports)]
 
+#![recursion_limit = "128"]
+
+// #![feature(trace_macros)] trace_macros!(true);
+//! Definitions of the macros used for the Contracts
+//! 
+//! TODO: Ensure all code generated is full hardened against errors
+//! TODO: Does not generate any metadata as yet.
+
+
+// DevNote: did experiment with macros that can added on parameters but these are experimental nightly only
+// moving to arguments in the transaction decorator
+// #![feature(proc_macro_diagnostic,param_attrs)]
+
+extern crate proc_macro;
 
 // Bring in quite a lot of different crates, noteably the syn crate for handling the 
 // AST.
-// Suspect that a lot of these aren't actually needed
-//use proc_macro2::TokenStream;
-use quote::quote;
+use quote::{format_ident, quote};
 use syn::{
-    parse_macro_input, AttributeArgs,ItemFn,
+    parse_macro_input, AttributeArgs,ItemFn, FnArg, Type,TypePath,TypeReference
 };
 
-// use syn::{
-//     parse::Error, parse_macro_input, parse_quote, punctuated::Punctuated, spanned::Spanned, FnArg,
-//     Generics, Ident, ImplItem, ImplItemMethod, ItemImpl, ReturnType, Token, Type, TypeTuple,
-// };
 
-//use quote::ToTokens;
-//use quote::TokenStreamExt;
-
-
+// DevNote: Most basic attribute procedural macro, keep here for reference and debug
 // #[proc_macro_attribute]
 // pub fn transient(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 //     println!("attr: \"{}\"", attr.to_string());
@@ -31,21 +36,30 @@ use syn::{
 //     item
 // }
 
-/// Use this macro to mark the impl of the contract functions
-/// 
+
+/// Use this macro to mark the implementation of the your contract structure
 /// 
 /// # Example
 /// 
 /// ```
-///  
 /// #[contract_impl]
 /// impl MyContract {
 /// 
+///     #[transaction]
 ///     pub fn my_asset_fn() { 
 ///         OK(())
 ///     }
-/// 
+///
+///     // this is NOT callable as transaction function 
+///     fn helper() { }
 /// }
+/// ```
+/// 
+/// This macro's purpose is to implement the 'routing' trait for the contract. This permits
+/// the message from peer to correctly routed to the transaction function required.
+/// 
+/// This trait relies on the transaction functions also being marked with the `#[transaction]` 
+/// macro. 
 /// 
 #[proc_macro_attribute]
 pub fn contract_impl(_args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -73,8 +87,14 @@ pub fn contract_impl(_args: proc_macro::TokenStream, input: proc_macro::TokenStr
             syn::ImplItem::Method(ref method) => {
                 let method = method.clone();
                 let name = &method.sig.ident;
-                method_fns.push(syn::Ident::new(&format!("{}",name), name.span()));
-                method_names.push(ident_to_litstr(name));
+
+                // ignore the new method 
+                // TODO this in a better way! i.e. only the fns marked #[transaction]
+
+                if name != "new" {  
+                    method_fns.push(syn::Ident::new(&format!("invoke_{}",name), name.span()));
+                    method_names.push(ident_to_litstr(name));    
+                }
 
                 // todo: sort out the arguments; left to another day
                 // this code will be long and boring, but conceptually simple based
@@ -95,28 +115,29 @@ pub fn contract_impl(_args: proc_macro::TokenStream, input: proc_macro::TokenStr
     }
 
     // quote! the existing code, and also the new routing implementation 
-    // lots more to add here.....
+    // TODO: Need to ensure this is full hardened against errors
+    // 
     let output = quote! {
        #existing
 
-        impl Routing for #type_name {         
+         impl Routing for #type_name {         
 
-            fn route2(&self, ctx: Context, tx_fn: String, args: Vec<String>) -> Result<String,String>{
-                ctx.log(format!("Inside the contract {} {:?}",tx_fn,args));
-                let _r = match &tx_fn[..] {
+                fn route2(&self, ctx: Context, tx_fn: String, args: Vec<String>) -> Result<String,String>{
+                 ctx.log(format!("Inside the contract {} {:?}",tx_fn,args));
+                 let _r = match &tx_fn[..] {
           
-                    #(#method_names => 
-                        {
-                            //let _r = self.#method_fns(ctx );
-                            Ok(())
-                        }
+                      #(#method_names => 
+                          {
+                              let _r = self.#method_fns(args);
+                              Ok(())
+                          }
                         
-                        , )*       
-                    _ => Err(String::from("Unknown transaction fn "))
-                };
-                Ok(String::from("200"))
-            }
-        }
+                          , )*       
+                     _ => Err(String::from("Unknown transaction fn "))
+                 };
+                 Ok(String::from("200"))
+             }
+         }
 
     };
 
@@ -164,10 +185,64 @@ fn ident_to_litstr(ident: &syn::Ident) -> syn::LitStr {
 /// ```
 /// 
 #[proc_macro_attribute]
-pub fn transaction(_args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    input
+pub fn transaction(args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+
+    let psitem = parse_macro_input!(input as ItemFn);
+
+    let name = psitem.sig.ident.clone();
+    let classname = syn::Ident::new(&format!("{}{}", "invoke_", name), psitem.sig.ident.span());
+
+    let ret_type= match psitem.sig.output.clone() {
+        syn::ReturnType::Default => Box::new(syn::parse_quote!(())),
+        syn::ReturnType::Type(_, ret_type) => ret_type,
+    };
+
+    let mut arg_names = Vec::new();
+    let mut aargs = Vec::new();
+    
+
+    // the overall algorthim here should be consiered candidate for optimization
+    // It iterates over the signature, skipping the self reference
+    // then kets the name of the argument
+
+    for input in psitem.sig.inputs.iter().skip(1) {
+        match input {
+            FnArg::Typed(arg) =>  { 
+                let pat = &arg.pat;
+                let ty = &arg.ty;              
+                let comment = format!("{:?}",ty);
+                aargs.push(quote!{                   
+                   let #pat = a.remove(0); // and convert convert_from( );
+                });
+                arg_names.push(quote!{ # pat });
+
+             },           
+            _ => { panic!() }
+        }
+        
+    };
+
+
+    let output = quote! {
+
+        #psitem
+
+        // hello
+       pub fn #classname(&self, args: Vec<String>) -> #ret_type {
+            let mut a = args.clone();
+            #(#aargs)*
+
+            self.#name(#(#arg_names),*)
+        }
+    };
+   output.into()
 }
 
+/// Define the properties of the datatype
+#[proc_macro_attribute]
+pub fn property(_args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    input
+}
 
 ///
 /// Use this to mark the structs that serve as complex data types
@@ -184,7 +259,7 @@ pub fn transaction(_args: proc_macro::TokenStream, input: proc_macro::TokenStrea
 /// 
 /// ```
 /// 
-#[proc_macro_derive(DataType)]
+#[proc_macro_derive(DataTypeMacro)]
 pub fn data_type_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream  {
     // Construct a representation of Rust code as a syntax tree
     // that we can manipulate

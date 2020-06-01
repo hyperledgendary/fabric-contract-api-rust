@@ -11,6 +11,8 @@
 <span id="11">11</span>
 <span id="12">12</span>
 <span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -20,7 +22,9 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">ledger</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">collection</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">state</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">datatype</span>;
 
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">datatype</span>::<span class="ident">DataType</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">ledger</span>::<span class="ident">Ledger</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">collection</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">collection</span>::<span class="ident">CollectionName</span>;

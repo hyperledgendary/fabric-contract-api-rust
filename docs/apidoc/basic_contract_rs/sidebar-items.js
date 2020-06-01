@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["__launch",""],["register","Register the contracts Look to fold this into the macro (or the contract_impl macro)"]]});
+initSidebarItems({"fn":[["__guest_call",""],["__launch",""],["once_wapc",""]]});

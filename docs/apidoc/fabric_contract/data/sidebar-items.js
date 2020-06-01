@@ -1,0 +1,1 @@
+initSidebarItems({"attr":[["Property","Define the properties of the datatype"]],"trait":[["DataType",""]]});

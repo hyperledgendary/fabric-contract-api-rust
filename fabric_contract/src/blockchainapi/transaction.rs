@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#![allow(dead_code)]
 /// Represents a transaction 
 /// 
 /// This can be used to obtain information about the current transaction

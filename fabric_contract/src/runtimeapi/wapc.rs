@@ -21,26 +21,26 @@ use items::Arguments;
 use items::Return;
 
 /// General function to log messages
-#[link(wasm_import_module = "wapc")]
-extern "C" {
-    pub fn __log(ptr: *const u8, len: usize);
-}
+// #[link(wasm_import_module = "wapc")]
+// extern "C" {
+//     pub fn __log(ptr: *const u8, len: usize);
+// }
 
 // register the callback handler for the wapc calls
-wapc_handler!(handle_wapc);
+//wapc_handler!(handle_wapc);
 
 pub fn handle_wapc(operation: &str, msg: &[u8]) -> CallResult {
     match operation {
         "contract" => handle_tx_invoke(msg),
        // could add other functions for administration
-        _ => Err("Unkown function being called".into()),
+        _ => Err("Unknown function being called".into()),
     }
 }
 
 #[inline(never)]   // not sure why this is not inlined?
 pub fn log(s: &str) {
     unsafe {
-        __log(s.as_ptr(), s.len());
+        guest::__console_log(s.as_ptr(), s.len());
     }
 }
 

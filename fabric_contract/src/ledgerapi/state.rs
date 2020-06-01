@@ -1,6 +1,8 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
+#![allow(unused_variables)]
+use crate::ledgerapi::datatype::*;
 
 ///
 /// A State is the combination of key and value that are contained within a collection.
@@ -80,16 +82,23 @@ impl Default for State  {
     }
 }
 
-impl ToState for State {
-    #[inline]
-    fn to_state(&self) -> &State {
-        self.to_owned()
-    }
-}
-
 impl From<()> for State {
     fn from(_:()) -> Self {
         Self::default()
+    }
+}
+
+/// Implementation of converting to a state from a datatype
+/// 
+/// # Example
+/// 
+/// ```
+///     let myAsset = MyAsset::new();
+///     state.from(myAsset);
+/// ```
+impl From<Box<dyn DataType>> for State {
+    fn from(_:Box<dyn DataType>) -> Self {
+       Self::default()
     }
 }
 
@@ -99,11 +108,4 @@ impl From<(String,Vec<u8>)> for State {
     }
 }
 
-pub trait ToState {
-    fn to_state(&self) -> &State;
-}
 
-fn temp() {
-    let s = State::new("Key".to_string(),"Value".to_string().into_bytes());
-    let s1 = State::from(("Key".to_string(),"Value".to_string().into_bytes()));
-}

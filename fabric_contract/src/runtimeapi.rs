@@ -3,5 +3,6 @@
  */
 
 pub mod register;
-
+pub mod wapc;
 pub use register::ContractRuntime;
+pub use wapc::*;

@@ -5,7 +5,7 @@ authors = ["Matthew B White <whitemat@uk.ibm.com>"]
 edition = "2018"
 
 [lib]
-# crate-type = ["cdylib"]
+#crate-type = ["cdylib"]
 
 [profile.release]
 # Optimize for small code size
@@ -13,6 +13,7 @@ opt-level = "s"
 
 [dependencies]
 wapc-guest = "0.2.0"
+contract_macros = { path = "../contract_macros" }
 
 # protobuf handling
 prost = "0.6.1"

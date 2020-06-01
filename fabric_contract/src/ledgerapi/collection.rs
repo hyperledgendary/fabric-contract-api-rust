@@ -1,8 +1,11 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
+#![allow(unused_variables)]
+#![allow(dead_code)]
 
 use crate::ledgerapi::state::*;
+use crate::ledgerapi::datatype::*;
 
 /// Collection Name
 /// 
@@ -46,25 +49,25 @@ pub struct Collection {
 
 impl Collection {
 
-    pub fn retrieve<T: ToState>(&self, key: String) -> Result<T,String> {
+    pub fn retrieve<T: DataType>(&self, key: &String) -> Result<T,String> {
          todo!("getstate")
     }
 
-    pub fn create<T: ToState>(&self, value: T) -> Result<State,String> {
+    pub fn create<T: DataType>(&self, value: T) -> Result<State,String> {
          todo!("create")
     }
 
-    pub fn update<T: ToState>(&self, _value: T) -> Result<State,String> {
+    pub fn update<T: DataType>(&self, _value: T) -> Result<State,String> {
          todo!("getstate")
     }
 
-    pub fn delete<T: ToState>(&self, _value: T) -> Result<(),String> {
+    pub fn delete<T: DataType>(&self, _value: T) -> Result<(),String> {
          todo!("getstate")
     }
 
 
     /// Does this key exist
-    pub fn state_exists(&self, key: String) -> bool {
+    pub fn state_exists(&self, key: &String) -> bool {
         true
     }
     

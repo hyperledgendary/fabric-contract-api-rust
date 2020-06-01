@@ -10,25 +10,15 @@
 //! caution. Any failure will terminate the container
 //! and there is limited scope for logging at stage in
 //! the lifecyle
-mod assetcontract;
-mod myasset;
+mod contracts;
+use crate::contracts::AssetContract;
 
-
-use fabric_contract::contract::ContractManager;
-use assetcontract::AssetContract;
+mod types;
+use crate::types::MyAsset;
 
 // The macro to indicate the function that will be used to register the contracts.
-use fabric_contract::launch_handler;
-
-
-launch_handler!(register);
-
-/// Register the contracts
-/// Look to fold this into the macro (or the contract_impl macro)
-pub fn register() -> i32 {
-    ContractManager::register_contract(Box::new(AssetContract::new()));
-
-    // return 0 to indicate success, other values imply failure and will terminate
-    // the chaincode container
-    0
-}
+// if there is more than one, use a comma separated list
+//
+// Provide the function that will create a new instance of the contract strcut
+// More than one contract struct can be provided. 
+fabric_contract::register!( AssetContract::new );

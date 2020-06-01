@@ -22,16 +22,6 @@
 <span id="22">22</span>
 <span id="23">23</span>
 <span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -45,26 +35,16 @@
 <span class="doccomment">//! caution. Any failure will terminate the container</span>
 <span class="doccomment">//! and there is limited scope for logging at stage in</span>
 <span class="doccomment">//! the lifecyle</span>
-<span class="kw">mod</span> <span class="ident">assetcontract</span>;
-<span class="kw">mod</span> <span class="ident">myasset</span>;
+<span class="kw">mod</span> <span class="ident">contracts</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contracts</span>::<span class="ident">AssetContract</span>;
 
-
-<span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">contract</span>::<span class="ident">ContractManager</span>;
-<span class="kw">use</span> <span class="ident">assetcontract</span>::<span class="ident">AssetContract</span>;
+<span class="kw">mod</span> <span class="ident">types</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">types</span>::<span class="ident">MyAsset</span>;
 
 <span class="comment">// The macro to indicate the function that will be used to register the contracts.</span>
-<span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">launch_handler</span>;
-
-
-<span class="macro">launch_handler</span><span class="macro">!</span>(<span class="ident">register</span>);
-
-<span class="doccomment">/// Register the contracts</span>
-<span class="doccomment">/// Look to fold this into the macro (or the contract_impl macro)</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
-    <span class="ident">ContractManager</span>::<span class="ident">register_contract</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">AssetContract</span>::<span class="ident">new</span>()));
-
-    <span class="comment">// return 0 to indicate success, other values imply failure and will terminate</span>
-    <span class="comment">// the chaincode container</span>
-    <span class="number">0</span>
-}</pre></div>
+<span class="comment">// if there is more than one, use a comma separated list</span>
+<span class="comment">//</span>
+<span class="comment">// Provide the function that will create a new instance of the contract strcut</span>
+<span class="comment">// More than one contract struct can be provided. </span>
+<span class="ident">fabric_contract</span>::<span class="macro">register</span><span class="macro">!</span>( <span class="ident">AssetContract</span>::<span class="ident">new</span> );</pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "basic_contract_rs";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
