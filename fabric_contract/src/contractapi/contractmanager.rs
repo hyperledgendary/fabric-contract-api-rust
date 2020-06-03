@@ -2,11 +2,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#![allow(dead_code)]
 use crate::contractapi::context::*;
 use crate::contractapi::contract::*;
 use crate::contractapi::contractdefn;
-use lazy_static::lazy_static; // 1.4.0
+use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Mutex;
 
@@ -34,19 +33,27 @@ impl ContractManager {
         self.contracts.insert(name, contract_defn);
     }
 
-    fn evaluate2(
+    fn evaluate(
         self: &mut ContractManager,
         ctx: Context,
         contract_name: String,
         tx: String,
-        args: Vec<String>,
+        args: Vec<u8>,
     ) -> Result<String, String> {
         ctx.log(format!("{}", self.contracts.len()));
         match self.contracts.get(&contract_name) {
             Some(defn) => {
                 ctx.log(String::from("Found defn"));
-                let _r = defn.invoke(ctx, tx, args);
-                Ok(String::from("called"))
+
+                // need to move this to the contract
+                // and apply the correct wire deserializtion protocol
+                let parsed_args = String::from_utf8(args)
+                    .unwrap_or_default()
+                    .split(",")
+                    .map(|s| s.to_string())
+                    .collect();
+
+                defn.invoke(ctx, tx, parsed_args)
             }
             None => {
                 ctx.log(format!("Failed {}.{},{:?}", contract_name, tx, args));
@@ -55,6 +62,7 @@ impl ContractManager {
         }
     }
 
+    /// register the contract
     pub fn register_contract(contract: Box<dyn Contract + Send>) {
         CONTRACT_MGR
             .lock()
@@ -62,17 +70,27 @@ impl ContractManager {
             .register_contract_impl(contract);
     }
 
-    pub fn route(
-        ctx: Context,
-        contract_name: String,
-        tx: String,
-        args: Vec<String>,
-    ) -> Result<String, String> {
-        CONTRACT_MGR
+    /// Route the call to the correct contract
+    pub fn route(ctx: Context, tx: String, args: Vec<u8>) -> Result<String, String> {
+        // parse out the contract_name here
+        let namespace: String;
+        let fn_name: String;
+        match tx.find(":") {
+            None => {
+                namespace = "default".to_string();
+                fn_name = tx.clone();
+            }
+            Some(s) => {
+                namespace = tx[..s].to_string();
+                fn_name = tx[s + 1..].to_string();
+            }
+        }
+
+        let r = CONTRACT_MGR
             .lock()
             .unwrap()
-            .evaluate2(ctx, contract_name, tx, args)
+            .evaluate(ctx, namespace, fn_name, args);
+
+        r
     }
 }
-
-

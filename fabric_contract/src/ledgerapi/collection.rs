@@ -7,6 +7,9 @@
 use crate::ledgerapi::state::*;
 use crate::ledgerapi::datatype::*;
 
+
+use crate::runtimeapi::ledgerservice::*;
+
 /// Collection Name
 /// 
 /// An enumeration that be one of 
@@ -74,14 +77,23 @@ impl Collection {
     /// Return the state for this key
     /// 
     pub fn get_state(&self, key: String) -> State {
-        todo!("getstate")
+        todo!("update state")
+
+       
+
+
     }
 
     /// Creates the state
     /// 
     /// If it it already exists, this is an error
     pub fn create_state(&self, key: String, data: Vec<u8>) -> State { 
-       State::new(key,data)
+       
+       let state = State::new(key,data);
+
+    //    LedgerService::create_state(key,data);
+
+       state
     }
 
     /// Update the states

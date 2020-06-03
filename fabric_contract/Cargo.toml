@@ -14,6 +14,8 @@ opt-level = "s"
 [dependencies]
 wapc-guest = "0.2.0"
 contract_macros = { path = "../contract_macros" }
+fabric_ledger_protos_rust = { path = "/home/matthew/github.com/hyperledgendary/fabric-ledger-protos/fabric-ledger-protos-rust" }
+
 
 # protobuf handling
 prost = "0.6.1"

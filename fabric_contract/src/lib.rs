@@ -85,7 +85,7 @@ pub mod data {
 /// - Logging
 ///
 pub mod runtime {
-    pub use crate::runtimeapi::ContractRuntime;
+    // pub use crate::runtimeapi::ContractRuntime;
 }
 
 /// Module to provide APIs to write contracts and interact with the ledger

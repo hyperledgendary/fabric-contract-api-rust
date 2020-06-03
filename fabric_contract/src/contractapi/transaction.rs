@@ -1,13 +1,11 @@
-
-#![allow(dead_code)]
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 use std::fmt;
 
-
-
 pub struct TransactionFn {
     name: String,
-    tx: fn(&str) -> bool,
 }
 
 impl fmt::Debug for TransactionFn {
@@ -21,12 +19,7 @@ impl TransactionFn {
     pub fn new(name: &str, func: fn(&str)->bool) -> TransactionFn {
         TransactionFn {
             name: String::from(name),
-            tx:func,
         }
     }
 
-
-    pub fn call(self: &TransactionFn,arg: &str) {
-        (self.tx)(arg);
-    }
 }

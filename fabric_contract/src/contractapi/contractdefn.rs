@@ -9,7 +9,6 @@ use crate::contractapi::contract::*;
 use crate::contractapi::context::*;
 
 // Internal definition of a contract
-
 pub(super) struct ContractDefn {
     name: String,
     methods: HashMap<String, transaction::TransactionFn>,
