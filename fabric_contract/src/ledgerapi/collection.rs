@@ -57,7 +57,10 @@ impl Collection {
     }
 
     pub fn create<T: DataType>(&self, value: T) -> Result<State,String> {
-         todo!("create")
+         
+        let s = State::from(value);
+        self.create_state(key: String, data: Vec<u8>)
+
     }
 
     pub fn update<T: DataType>(&self, _value: T) -> Result<State,String> {
@@ -71,29 +74,20 @@ impl Collection {
 
     /// Does this key exist
     pub fn state_exists(&self, key: &String) -> bool {
-        true
+        LedgerService::exists_state(key).unwrap()
     }
     
     /// Return the state for this key
     /// 
-    pub fn get_state(&self, key: String) -> State {
-        todo!("update state")
-
-       
-
-
+    pub fn get_state(&self, key: String) -> Result<State,String> {
+        LedgerService::read_state(key)
     }
 
     /// Creates the state
     /// 
     /// If it it already exists, this is an error
-    pub fn create_state(&self, key: String, data: Vec<u8>) -> State { 
-       
-       let state = State::new(key,data);
-
-    //    LedgerService::create_state(key,data);
-
-       state
+    pub fn create_state(&self, key: String, data: Vec<u8>) -> Result<State,String> {     
+       LedgerService::create_state(key,data)
     }
 
     /// Update the states

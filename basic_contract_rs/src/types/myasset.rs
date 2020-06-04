@@ -7,13 +7,14 @@ use fabric_contract::data::DataType;
 use fabric_contract::contract::State;
 
 pub struct MyAsset {
-   
+   uid: String,
    value: String
 }
 
 impl MyAsset {
-   pub fn new(value: String) -> MyAsset {
+   pub fn new(uid: String, value: String) -> MyAsset {
       MyAsset {
+         uid,
          value
       }
    }
@@ -21,6 +22,7 @@ impl MyAsset {
    pub fn get_value(&self) -> String {
       self.value.clone()
    }
+
 }
 
 
@@ -30,6 +32,16 @@ impl DataType for MyAsset {
       todo!("to_state")
    }
    fn get_key(&self) -> String{
-      todo!("getkey")
+      self.uid.clone()
+   }
+}
+
+impl From<MyAsset> for State {
+   fn from(a: MyAsset) -> Self {
+
+      let key = a.get_key();
+      let data = format!("{{\"value\":\"{}\"}}",a.get_value());
+
+      Self::new(key , data.into() )
    }
 }

@@ -3,7 +3,7 @@
  */
 
 //! This is the runtime componet that marshalls the WAPC calls 
-use prost::Message;
+use protobuf::{parse_from_bytes,Message};
 use std::str;
 use crate::contractapi::context::Context;
 use crate::contractapi::contractmanager::*;
@@ -11,7 +11,7 @@ use crate::contractapi::contractmanager::*;
 extern crate wapc_guest as guest;
 use guest::prelude::*;
 
-use fabric_ledger_protos_rust::*;
+use fabric_ledger_protos::contract_messages::*;
 
 /// General function to log messages
 // #[link(wasm_import_module = "wapc")]
@@ -62,26 +62,22 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
     log("handler_tx_invoke");  
 
     // decode the message and arguments
-    let invokeRequest = contract::InvokeTransactionRequest::decode(msg).unwrap();
-    let fn_name = invokeRequest.transaction_name;
-    let args = invokeRequest.payload;
-    let ctx = Context::new(invokeRequest.channel_id, invokeRequest.transaction_id, log);
+    let invoke_request = parse_from_bytes::<InvokeTransactionRequest>(&msg).unwrap();
 
+    let fn_name = invoke_request.transaction_name;
+    let args = invoke_request.payload;
+    let ctx = Context::new(invoke_request.channel_id, invoke_request.transaction_id, log);
+    
     // pass over to the contract manager to route
-    log("making the routing calll");
+    log("making the routing call");
+    let mut response_msg = InvokeTransactionResponse::new();
+
     let ret = match ContractManager::route(ctx,fn_name,args) {
-        Ok(r) =>  contract::InvokeTransactionResponse { payload : r.into_bytes() } ,
-        Err(e) => contract::InvokeTransactionResponse { payload : e.into_bytes() } ,
+        Ok(r) =>  response_msg.set_payload( r.into_bytes() ),
+        Err(e) => response_msg.set_payload( e.into_bytes() ),
     };
    
-    let mut buffer = vec![];
-
-    // encoding response from the transaction
-    log("encoding response");
-    if let Err(encoding_error) = ret.encode(&mut buffer) {
-        panic!("Failed to encode {:?}",encoding_error);
-    }
- 
+    let buffer: Vec<u8> = response_msg.write_to_bytes()?;
     log("done invoke");
     Ok(buffer)
 

@@ -48,13 +48,13 @@ impl AssetContract {
     ///
     /// As an example the value is passed as private data
     ///
-    #[Transaction(evaluate)]
+    #[Transaction(submit)]
     pub fn create_asset(&self, my_assset_id: String, value: String) -> Result<(), ContractError> {
         // get the collection that is backed by the world state
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
-        let new_asset = MyAsset::new(my_assset_id);
+        let new_asset = MyAsset::new(my_assset_id,value);
 
-        world.create(new_asset);
+        let _r = world.create(new_asset);
         Ok(())
 
     }

@@ -4,6 +4,8 @@
 #![allow(unused_variables)]
 use crate::ledgerapi::datatype::*;
 
+use fabric_ledger_protos::{ledger_messages};
+
 ///
 /// A State is the combination of key and value that are contained within a collection.
 ///
@@ -105,6 +107,12 @@ impl From<Box<dyn DataType>> for State {
 impl From<(String,Vec<u8>)> for State {
     fn from((a, b): (String, Vec<u8>)) -> Self {
         Self { key: a, data: b }
+    }
+}
+
+impl From<&ledger_messages::State> for State {
+    fn from(lms: &ledger_messages::State) -> Self {
+        Self { key: lms.get_key().to_string() , data: lms.get_value().to_vec()}
     }
 }
 
