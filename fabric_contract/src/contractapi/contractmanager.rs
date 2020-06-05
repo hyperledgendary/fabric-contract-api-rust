@@ -8,7 +8,7 @@ use crate::contractapi::contractdefn;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Mutex;
-
+use log::{error, info, warn,debug};
 // Static reference to the ContractManager
 lazy_static! {
     static ref CONTRACT_MGR: Mutex<ContractManager> = Mutex::new(ContractManager::new());
@@ -35,12 +35,17 @@ impl ContractManager {
 
     fn evaluate(
         self: &mut ContractManager,
-        ctx: Context,
+        ctx: &Context,
         contract_name: String,
         tx: String,
         args: Vec<u8>,
     ) -> Result<String, String> {
-        ctx.log(format!("{}", self.contracts.len()));
+        ctx.log(format!("contractmanager::evaluate {} {}", contract_name,tx));
+       
+        for (key, _value) in  &self.contracts {
+            ctx.log(format!("{} ", key));
+        }
+
         match self.contracts.get(&contract_name) {
             Some(defn) => {
                 ctx.log(String::from("Found defn"));
@@ -52,11 +57,11 @@ impl ContractManager {
                     .split(",")
                     .map(|s| s.to_string())
                     .collect();
-
+                debug!("{:#?}",parsed_args);
                 defn.invoke(ctx, tx, parsed_args)
             }
             None => {
-                ctx.log(format!("Failed {}.{},{:?}", contract_name, tx, args));
+                ctx.log(format!("Unable to find contract Failed {}.{},{:?}", contract_name, tx, args));
                 Err(String::from("Unable to find contract"))
             }
         }
@@ -71,7 +76,9 @@ impl ContractManager {
     }
 
     /// Route the call to the correct contract
-    pub fn route(ctx: Context, tx: String, args: Vec<u8>) -> Result<String, String> {
+    pub fn route(ctx: &Context, tx: String, args: Vec<u8>) -> Result<String, String> {
+        ctx.log(String::from("contractmanager::route>>"));
+
         // parse out the contract_name here
         let namespace: String;
         let fn_name: String;
@@ -90,7 +97,8 @@ impl ContractManager {
             .lock()
             .unwrap()
             .evaluate(ctx, namespace, fn_name, args);
-
+        
+        ctx.log(String::from("contractmanager::route<<"));
         r
     }
 }

@@ -4,5 +4,7 @@
 
 pub mod wapc;
 pub use wapc::*;
+pub mod logger;
+pub use logger::*;
 pub mod ledgerservice;
 pub use ledgerservice::*;

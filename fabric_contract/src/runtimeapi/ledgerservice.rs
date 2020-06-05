@@ -31,7 +31,7 @@ impl LedgerService {
         csr.set_state(state);
         // need to get the ownership back again
         let state = csr.get_state();
-        runtime_host_call("ledger_service".to_string(), buffer);
+        runtime_host_call("LedgerService".to_string(),"CreateState".to_string(), buffer);
         Ok(State::from(state))
     }
 
@@ -45,7 +45,7 @@ impl LedgerService {
         rsr.set_transaction_id("1234".to_string());
         rsr.set_state_key(key);
         
-        let response_buffer: Vec<u8> = runtime_host_call("ledger_service".to_string(), buffer);
+        let response_buffer: Vec<u8> = runtime_host_call("LedgerService".to_string(), "ReadState".to_string(), buffer);
         let response = parse_from_bytes::<ledger_messages::ReadStateResponse>(&response_buffer).unwrap();
         let state = response.get_state();
         Ok(State::from(state))
@@ -68,7 +68,7 @@ impl LedgerService {
         rsr.set_transaction_id("1234".to_string());
         rsr.set_state_key(key.clone());
         
-        let response_buffer: Vec<u8> = runtime_host_call("ledger_service".to_string(), buffer);
+        let response_buffer: Vec<u8> = runtime_host_call("LedgerService".to_string(),"ExistsState".to_string(), buffer);
         let response = parse_from_bytes::<ledger_messages::ExistsStateResponse>(&response_buffer).unwrap();
         
         Ok(response.get_exists())

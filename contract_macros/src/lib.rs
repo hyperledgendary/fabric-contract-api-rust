@@ -119,15 +119,16 @@ pub fn contract_impl(_args: proc_macro::TokenStream, input: proc_macro::TokenStr
     // 
     let output = quote! {
        #existing
-
+         
          impl Routing for #type_name {         
 
-                fn route2(&self, ctx: Context, tx_fn: String, args: Vec<String>) -> Result<String,String>{
+                fn route2(&self, ctx: &Context, tx_fn: String, args: Vec<String>) -> Result<String,String>{
                  ctx.log(format!("Inside the contract {} {:?}",tx_fn,args));
                  let _r = match &tx_fn[..] {
           
                       #(#method_names => 
                           {
+                              log::debug!("calling");
                               let _r = self.#method_fns(args);
                               Ok(())
                           }
@@ -208,11 +209,14 @@ pub fn transaction(args: proc_macro::TokenStream, input: proc_macro::TokenStream
     for input in psitem.sig.inputs.iter().skip(1) {
         match input {
             FnArg::Typed(arg) =>  { 
+               
                 let pat = &arg.pat;
                 let ty = &arg.ty;              
                 let comment = format!("{:?}",ty);
-                aargs.push(quote!{                   
+                aargs.push(quote!{
+                   log::info!("{:?}",a);    
                    let #pat = a.remove(0); // and convert convert_from( );
+                  
                 });
                 arg_names.push(quote!{ # pat });
 

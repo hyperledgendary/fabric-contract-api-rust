@@ -36,8 +36,8 @@ pub use contract_macros::*;
 macro_rules! register {
 
     (  $( $contract:path ),*   )=> {
-        extern crate wapc_guest as guest;
-        use guest::prelude::*;
+        // extern crate wapc_guest as guest;
+        // use guest::prelude::*;
 
         use fabric_contract::contract::ContractManager;
         use fabric_contract::prelude::*;
@@ -47,12 +47,14 @@ macro_rules! register {
         static START: Once = Once::new();
         
         pub fn __launch() {
+            fabric_contract::runtime::initLogger();
+
             host_log("__launch");
             $( ContractManager::register_contract(Box::new($contract())); )*
             host_log("__launched");
         }
 
-        pub fn once_wapc(operation: &str, msg: &[u8]) -> CallResult {
+        pub fn once_wapc(operation: &str, msg: &[u8]) -> wapc_guest::prelude::CallResult {
             START.call_once(|| {
                  __launch();
             });
@@ -61,7 +63,7 @@ macro_rules! register {
 
 
         // register the callback handler for the wapc calls
-        wapc_handler!(once_wapc);
+        wapc_guest::wapc_handler!(once_wapc);
     };
 }
 
@@ -85,7 +87,7 @@ pub mod data {
 /// - Logging
 ///
 pub mod runtime {
-    // pub use crate::runtimeapi::ContractRuntime;
+   pub use crate::runtimeapi::logger::*;
 }
 
 /// Module to provide APIs to write contracts and interact with the ledger
@@ -119,3 +121,6 @@ pub mod contract {
 pub mod blockchain {
     pub use crate::blockchainapi::transaction::Transaction;
 }
+
+
+

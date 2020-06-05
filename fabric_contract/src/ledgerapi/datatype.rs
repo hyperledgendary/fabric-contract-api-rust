@@ -6,7 +6,7 @@ pub trait DataType {
 
     /// Converts into a state that can be handled and put into
     /// the ledger and private collections
-    fn to_state(&self) -> &State;
+    fn to_state(&self) -> State;
 
     /// 
     fn get_key(&self) -> String; 

@@ -9,6 +9,8 @@
 use fabric_contract::contract::*;
 use fabric_contract::data::*;
 
+use log::{debug,info};
+
 use crate::types::MyAsset;
 
 /// Structure for the AssetContract, on which implemenation transaction functions will be added
@@ -50,9 +52,11 @@ impl AssetContract {
     pub fn create_asset(&self, my_assset_id: String, value: String) -> Result<(), ContractError> {
         // get the collection that is backed by the world state
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
+        info!("Accessed collection");
         let new_asset = MyAsset::new(my_assset_id,value);
-
+        info!("Created asset");
         let _r = world.create(new_asset);
+        info!("created in world");
         Ok(())
 
     }

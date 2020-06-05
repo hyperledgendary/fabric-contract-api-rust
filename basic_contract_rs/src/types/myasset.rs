@@ -28,8 +28,8 @@ impl MyAsset {
 
 impl DataType for MyAsset {
    
-   fn to_state(&self)-> &State{
-      todo!("to_state")
+   fn to_state(&self)-> State{      
+      State::from((self.uid.clone(),self.value.clone().into_bytes()))
    }
    fn get_key(&self) -> String{
       self.uid.clone()

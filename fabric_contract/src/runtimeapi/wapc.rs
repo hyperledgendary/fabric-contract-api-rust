@@ -50,16 +50,16 @@ pub fn log(s: &str) {
 /// The API calls made by the users contract implementation via the Collection, State interfaces etc..
 /// get rounted to here. They are then passed over the Wasm boundary to be sent off (somehow) to the peer
 /// 
-pub fn runtime_host_call(cmd: String, data: Vec<u8>) -> Vec<u8> {
-    log(&format!("Making host call{}::{}",cmd,str::from_utf8(&data).unwrap())[..]);
-    let res = host_call("wapc", &cmd[..],&data).unwrap();
+pub fn runtime_host_call(service: String, cmd: String, data: Vec<u8>) -> Vec<u8> {
+    log(&format!("Making host call {}::{}::{}",service,cmd,str::from_utf8(&data).unwrap())[..]);
+    let res = host_call("wapc", &service[..], &cmd[..],&data).unwrap();
     res
 }
 
 /// handle_tx_invoke called with the buffer that contains the request 
 /// of what transaction function should be invoked
 fn handle_tx_invoke(msg: &[u8]) -> CallResult {
-    log("handler_tx_invoke");  
+    log("handler_tx_invoke>>");  
 
     // decode the message and arguments
     let invoke_request = parse_from_bytes::<InvokeTransactionRequest>(&msg).unwrap();
@@ -69,16 +69,17 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
     let ctx = Context::new(invoke_request.channel_id, invoke_request.transaction_id, log);
     
     // pass over to the contract manager to route
-    log("making the routing call");
+    log(&format!("making the routing call ::{}::",fn_name)[..]);
     let mut response_msg = InvokeTransactionResponse::new();
 
-    let ret = match ContractManager::route(ctx,fn_name,args) {
+    let ret = match ContractManager::route(&ctx,fn_name,args) {
         Ok(r) =>  response_msg.set_payload( r.into_bytes() ),
         Err(e) => response_msg.set_payload( e.into_bytes() ),
     };
    
     let buffer: Vec<u8> = response_msg.write_to_bytes()?;
-    log("done invoke");
+    log("handler_tx_invoke<<");
     Ok(buffer)
 
 }
+

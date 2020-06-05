@@ -12,10 +12,10 @@ edition = "2018"
 opt-level = "s"
 
 [dependencies]
-wapc-guest = "0.2.0"
+wapc-guest = "0.3.1"
 contract_macros = { path = "../contract_macros" }
-fabric_ledger_protos = { path = "/home/matthew/github.com/hyperledgendary/fabric-ledger-protos/fabric-ledger-protos-rust" }
-
+fabric_ledger_protos = "0.2.0"
+log = "0.4.8"
 protobuf = "2.14.0"
 # protobuf handling
 prost = "0.6.1"

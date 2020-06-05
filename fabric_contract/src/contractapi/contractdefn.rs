@@ -40,8 +40,8 @@ impl ContractDefn {
         
     }
 
-    pub fn invoke(self: &ContractDefn, ctx: Context, name:String, args:Vec<String>) -> Result<String,String> {
-        ctx.log(format!(">> invoke {}",name));
+    pub fn invoke(self: &ContractDefn, ctx: &Context, name:String, args:Vec<String>) -> Result<String,String> {
+        ctx.log(format!(">> invoke {} {:#?}",name, args));
         let _r = self.contract.route2(ctx,name,args); 
         Ok(String::from("ok"))
     }

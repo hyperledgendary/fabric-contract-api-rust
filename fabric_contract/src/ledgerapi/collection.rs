@@ -52,14 +52,20 @@ pub struct Collection {
 
 impl Collection {
 
+    pub fn new() -> Collection {
+        Collection {
+            name: CollectionName::World,
+        }
+    }
+
     pub fn retrieve<T: DataType>(&self, key: &String) -> Result<T,String> {
          todo!("getstate")
     }
 
     pub fn create<T: DataType>(&self, value: T) -> Result<State,String> {
-         todo!("")
-        // let s = State::from(value);
-        // self.create_state(s.get_key(), s.get_value())
+         
+        let s = value.to_state();
+        self.create_state(s.key(), s.value())
 
     }
 
