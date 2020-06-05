@@ -33,23 +33,36 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
 </pre><div class="example-wrap"><pre class="rust ">
 
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
  */</span>
 
-<span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">data</span>::<span class="ident">DataType</span>;
-<span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">contract</span>::<span class="ident">State</span>;
+<span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">data</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">contract</span>::<span class="kw-2">*</span>;
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MyAsset</span> {
-   
+   <span class="ident">uid</span>: <span class="ident">String</span>,
    <span class="ident">value</span>: <span class="ident">String</span>
 }
 
 <span class="kw">impl</span> <span class="ident">MyAsset</span> {
-   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MyAsset</span> {
+   <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">uid</span>: <span class="ident">String</span>, <span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MyAsset</span> {
       <span class="ident">MyAsset</span> {
+         <span class="ident">uid</span>,
          <span class="ident">value</span>
       }
    }
@@ -57,6 +70,7 @@
    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
       <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">clone</span>()
    }
+
 }
 
 
@@ -66,7 +80,17 @@
       <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;to_state&quot;</span>)
    }
    <span class="kw">fn</span> <span class="ident">get_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>{
-      <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;getkey&quot;</span>)
+      <span class="self">self</span>.<span class="ident">uid</span>.<span class="ident">clone</span>()
    }
-}</pre></div>
+}
+
+<span class="comment">// impl From&lt;DataType&gt; for State {</span>
+<span class="comment">//    fn from(a: MyAsset) -&gt; Self {</span>
+
+<span class="comment">//       let key = a.get_key();</span>
+<span class="comment">//       let data = format!(&quot;{{\&quot;value\&quot;:\&quot;{}\&quot;}}&quot;,a.get_value());</span>
+
+<span class="comment">//       Self::new(key , data.into() )</span>
+<span class="comment">//    }</span>
+<span class="comment">// }</span></pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "basic_contract_rs";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

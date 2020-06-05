@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
 /*
  * SPDX-License-Identifier: Apache-2.0
  */

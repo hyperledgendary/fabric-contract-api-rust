@@ -27,14 +27,6 @@
 <span id="27">27</span>
 <span id="28">28</span>
 <span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -43,26 +35,18 @@
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Context</span> {
     <span class="ident">tx_id</span>: <span class="ident">std</span>::<span class="ident">string</span>::<span class="ident">String</span>,
+    <span class="ident">channel_id</span>: <span class="ident">std</span>::<span class="ident">string</span>::<span class="ident">String</span>,
     <span class="ident">logfn</span> : <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">str</span>),
     <span class="comment">// callback: fn(String,Vec&lt;u8&gt;) -&gt; String,  // next step to add in the callback logic</span>
 }
 
 <span class="kw">impl</span> <span class="ident">Context</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">logfn</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">str</span>)) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Context</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">channel_id</span>: <span class="ident">String</span>, <span class="ident">tx_id</span>: <span class="ident">String</span>, <span class="ident">logfn</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="ident">str</span>)) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Context</span> {
         <span class="ident">Context</span> {
-            <span class="ident">tx_id</span>: <span class="string">&quot;01234567890&quot;</span>.<span class="ident">to_string</span>(),
+            <span class="ident">channel_id</span>,
+            <span class="ident">tx_id</span>,
             <span class="ident">logfn</span>,
         }
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_state</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">String</span>, <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) {
-        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;[createState] {}  {:?}&quot;</span>, <span class="ident">key</span>, <span class="ident">data</span>);
-        <span class="comment">// (&amp;self.callback)(String::from(&quot;create state&quot;),data);</span>
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">retrieve_state</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">key</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;[retrieveState] {} &quot;</span>, <span class="ident">key</span>);
-        <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;data&quot;</span>))
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_txid</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">std</span>::<span class="ident">string</span>::<span class="ident">String</span> {

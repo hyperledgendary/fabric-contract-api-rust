@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use fabric_contract::data::DataType;
-use fabric_contract::contract::State;
+use fabric_contract::data::*;
+use fabric_contract::contract::*;
 
 pub struct MyAsset {
    uid: String,
@@ -36,12 +36,12 @@ impl DataType for MyAsset {
    }
 }
 
-impl From<MyAsset> for State {
-   fn from(a: MyAsset) -> Self {
+// impl From<DataType> for State {
+//    fn from(a: MyAsset) -> Self {
 
-      let key = a.get_key();
-      let data = format!("{{\"value\":\"{}\"}}",a.get_value());
+//       let key = a.get_key();
+//       let data = format!("{{\"value\":\"{}\"}}",a.get_value());
 
-      Self::new(key , data.into() )
-   }
-}
+//       Self::new(key , data.into() )
+//    }
+// }

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ContractRuntime",""]]});
+initSidebarItems({});

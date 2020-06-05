@@ -57,9 +57,9 @@ impl Collection {
     }
 
     pub fn create<T: DataType>(&self, value: T) -> Result<State,String> {
-         
-        let s = State::from(value);
-        self.create_state(key: String, data: Vec<u8>)
+         todo!("")
+        // let s = State::from(value);
+        // self.create_state(s.get_key(), s.get_value())
 
     }
 

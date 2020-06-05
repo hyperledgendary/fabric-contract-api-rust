@@ -71,11 +71,7 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
  */</span>
@@ -124,13 +120,13 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// As an example the value is passed as private data</span>
     <span class="doccomment">///</span>
-    <span class="attribute">#[<span class="ident">Transaction</span>(<span class="ident">evaluate</span>)]</span>
+    <span class="attribute">#[<span class="ident">Transaction</span>(<span class="ident">submit</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_asset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">my_assset_id</span>: <span class="ident">String</span>, <span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ContractError</span><span class="op">&gt;</span> {
         <span class="comment">// get the collection that is backed by the world state</span>
         <span class="kw">let</span> <span class="ident">world</span> <span class="op">=</span> <span class="ident">Ledger</span>::<span class="ident">access_ledger</span>().<span class="ident">get_collection</span>(<span class="ident">CollectionName</span>::<span class="ident">World</span>);
-        <span class="kw">let</span> <span class="ident">new_asset</span> <span class="op">=</span> <span class="ident">MyAsset</span>::<span class="ident">new</span>(<span class="ident">my_assset_id</span>);
+        <span class="kw">let</span> <span class="ident">new_asset</span> <span class="op">=</span> <span class="ident">MyAsset</span>::<span class="ident">new</span>(<span class="ident">my_assset_id</span>,<span class="ident">value</span>);
 
-        <span class="ident">world</span>.<span class="ident">create</span>(<span class="ident">new_asset</span>);
+        <span class="kw">let</span> <span class="ident">_r</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">create</span>(<span class="ident">new_asset</span>);
         <span class="prelude-val">Ok</span>(())
 
     }
