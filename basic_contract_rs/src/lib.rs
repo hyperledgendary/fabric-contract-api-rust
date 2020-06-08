@@ -11,10 +11,11 @@
 //! and there is limited scope for logging at stage in
 //! the lifecyle
 mod contracts;
-use crate::contracts::AssetContract;
+pub use crate::contracts::AssetContract;
 
+// TODO: will need this when add 'myasset'
 mod types;
-use crate::types::MyAsset;
+pub use crate::types::MyAsset;
 
 // The macro to indicate the function that will be used to register the contracts.
 // if there is more than one, use a comma separated list

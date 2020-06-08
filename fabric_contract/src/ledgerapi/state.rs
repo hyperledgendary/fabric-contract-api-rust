@@ -94,10 +94,10 @@ impl From<()> for State {
 /// 
 /// # Example
 /// 
-/// ```
-///     let myAsset = MyAsset::new();
-///     state.from(myAsset);
-/// ```
+/// 
+/// let myAsset = MyAsset::new();
+/// state.from(myAsset);
+/// 
 impl From<Box<dyn DataType>> for State {
     fn from(_:Box<dyn DataType>) -> Self {
        Self::default()

@@ -112,9 +112,12 @@ impl Collection {
     /// 
     /// # Example
     /// 
-    /// ``` 
+    /// 
+    /// use fabric_contract::contract::*;
+    /// 
+    /// let collection = Ledger::access_ledger().get_collection(CollectionName::World); 
     /// collection.get_states(KeyQueryHandler::Range("Car001","Car002"));
-    /// ```
+    /// 
     pub fn get_states(handler: KeyQueryHandler) -> String{
          todo!("getstates");
     //     // https://users.rust-lang.org/t/how-to-return-an-iterator/25133/3

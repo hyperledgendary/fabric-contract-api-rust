@@ -7,9 +7,7 @@
 //!
 
 use fabric_contract::contract::*;
-use fabric_contract::data::*;
-
-use log::{debug,info};
+use log::{info};
 
 use crate::types::MyAsset;
 
@@ -67,7 +65,7 @@ impl AssetContract {
         // get the collection that is backed by the world state
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
 
-        self.asset_exists(my_assset_id.clone());
+        let _r = self.asset_exists(my_assset_id.clone());
 
         let value = world.retrieve::<MyAsset>(&my_assset_id).unwrap().get_value();
 
