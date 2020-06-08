@@ -8,7 +8,7 @@ use crate::contractapi::contractdefn;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Mutex;
-use log::{error, info, warn,debug};
+use log::{debug};
 // Static reference to the ContractManager
 lazy_static! {
     static ref CONTRACT_MGR: Mutex<ContractManager> = Mutex::new(ContractManager::new());

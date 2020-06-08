@@ -41,19 +41,20 @@ use syn::{
 /// 
 /// # Example
 /// 
-/// ```
-/// #[contract_impl]
+/// 
+/// use fabric_contract::contract::*;
+/// struct MyContract {}
+/// 
+/// #[Contract_Impl]
 /// impl MyContract {
 /// 
-///     #[transaction]
-///     pub fn my_asset_fn() { 
-///         OK(())
-///     }
+/// #[Transaction]
+/// pub fn my_asset_fn() {  }
 ///
-///     // this is NOT callable as transaction function 
-///     fn helper() { }
+/// // this is NOT callable as transaction function 
+/// fn helper() { }
 /// }
-/// ```
+/// 
 /// 
 /// This macro's purpose is to implement the 'routing' trait for the contract. This permits
 /// the message from peer to correctly routed to the transaction function required.
@@ -158,32 +159,21 @@ fn ident_to_litstr(ident: &syn::Ident) -> syn::LitStr {
 /// - which arguments are from the set of transient data
 /// 
 /// # Example
+///
 /// 
-/// This shoulds a transaction function that will will be marked as to be 'submitted'
-/// ```
-/// #[transaction]
-/// pub fn createAsset()...
+/// use fabric_contract::contract::*;
+/// #[Transaction]
+/// pub fn createAsset() { }
 /// 
-/// /// This shoulds a transaction function that will will be marked as to be 'submitted'
-/// ```
-/// #[transaction]
-/// pub fn createAsset()...
+/// #[Transaction(submit)]
+/// pub fn createAnotherAsset() { }
+
+/// #[Transaction(evaluate)]
+/// pub fn readAsset() { }
 /// 
-/// #[transaction(submit)]
-/// pub fn createAsset()...
-/// ```
+/// #[Transaction(tranisent = {price, owner} )]
+/// pub fn createDetailedAsset(id: String, price: u32, owner: String ) { }
 /// 
-/// ```
-/// This shoulds a transaction function that will will be marked as to be 'evaluated'
-/// ```
-/// #[transaction(evaluate)]
-/// pub fn createAsset()...
-/// 
-/// ```
-/// 
-/// #[transaction(tranisent = {price, owner} )]
-/// pub fn createAsset(id: String, price: u32, owner: String ) ...alloc
-/// ```
 /// 
 #[proc_macro_attribute]
 pub fn transaction(args: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -250,18 +240,7 @@ pub fn property(_args: proc_macro::TokenStream, input: proc_macro::TokenStream) 
 
 ///
 /// Use this to mark the structs that serve as complex data types
-/// 
-/// # Example
-/// 
-/// ```
-/// #[derive(DataType)]
-/// pub struct MyAsset {
-///     assetid: String
-/// }
-/// 
-/// pub fn get_asset() -> Result<MyAsset,String> { ... }
-/// 
-/// ```
+/// Need to provide example
 /// 
 #[proc_macro_derive(DataTypeMacro)]
 pub fn data_type_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream  {

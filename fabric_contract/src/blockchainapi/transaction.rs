@@ -16,7 +16,7 @@
 /// 
 /// ```
 /// pub fn myTransactionFn(){
-///   let tx = Transaction::current_transaction()
+///   let tx = fabric_contract::blockchain::Transaction::current_transaction();
 /// 
 ///   let id = tx.get_id();
 ///   let timestamp = tx.get_timestamp();

@@ -5,7 +5,7 @@
 use crate::runtimeapi::wapc::runtime_host_call;
 use crate::ledgerapi::*;
 
-use protobuf::{parse_from_bytes,Message};
+use protobuf::{parse_from_bytes};
 
 use fabric_ledger_protos::{ledger_messages};
 
@@ -51,11 +51,11 @@ impl LedgerService {
         Ok(State::from(state))
     }
 
-    pub fn update_state() -> String {
+    pub fn _update_state() -> String {
         todo!("update state")
     }
 
-    pub fn delete_state() -> String {
+    pub fn _delete_state() -> String {
         todo!("update state")
     }
 

@@ -28,10 +28,11 @@ pub use contract_macros::*;
 /// 
 /// # Example
 /// 
-/// ```
+/// 
+/// use fabric_contract::contract::*;
 /// fabric_contract::register!( AssetContract::new );
-/// fabric_contract::register!( AssetContract::new, AccountsContract::new );
-/// ```
+/// 
+/// 
 #[macro_export]
 macro_rules! register {
 
@@ -47,7 +48,7 @@ macro_rules! register {
         static START: Once = Once::new();
         
         pub fn __launch() {
-            fabric_contract::runtime::initLogger();
+            fabric_contract::runtime::init_logger();
 
             host_log("__launch");
             $( ContractManager::register_contract(Box::new($contract())); )*

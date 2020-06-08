@@ -9,11 +9,29 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+jobs:
+  - job: Clippy
+    container: 'rust:latest'
+    steps:
+      - script: rustup component add clippy
+        displayName: Install Clippy
+      - script: cargo clippy --all-targets --all-features
+        displayName: Run clippy
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  - job: BuildUT
+    displayName: 'Generate Rust lib'
+    steps:
+      - script: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path --default-toolchain default
+          echo "##vso[task.prependpath]$HOME/.cargo/bin"
+          rustup target add wasm32-unknown-unknown
+        displayName: 'Install rust'
+
+      - script: cargo build --all --target wasm32-unknown-unknown
+        displayName: Cargo build
+
+      - script: cargo test --all
+        displayName: Cargo test  
+
+
+
