@@ -121,6 +121,7 @@ pub mod contract {
 /// - Invoking chaincode on other channels
 pub mod blockchain {
     pub use crate::blockchainapi::transaction::Transaction;
+    pub use crate::blockchainapi::clientidentity::ClientIdentity;
 }
 
 

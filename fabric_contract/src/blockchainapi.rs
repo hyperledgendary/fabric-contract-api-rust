@@ -5,3 +5,4 @@
 //! This module provides APIs to access information about the blockchain.
 //! 
 pub mod transaction;
+pub mod clientidentity;

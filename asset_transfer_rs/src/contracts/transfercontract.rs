@@ -7,18 +7,19 @@
 //!
 
 use fabric_contract::contract::*;
+use fabric_contract::blockchain::*;
 use log::info;
 
 use crate::types::MyAsset;
 
 /// Structure for the AssetContract, on which implemenation transaction functions will be added
-pub struct AssetContract {}
+pub struct TransferContract {}
 
 /// Implementation of the contract trait for the AssetContract
 /// There are default implementation methods, but can be modified if you wish
 ///
 /// Recommended that the name() function is always modified
-impl Contract for AssetContract {
+impl Contract for TransferContract {
     //! Name of the contract
     fn name(&self) -> String {
         format!("AssetContract")
@@ -28,11 +29,49 @@ impl Contract for AssetContract {
 /// The contract implementation
 /// Should be marked with the macro `#[contrant_impl]`
 #[Contract_Impl]
-impl AssetContract {
-    /// TODO: Is this required? Can it be enforced
-    pub fn new() -> AssetContract {
-        AssetContract {}
+impl TransferContract {
+    
+    pub fn new() -> TransferContract {
+        TransferContract {}
     }
+    
+    #[Transaction(transient = [properties])]
+    pub fn issue_asset(&self, asset_id: String, properties: String) -> Result<(),ContractError> {
+
+        let tx = fabric_contract::blockchain::Transaction::current_transaction();
+        let org = match tx.get_peer_mspid() == tx.get_submitting_identity()?.get_mspid()  {
+            true => tx.get_peer_mspid(),
+            false => return Err(ContractError::from("error".to_string()))
+        };
+
+
+        
+        Ok(())
+    }
+
+    #[Transaction()]
+    pub fn agree_to_sell(&self, asset_id: String) -> Result<(),ContractError> {
+        todo!("issue_asset")
+    }
+
+    #[Transaction()]
+    pub fn agree_to_buy(&self, asset_id: String) -> Result<(),ContractError> {
+        todo!("issue_asset")
+    }
+
+    #[Transaction()]
+    pub fn verify_asset_properties(&self, asset_id: String) -> Result<(),ContractError> {
+        todo!("issue_asset")
+    }
+
+    #[Transaction()]
+    pub fn transfer_asset(&self, asset_id: String) -> Result<(),ContractError> {
+        todo!("issue_asset")
+    }
+
+
+
+
     /// Does the Asset with the supplied key exist
     ///
     /// Returns true or false.
