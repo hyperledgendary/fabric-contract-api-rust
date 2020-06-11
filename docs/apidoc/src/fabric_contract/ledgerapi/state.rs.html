@@ -214,10 +214,10 @@
 <span class="doccomment">/// </span>
 <span class="doccomment">/// # Example</span>
 <span class="doccomment">/// </span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///     let myAsset = MyAsset::new();</span>
-<span class="doccomment">///     state.from(myAsset);</span>
-<span class="doccomment">/// ```</span>
+<span class="doccomment">/// </span>
+<span class="doccomment">/// let myAsset = MyAsset::new();</span>
+<span class="doccomment">/// state.from(myAsset);</span>
+<span class="doccomment">/// </span>
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">DataType</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">State</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="kw">_</span>:<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">DataType</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
        <span class="self">Self</span>::<span class="ident">default</span>()

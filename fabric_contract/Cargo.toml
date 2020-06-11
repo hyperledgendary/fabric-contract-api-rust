@@ -14,7 +14,7 @@ opt-level = "s"
 [dependencies]
 wapc-guest = "0.3.1"
 contract_macros = { path = "../contract_macros" }
-fabric_ledger_protos = "0.2.0"
+fabric_ledger_protos = "0.4.0"
 log = "0.4.8"
 protobuf = "2.14.0"
 # protobuf handling

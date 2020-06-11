@@ -22,6 +22,7 @@
 <span id="22">22</span>
 <span id="23">23</span>
 <span id="24">24</span>
+<span id="25">25</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -36,10 +37,11 @@
 <span class="doccomment">//! and there is limited scope for logging at stage in</span>
 <span class="doccomment">//! the lifecyle</span>
 <span class="kw">mod</span> <span class="ident">contracts</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contracts</span>::<span class="ident">AssetContract</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contracts</span>::<span class="ident">AssetContract</span>;
 
+<span class="comment">// TODO: will need this when add &#39;myasset&#39;</span>
 <span class="kw">mod</span> <span class="ident">types</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">types</span>::<span class="ident">MyAsset</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">types</span>::<span class="ident">MyAsset</span>;
 
 <span class="comment">// The macro to indicate the function that will be used to register the contracts.</span>
 <span class="comment">// if there is more than one, use a comma separated list</span>

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["__guest_call",""],["__launch",""],["once_wapc",""]]});
+initSidebarItems({"fn":[["__guest_call",""],["__launch",""],["once_wapc",""]],"struct":[["AssetContract","Structure for the AssetContract, on which implemenation transaction functions will be added"],["MyAsset",""]]});

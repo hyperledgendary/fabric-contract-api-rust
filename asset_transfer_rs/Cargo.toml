@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 fabric_contract = { path = "../fabric_contract" }
+sha2 = "0.9.0"
 log = "0.4.8"
 wapc-guest = "0.2.0"
 serde = { version = "1.0.110", features = ["derive"] }

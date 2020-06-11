@@ -10,6 +10,8 @@ use fabric_contract::contract::*;
 use fabric_contract::blockchain::*;
 use log::info;
 
+use sha2::{Sha256};
+
 use crate::types::MyAsset;
 
 /// Structure for the AssetContract, on which implemenation transaction functions will be added
@@ -36,39 +38,145 @@ impl TransferContract {
     }
     
     #[Transaction(transient = [properties])]
-    pub fn issue_asset(&self, asset_id: String, properties: String) -> Result<(),ContractError> {
+    pub fn issue_asset(&self, asset_id: String, public_desc: String, properties: String) -> Result<(),ContractError> {
 
         let tx = fabric_contract::blockchain::Transaction::current_transaction();
-        let org = match tx.get_peer_mspid() == tx.get_submitting_identity()?.get_mspid()  {
-            true => tx.get_peer_mspid(),
-            false => return Err(ContractError::from("error".to_string()))
-        };
+
+        let peers_msp = tx.get_peer_mspid();
+        let client_msp = tx.get_submitting_identity()?.get_mspid();
+
+        if peers_msp != client_msp {
+            return Err(ContractError::from("Mismatch of Organization names".to_string()));
+        }
+
+        let asset = MyAsset::new(asset_id,public_desc);
+        
+        // get the collection that is backed by the world state
+        let world = Ledger::access_ledger().get_collection(CollectionName::World);
+        let state = world.create(asset)?;
+        
+        state.set_endorsement(/* Peerm clientMSP */);
 
 
+        let privateOrgCollection = Ledger::access_ledger().get_collection(CollectionName::Organization(client_msp));
+        privateOrgCollection.create_state(asset_id,properties.into_bytes());
         
         Ok(())
     }
 
-    #[Transaction()]
-    pub fn agree_to_sell(&self, asset_id: String) -> Result<(),ContractError> {
-        todo!("issue_asset")
+    #[Transaction]
+    pub fn change_public_description(&self,asset_id: String, public_desc: String) -> Result<(),ContractError> {
+        let tx = fabric_contract::blockchain::Transaction::current_transaction();
+        let client_msp = tx.get_submitting_identity()?.get_mspid();
+
+        // get the collection that is backed by the world state
+        let world = Ledger::access_ledger().get_collection(CollectionName::World);;        
+        let asset = world.retrieve(&asset_id)?;
+
+        if asset.get_owner() != client_msp {
+            return Err(ContractError::from("Submitting organization does not own asset".to_string()));
+        };
+
+        asset.set_public_description(public_desc);
+        world.update(asset)?;
+
+        Ok(())
+    }
+
+    #[Transaction(transient = [price])]
+    pub fn agree_to_sell(&self, asset_id: String, price: String) -> Result<(),ContractError> {
+        let tx = fabric_contract::blockchain::Transaction::current_transaction();
+
+        let peers_msp = tx.get_peer_mspid();
+        let client_msp = tx.get_submitting_identity()?.get_mspid();
+
+        if peers_msp != client_msp {
+            return Err(ContractError::from("Mismatch of Organization names".to_string()));
+        }
+        // get the collection that is backed by the world state
+        let world = Ledger::access_ledger().get_collection(CollectionName::World);;        
+        let asset = world.retrieve(&asset_id)?;
+
+        if asset.get_owner() != client_msp {
+            return Err(ContractError::from("Submitting organization does not own asset".to_string()));
+        };
+
+        let privateOrgCollection = Ledger::access_ledger().get_collection(CollectionName::Organization(client_msp));
+        privateOrgCollection.create_state(asset_id,/* price record */);
+
     }
 
     #[Transaction()]
     pub fn agree_to_buy(&self, asset_id: String) -> Result<(),ContractError> {
-        todo!("issue_asset")
+        let tx = fabric_contract::blockchain::Transaction::current_transaction();
+
+        let peers_msp = tx.get_peer_mspid();
+        let client_msp = tx.get_submitting_identity()?.get_mspid();
+
+        if peers_msp != client_msp {
+            return Err(ContractError::from("Mismatch of Organization names".to_string()));
+        }
+
+        let privateOrgCollection = Ledger::access_ledger().get_collection(CollectionName::Organization(client_msp));
+
+
     }
 
-    #[Transaction()]
-    pub fn verify_asset_properties(&self, asset_id: String) -> Result<(),ContractError> {
-        todo!("issue_asset")
+
+    #[Transaction(transient = [properties])]
+    pub fn verify_asset_properties(&self, asset_id: String, properties: String) -> Result<(),ContractError> {
+              // get the collection that is backed by the world state
+        let world = Ledger::access_ledger().get_collection(CollectionName::World);;        
+        let asset = world.retrieve(&asset_id)?;
+
+        let privateOrgCollection = Ledger::access_ledger().get_collection(CollectionName::Organization(asset.get_owner()));
+        let state = privateOrgCollection.retrieve_state(asset_id,/* price record */)?;        
+        let state_hash = state.get_hash();
+
+        // create a Sha256 object
+        let mut hasher = Sha256::new();
+
+        // write input message
+        hasher.update(properties.into_bytes());
+
+        // read hash digest and consume hasher
+        let result = hasher.finalize();
+
+        if result!=state_hash {
+            return Err(ContractError::from("Verification of properties failure"))
+        };
+
+        Ok(())
     }
 
-    #[Transaction()]
-    pub fn transfer_asset(&self, asset_id: String) -> Result<(),ContractError> {
-        todo!("issue_asset")
+    #[Transaction(transient = [properties,price])]
+    pub fn transfer_asset(&self, asset_id: String,properties: String, price: String) -> Result<(),ContractError> {
+        let tx = fabric_contract::blockchain::Transaction::current_transaction();
+        let client_msp = tx.get_submitting_identity()?.get_mspid();
+
+
     }
 
+    pub fn verify_transfer_conditions(){
+
+        let tx = fabric_contract::blockchain::Transaction::current_transaction();
+
+        let peers_msp = tx.get_peer_mspid();
+        let client_msp = tx.get_submitting_identity()?.get_mspid();
+
+        // CHECK1: auth check to ensure that client's org actually owns the asset
+        if client_org != asset.get_owner() {
+
+        }
+
+        let privateOrgCollection = Ledger::access_ledger().get_collection(CollectionName::Organization(client_msp));
+        let state = privateOrgCollection.retrieve_state(asset_id,/* price record */)?;        
+        let state_hash = state.get_hash();
+        // verify that the hash of the passed immutable properties matches the on-chain hash
+
+        // CHECK3: verify that seller and buyer agreed on the same price
+
+    }
 
 
 

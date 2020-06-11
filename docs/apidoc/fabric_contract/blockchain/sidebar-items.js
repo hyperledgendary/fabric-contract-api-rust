@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Transaction","Represents a transaction "]]});
+initSidebarItems({"struct":[["ClientIdentity","Represents the identity that is requesting this transaction"],["Transaction","Represents a transaction "]]});

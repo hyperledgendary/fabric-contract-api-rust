@@ -71,6 +71,7 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
+<span id="74">74</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -81,7 +82,7 @@
 <span class="doccomment">//!</span>
 
 <span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">contract</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">data</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">log</span>::<span class="ident">info</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">types</span>::<span class="ident">MyAsset</span>;
 
@@ -111,9 +112,9 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Returns true or false.</span>
     <span class="attribute">#[<span class="ident">Transaction</span>(<span class="ident">evaluate</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">asset_exists</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">assset_id</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">ContractError</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">asset_exists</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">asset_id</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">ContractError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">world</span> <span class="op">=</span> <span class="ident">Ledger</span>::<span class="ident">access_ledger</span>().<span class="ident">get_collection</span>(<span class="ident">CollectionName</span>::<span class="ident">World</span>);
-        <span class="prelude-val">Ok</span>(<span class="ident">world</span>.<span class="ident">state_exists</span>(<span class="kw-2">&amp;</span><span class="ident">assset_id</span>))
+        <span class="prelude-val">Ok</span>(<span class="ident">world</span>.<span class="ident">state_exists</span>(<span class="kw-2">&amp;</span><span class="ident">asset_id</span>))
     }
 
     <span class="doccomment">/// Creates an asset</span>
@@ -124,11 +125,14 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_asset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">my_assset_id</span>: <span class="ident">String</span>, <span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ContractError</span><span class="op">&gt;</span> {
         <span class="comment">// get the collection that is backed by the world state</span>
         <span class="kw">let</span> <span class="ident">world</span> <span class="op">=</span> <span class="ident">Ledger</span>::<span class="ident">access_ledger</span>().<span class="ident">get_collection</span>(<span class="ident">CollectionName</span>::<span class="ident">World</span>);
-        <span class="kw">let</span> <span class="ident">new_asset</span> <span class="op">=</span> <span class="ident">MyAsset</span>::<span class="ident">new</span>(<span class="ident">my_assset_id</span>,<span class="ident">value</span>);
+        <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Accessed collection&quot;</span>);
+        <span class="kw">let</span> <span class="ident">new_asset</span> <span class="op">=</span> <span class="ident">MyAsset</span>::<span class="ident">new</span>(<span class="ident">my_assset_id</span>, <span class="ident">value</span>);
+        <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Created asset&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">_r</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">create</span>(<span class="ident">new_asset</span>);
+        <span class="ident">world</span>.<span class="ident">create</span>(<span class="ident">new_asset</span>)<span class="question-mark">?</span>;
+
+        <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;created in world&quot;</span>);
         <span class="prelude-val">Ok</span>(())
-
     }
 
     <span class="doccomment">/// reads an asset and returns the value</span>
@@ -137,12 +141,10 @@
         <span class="comment">// get the collection that is backed by the world state</span>
         <span class="kw">let</span> <span class="ident">world</span> <span class="op">=</span> <span class="ident">Ledger</span>::<span class="ident">access_ledger</span>().<span class="ident">get_collection</span>(<span class="ident">CollectionName</span>::<span class="ident">World</span>);
 
-        <span class="self">self</span>.<span class="ident">asset_exists</span>(<span class="ident">my_assset_id</span>.<span class="ident">clone</span>());
-
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">retrieve</span>::<span class="op">&lt;</span><span class="ident">MyAsset</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">my_assset_id</span>).<span class="ident">unwrap</span>().<span class="ident">get_value</span>();
-
-        <span class="prelude-val">Ok</span>(<span class="ident">value</span>)
-
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">asset_exists</span>(<span class="ident">my_assset_id</span>.<span class="ident">clone</span>()) {
+            <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">world</span>.<span class="ident">retrieve</span>::<span class="op">&lt;</span><span class="ident">MyAsset</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">my_assset_id</span>)<span class="question-mark">?</span>.<span class="ident">get_value</span>()),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ContractError</span>::<span class="ident">from</span>(<span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;Unable to find asset&quot;</span>))),
+        }
     }
 }
 </pre></div>
