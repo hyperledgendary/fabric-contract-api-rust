@@ -65,14 +65,14 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
     let invoke_request = parse_from_bytes::<InvokeTransactionRequest>(&msg).unwrap();
 
     let fn_name = invoke_request.transaction_name;
-    let args = invoke_request.payload;
-    let ctx = Context::new(invoke_request.channel_id, invoke_request.transaction_id, log);
+    let args = invoke_request.args;
+    let ctx = Context::new(invoke_request.context.unwrap(), log);
     
     // pass over to the contract manager to route
     log(&format!("making the routing call ::{}::",fn_name)[..]);
     let mut response_msg = InvokeTransactionResponse::new();
 
-    let ret = match ContractManager::route(&ctx,fn_name,args) {
+    let ret = match ContractManager::route(&ctx,fn_name,args.into_vec()) {
         Ok(r) =>  response_msg.set_payload( r.into_bytes() ),
         Err(e) => response_msg.set_payload( e.into_bytes() ),
     };

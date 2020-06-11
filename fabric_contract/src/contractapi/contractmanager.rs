@@ -38,7 +38,7 @@ impl ContractManager {
         ctx: &Context,
         contract_name: String,
         tx: String,
-        args: Vec<u8>,
+        args: Vec<Vec<u8>>,
     ) -> Result<String, String> {
         ctx.log(format!("contractmanager::evaluate {} {}", contract_name,tx));
        
@@ -52,11 +52,11 @@ impl ContractManager {
 
                 // need to move this to the contract
                 // and apply the correct wire deserializtion protocol
-                let parsed_args = String::from_utf8(args)
-                    .unwrap_or_default()
-                    .split(",")
-                    .map(|s| s.to_string())
-                    .collect();
+
+                let parsed_args = args.iter()
+                .map(|s| std::str::from_utf8(s).unwrap().to_string())
+                .collect();
+                
                 debug!("{:#?}",parsed_args);
                 defn.invoke(ctx, tx, parsed_args)
             }
@@ -76,7 +76,7 @@ impl ContractManager {
     }
 
     /// Route the call to the correct contract
-    pub fn route(ctx: &Context, tx: String, args: Vec<u8>) -> Result<String, String> {
+    pub fn route(ctx: &Context, tx: String, args: Vec<Vec<u8>>) -> Result<String, String> {
         ctx.log(String::from("contractmanager::route>>"));
 
         // parse out the contract_name here

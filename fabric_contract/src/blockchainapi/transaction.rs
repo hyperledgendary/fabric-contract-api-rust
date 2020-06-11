@@ -22,7 +22,7 @@ use crate::blockchainapi::clientidentity::ClientIdentity;
 /// 
 ///   let id = tx.get_id();
 ///   let timestamp = tx.get_timestamp();
-///   let mspid = tx.get_mspid();
+///   let mspid = tx.get_peer_mspid();
 /// }
 /// ```
 ///  

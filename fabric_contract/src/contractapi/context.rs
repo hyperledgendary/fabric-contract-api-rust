@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-
+use fabric_ledger_protos::common_messages::TransactionContext;
 
 pub struct Context {
     tx_id: std::string::String,
@@ -11,10 +11,10 @@ pub struct Context {
 }
 
 impl Context {
-    pub fn new(channel_id: String, tx_id: String, logfn: fn(&str)) -> Context {
+    pub fn new(context:  TransactionContext, logfn: fn(&str)) -> Context {
         Context {
-            _channel_id : channel_id,
-            tx_id,
+            _channel_id : context.channel_id,
+            tx_id: context.transaction_id,
             logfn,
         }
     }

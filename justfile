@@ -7,7 +7,6 @@ wasm:
 amd64:
     cargo build
 
-
 docs:
     cargo doc --no-deps --open
     cp -r ./target/doc/* ./docs/apidoc/
@@ -15,5 +14,10 @@ docs:
 # use expand with the expand crate when debugging macros
 expand:
     cargo expand --package basic_contract_rs
-  
+
+azure:
+    cargo build --target wasm32-unknown-unknown
+    cargo test --all
+    cargo clippy --all-targets --all-features
+
     
