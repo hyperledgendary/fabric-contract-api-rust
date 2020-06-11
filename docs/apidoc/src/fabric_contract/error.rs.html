@@ -18,6 +18,12 @@
 <span id="18">18</span>
 <span id="19">19</span>
 <span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
 </pre><div class="example-wrap"><pre class="rust ">
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
@@ -26,6 +32,12 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ContractError</span> {
     <span class="ident">msg</span>: <span class="ident">String</span>
+}
+
+<span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">From</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ContractError</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">msg</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+       <span class="self">Self</span> { <span class="ident">msg</span> }
+     }
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ContractError</span> {

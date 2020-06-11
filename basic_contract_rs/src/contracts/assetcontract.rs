@@ -7,7 +7,7 @@
 //!
 
 use fabric_contract::contract::*;
-use log::{info};
+use log::info;
 
 use crate::types::MyAsset;
 
@@ -37,9 +37,9 @@ impl AssetContract {
     ///
     /// Returns true or false.
     #[Transaction(evaluate)]
-    pub fn asset_exists(&self, assset_id: String) -> Result<bool, ContractError> {
+    pub fn asset_exists(&self, asset_id: String) -> Result<bool, ContractError> {
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
-        Ok(world.state_exists(&assset_id))
+        Ok(world.state_exists(&asset_id))
     }
 
     /// Creates an asset
@@ -51,12 +51,13 @@ impl AssetContract {
         // get the collection that is backed by the world state
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
         info!("Accessed collection");
-        let new_asset = MyAsset::new(my_assset_id,value);
+        let new_asset = MyAsset::new(my_assset_id, value);
         info!("Created asset");
-        let _r = world.create(new_asset);
+
+        world.create(new_asset)?;
+
         info!("created in world");
         Ok(())
-
     }
 
     /// reads an asset and returns the value
@@ -65,11 +66,9 @@ impl AssetContract {
         // get the collection that is backed by the world state
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
 
-        let _r = self.asset_exists(my_assset_id.clone());
-
-        let value = world.retrieve::<MyAsset>(&my_assset_id).unwrap().get_value();
-
-        Ok(value)
-
+        match self.asset_exists(my_assset_id.clone()) {
+            Ok(true) => Ok(world.retrieve::<MyAsset>(&my_assset_id)?.get_value()),
+            _ => Err(ContractError::from(String::from("Unable to find asset"))),
+        }
     }
 }

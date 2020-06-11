@@ -59,21 +59,21 @@ impl State {
     }
 
     /// Returns an iterator of the state history for this state
-    pub fn get_history() /* -> TODO  Iterator of StateHistory */{
+    pub fn get_history(&self) /* -> TODO  Iterator of StateHistory */{
 
     }
 
     /// gets the private hash for this stae
-    pub fn get_hash() -> Vec<u8> {
+    pub fn get_hash(&self) -> Vec<u8> {
         todo!("get_hash")
     }
 
     /// Sets the State Based Endorsment for this state
-    pub fn set_endorsement(/* TODO */) /* TODO */ {
+    pub fn set_endorsment(&self/* TODO */) /* TODO */ {
 
     }
 
-    pub fn get_endorsement() /* TODO */ {
+    pub fn get_endorsement(&self) /* TODO */ {
          
     }
 }

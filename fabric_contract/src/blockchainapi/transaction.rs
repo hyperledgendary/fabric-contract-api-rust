@@ -2,7 +2,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#![allow(dead_code)]
+use crate::blockchainapi::clientidentity::ClientIdentity;
+
+
 /// Represents a transaction 
 /// 
 /// This can be used to obtain information about the current transaction
@@ -52,8 +54,13 @@ impl Transaction {
 
     /// The MSP Identifier of the originating organization
     /// 
-    pub fn get_mspid(&self) -> String {
+    pub fn get_peer_mspid(&self) -> String {
         todo!("get_id")
+    }
+
+    /// Get 
+    pub fn get_submitting_identity(&self) -> Result<ClientIdentity,String> {
+        todo!("get_submitting_identity");
     }
 
     /// Get the current transaction

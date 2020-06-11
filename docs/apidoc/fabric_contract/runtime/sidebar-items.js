@@ -1,1 +1,1 @@
-initSidebarItems({});
+initSidebarItems({"fn":[["hook",""],["init_logger",""]]});
