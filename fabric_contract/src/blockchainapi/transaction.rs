@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-
+#![allow(dead_code)]
 use crate::blockchainapi::clientidentity::ClientIdentity;
 
 
@@ -11,8 +11,6 @@ use crate::blockchainapi::clientidentity::ClientIdentity;
 /// that trigger a contract function to be executed.
 /// 
 /// Timestamp and MSPID are two important fields
-/// 
-/// TODO: Check for others to be added
 /// 
 /// # Example
 /// 

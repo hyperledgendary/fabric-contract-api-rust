@@ -16,6 +16,7 @@ expand:
     cargo expand --package basic_contract_rs
 
 azure:
+    cargo clean
     cargo build --target wasm32-unknown-unknown
     cargo test --all
     cargo clippy --all-targets --all-features

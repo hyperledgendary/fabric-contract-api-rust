@@ -1,6 +1,8 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
+#![allow(dead_code)]
+
 
 //! This is the runtime componet that marshalls the WAPC calls 
 use protobuf::{parse_from_bytes,Message};
@@ -66,7 +68,7 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
 
     let fn_name = invoke_request.transaction_name;
     let args = invoke_request.args;
-    let ctx = Context::new(invoke_request.context.unwrap(), log);
+    let ctx = Context::new(invoke_request.context.unwrap());
     
     // pass over to the contract manager to route
     log(&format!("making the routing call ::{}::",fn_name)[..]);
