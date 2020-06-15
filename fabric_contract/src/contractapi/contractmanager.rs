@@ -1,14 +1,18 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-
+#![allow(dead_code)]
 use crate::contractapi::context::*;
 use crate::contractapi::contract::*;
 use crate::contractapi::contractdefn;
+
 use lazy_static::lazy_static;
+
+use log::{debug, trace, warn};
+
 use std::collections::HashMap;
 use std::sync::Mutex;
-use log::{debug};
+
 // Static reference to the ContractManager
 lazy_static! {
     static ref CONTRACT_MGR: Mutex<ContractManager> = Mutex::new(ContractManager::new());
@@ -40,28 +44,28 @@ impl ContractManager {
         tx: String,
         args: Vec<Vec<u8>>,
     ) -> Result<String, String> {
-        ctx.log(format!("contractmanager::evaluate {} {}", contract_name,tx));
-       
-        for (key, _value) in  &self.contracts {
-            ctx.log(format!("{} ", key));
-        }
+        debug!("contractmanager::evaluate {} {}", contract_name, tx);
 
         match self.contracts.get(&contract_name) {
             Some(defn) => {
-                ctx.log(String::from("Found defn"));
+                debug!("Found defn");
 
                 // need to move this to the contract
                 // and apply the correct wire deserializtion protocol
 
-                let parsed_args = args.iter()
-                .map(|s| std::str::from_utf8(s).unwrap().to_string())
-                .collect();
-                
-                debug!("{:#?}",parsed_args);
+                let parsed_args = args
+                    .iter()
+                    .map(|s| std::str::from_utf8(s).unwrap().to_string())
+                    .collect();
+
+                debug!("{:#?}", parsed_args);
                 defn.invoke(ctx, tx, parsed_args)
             }
             None => {
-                ctx.log(format!("Unable to find contract Failed {}.{},{:?}", contract_name, tx, args));
+                warn!(
+                    "Unable to find contract Failed {}.{},{:?}",
+                    contract_name, tx, args
+                );
                 Err(String::from("Unable to find contract"))
             }
         }
@@ -77,7 +81,7 @@ impl ContractManager {
 
     /// Route the call to the correct contract
     pub fn route(ctx: &Context, tx: String, args: Vec<Vec<u8>>) -> Result<String, String> {
-        ctx.log(String::from("contractmanager::route>>"));
+        trace!("contractmanager::route>>");
 
         // parse out the contract_name here
         let namespace: String;
@@ -97,8 +101,8 @@ impl ContractManager {
             .lock()
             .unwrap()
             .evaluate(ctx, namespace, fn_name, args);
-        
-        ctx.log(String::from("contractmanager::route<<"));
+
+        trace!("contractmanager::route<<");
         r
     }
 }

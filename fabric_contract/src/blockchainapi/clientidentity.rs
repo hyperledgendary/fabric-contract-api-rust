@@ -1,11 +1,9 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-
+#![allow(dead_code)]
 /// Represents the identity that is requesting this transaction
 /// 
-/// 
-///  
 pub struct ClientIdentity {
 
 }
@@ -31,7 +29,7 @@ impl ClientIdentity {
 
     /// Returns the value of the client's attribute named `attrName`.
     /// 
-    pub fn get_attribute(&self, attrName: String) -> Option<String> {
+    pub fn get_attribute(&self, attr_name: String) -> Option<String> {
         todo!("get_attributed")
     }
 

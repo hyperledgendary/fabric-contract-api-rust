@@ -2,13 +2,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #![allow(dead_code)]
+
 use std::collections::HashMap;
 
 use crate::contractapi::transaction;
 use crate::contractapi::contract::*;
 use crate::contractapi::context::*;
 
-// Internal definition of a contract
+use log::{debug, trace};
+
+/// Internal definition of a contract
 pub(super) struct ContractDefn {
     name: String,
     methods: HashMap<String, transaction::TransactionFn>,
@@ -28,7 +31,7 @@ impl ContractDefn {
     pub fn add_new_method(self: &mut ContractDefn, name: &str, func: fn(&str) -> bool) {
 
         let tx = transaction::TransactionFn::new(name,func);
-        println!("{:?}",tx);
+        debug!("{:?}",tx);
         self.methods.insert(String::from(name), tx);
     }
 
@@ -41,7 +44,7 @@ impl ContractDefn {
     }
 
     pub fn invoke(self: &ContractDefn, ctx: &Context, name:String, args:Vec<String>) -> Result<String,String> {
-        ctx.log(format!(">> invoke {} {:#?}",name, args));
+        trace!(">> invoke {} {:#?}",name, args);
         let _r = self.contract.route2(ctx,name,args); 
         Ok(String::from("ok"))
     }
