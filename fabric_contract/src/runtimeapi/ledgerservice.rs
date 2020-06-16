@@ -5,7 +5,7 @@
 use crate::runtimeapi::wapc::runtime_host_call;
 use crate::ledgerapi::*;
 
-use protobuf::{parse_from_bytes};
+use protobuf::{parse_from_bytes, Message};
 
 use fabric_ledger_protos::{ledger_messages,common_messages};
 
@@ -19,7 +19,7 @@ pub struct LedgerService {}
 impl LedgerService {
     pub fn create_state(key: String, data: Vec<u8>) -> Result<State,String> {
         // create the protobuf message and pass to waPC
-        let buffer = vec![];
+    
 
         let mut state = ledger_messages::State::new();
         state.set_key(key);
@@ -34,6 +34,9 @@ impl LedgerService {
 
         // need to get the ownership back again
         let state = csr.get_state();
+
+        let buffer = csr.write_to_bytes().unwrap();
+
         runtime_host_call("LedgerService".to_string(),"CreateState".to_string(), buffer);
         Ok(State::from(state))
     }

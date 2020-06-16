@@ -1,8 +1,8 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-
-use crate::{dataapi::WireBuffer, contractapi::context::*};
+#![allow(unused_imports)]
+use crate::{dataapi::WireBuffer, contractapi::context::*, prelude::TransactionFn};
 use super::contractdefn::ContractDefn;
 
 // trait that is implemented by macro for each struct that does the final step in the routing to
@@ -11,8 +11,10 @@ pub trait Routing  {
     fn route2(&self, ctx: &Context, tx_fn: String, args: Vec<String>) -> Result<String,String>;
     fn route3(&self, tx_fn: String, args: Vec<WireBuffer>) -> Result<String,String>;
 }
+
 pub trait Metadata { 
-    fn get_metadata(&self, cd: &mut ContractDefn);
+    /// Gets the detail of the functions, which is vector of strings
+    fn get_fn_metadata(&self) -> Vec<TransactionFn>;
 }
 
 /// Trait that is implemented for each contract

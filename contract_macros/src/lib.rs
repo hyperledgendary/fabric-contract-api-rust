@@ -87,7 +87,7 @@ pub fn contract_impl(
                 // ignore the new method
                 // TODO this in a better way! i.e. only the fns marked #[transaction]
 
-                if name != "new" {
+                if name != "new" && !name.to_string().starts_with("invoke") && !name.to_string().starts_with("md"){
                     method_fns.push(syn::Ident::new(&format!("invoke_{}", name), name.span()));
                     method_md.push(syn::Ident::new(&format!("md_{}", name), name.span()));
                     method_names.push(ident_to_litstr(name));
@@ -114,34 +114,48 @@ pub fn contract_impl(
 
         impl Metadata for #type_name {
 
-           fn get_metadata(&self, mut cd : fabric_contract::prelude::ContractDefn)  {
-                 // add other things to cd as needed
-                 #(cd.add_tx_fn(self.#method_md()); )*
-
+           fn get_fn_metadata(&self) -> std::vec::Vec<fabric_contract::prelude::TransactionFn> {
+                 let mut fns = Vec::new();
+                 #(fns.push(self.#method_md()); )*
+                fns
              }
         }
 
          impl Routing for #type_name {
           
                 fn route3(&self, tx_fn: String, args: Vec<WireBuffer>) -> Result<String,String> {
-                    todo!()
+                    log::debug!("Inside the contract (route3) {} {:?}",tx_fn,args);
+                    let _r = match &tx_fn[..] {
+   
+                         #(#method_names =>
+                             {
+                                 log::debug!("calling");
+                                 let _r = self.#method_fns(args);
+                                 Ok(())
+                             }
+   
+                             , )*
+                        _ => Err(String::from("Unknown transaction fn "))
+                    };
+                    Ok(String::from("200"))
                 }
 
                 fn route2(&self, ctx: &Context, tx_fn: String, args: Vec<String>) -> Result<String,String>{
-                    log::debug!("Inside the contract {} {:?}",tx_fn,args);
-                 let _r = match &tx_fn[..] {
+                //  log::debug!("Inside the contract {} {:?}",tx_fn,args);
+                //  let _r = match &tx_fn[..] {
 
-                      #(#method_names =>
-                          {
-                              log::debug!("calling");
-                              let _r = self.#method_fns(args);
-                              Ok(())
-                          }
+                //       #(#method_names =>
+                //           {
+                //               log::debug!("calling");
+                //               let _r = self.#method_fns(args);
+                //               Ok(())
+                //           }
 
-                          , )*
-                     _ => Err(String::from("Unknown transaction fn "))
-                 };
-                 Ok(String::from("200"))
+                //           , )*
+                //      _ => Err(String::from("Unknown transaction fn "))
+                //  };
+                //  Ok(String::from("200"))
+                todo!("route 2 for deletion")
              }
          }
 
@@ -204,7 +218,7 @@ pub fn transaction(
     // the overall algorthim here should be consiered candidate for optimization
     // It iterates over the signature, skipping the self reference
     // then kets the name of the argument
-
+// log::info!("{:?}, {}",a,#stringify);
     for input in psitem.sig.inputs.iter().skip(1) {
         match input {
             FnArg::Typed(arg) => {
@@ -213,9 +227,10 @@ pub fn transaction(
                 let ty = &arg.ty;
                 let comment = format!("{:?}", ty);
                 aargs.push(quote! {
-                   log::info!("{:?}, {}",a,#stringify);
-                   let #pat = a.remove(0); // and convert convert_from( );
-
+                   
+                   let #pat = #ty::from(&args[i]);
+                   i+=1; // and convert convert_from( );
+                    
                 });
                 arg_names.push(quote! { # pat });
 
@@ -228,14 +243,12 @@ pub fn transaction(
     }
 
     let output = quote! {
-
-       
-
+    
         #psitem
 
         // hello
-       pub fn #classname(&self, args: Vec<String>) -> #ret_type {
-            let mut a = args.clone();
+       pub fn #classname(&self, args: Vec<WireBuffer>) -> #ret_type {
+            let mut i=0;
             #(#aargs)*
 
             self.#name(#(#arg_names),*)

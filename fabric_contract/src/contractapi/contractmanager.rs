@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #![allow(dead_code)]
+#![allow(unused_imports)]
 use crate::contractapi::context::*;
 use crate::contractapi::contract::*;
 use crate::{dataapi::WireBuffer, contractapi::contractdefn};
@@ -51,13 +52,8 @@ impl ContractManager {
 
         match self.contracts.get(&contract_name) {
             Some(defn) => { 
-                todo!("Found Contract Defiition");
-
-                // let args = args.iter().map(|a| WireBuffer::from(a)).collect();
-
-                // let r = defn.invoke(ctx,tx,args,transient);
-
-                // r
+                let r = defn.invoke(ctx,tx,args/*,transient*/);
+                r
             }
             None => {
                 warn!(

@@ -2,20 +2,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #![allow(dead_code)]
-
+#![allow(unused_imports)]
 use std::collections::HashMap;
 
 use crate::contractapi::transaction;
 use crate::contractapi::contract::*;
-use crate::{dataapi::WireBuffer, contractapi::context::*};
+use crate::{dataapi::WireBuffer, dataapi::serializer::*, contractapi::context::*};
 
 use log::{debug, trace};
 
 /// Internal definition of a contract
+
 pub struct ContractDefn {
-    name: String,
+    name:  String,
     methods: HashMap<String, transaction::TransactionFn>,
     contract: Box<dyn Contract +Send>,
+    converter: Box<dyn Converter + Send>,
 }
 
 
@@ -24,14 +26,22 @@ impl ContractDefn {
         let mut cd = ContractDefn {
             name: String::from(c.name()),
             methods: HashMap::new(),
-            contract:c,
+            contract: c,
+            converter: Box::new(JSONConverter {}),
         };
-       
-        cd
-    }
 
-    pub fn update(&self){
-        self.contract.get_metadata(self);
+        let fns = cd.contract.get_fn_metadata();
+        for t in fns {
+            debug!("Function {:?}",t);
+            cd.add_tx_fn(t);
+        };
+
+
+        // last thing that we need to do is setup the data converter that
+        // is required for this contract
+        
+
+        cd
     }
 
     pub fn add_tx_fn(self: &mut ContractDefn, tx: transaction::TransactionFn) {
@@ -53,11 +63,20 @@ impl ContractDefn {
         
     }
 
-    pub fn invoke(self: &ContractDefn, ctx: &Context, name:String, args:Vec<WireBuffer>) -> Result<String,String> {
+    pub fn invoke(self: &ContractDefn, ctx: &Context, name:String, args:&[Vec<u8>]) -> Result<String,String> {
         // trace!(">> invoke {} {:#?}",name, args);
-    
+        debug!("Invoking tx fn");
+
+        let txfn = self.get_txfn(&name[..])?;
+        let mut updated_args = Vec::<WireBuffer>::new();
+        // got the tx fn, now to loop over the supplied args 
+        for (pos, p) in txfn.get_parameters().iter().enumerate() {
+            updated_args.push(WireBuffer::new(args[pos].clone(),
+                                                p.type_schema.clone(),Box::new(JSONConverter {})) );
+        }
+
         // let _r = self.contract.route2(ctx,name,args); 
-        let _r = self.contract.route3(name,args);
+        let _r = self.contract.route3(name, updated_args);
         Ok(String::from("ok"))
     }
    

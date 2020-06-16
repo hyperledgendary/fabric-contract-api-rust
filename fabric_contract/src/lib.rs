@@ -21,6 +21,10 @@ mod dataapi;
 
 pub use contract_macros::*;
 
+mod bootstrap {
+    use std::sync::Once;
+    static START: Once = Once::new();
+}
 
 /// Macro to use in the lib.rs file of your contract's crate
 /// 
