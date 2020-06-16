@@ -10,10 +10,10 @@ pub struct Context {
 }
 
 impl Context {
-    pub fn new(context:  TransactionContext) -> Context {
+    pub fn new(context:  &TransactionContext) -> Context {
         Context {
-            _channel_id : context.channel_id,
-            tx_id: context.transaction_id
+            _channel_id : context.channel_id.clone(),
+            tx_id: context.transaction_id.clone()
         }
     }
 

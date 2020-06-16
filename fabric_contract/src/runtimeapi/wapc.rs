@@ -15,12 +15,7 @@ use guest::prelude::*;
 
 use fabric_ledger_protos::contract_messages::*;
 
-/// General function to log messages
-// #[link(wasm_import_module = "wapc")]
-// extern "C" {
-//     pub fn __log(ptr: *const u8, len: usize);
-// }
-
+use log::{debug, trace, warn, info, error};
 
 ///
 /// Map to the ContractService
@@ -53,7 +48,7 @@ pub fn log(s: &str) {
 /// get rounted to here. They are then passed over the Wasm boundary to be sent off (somehow) to the peer
 /// 
 pub fn runtime_host_call(service: String, cmd: String, data: Vec<u8>) -> Vec<u8> {
-    log(&format!("Making host call {}::{}::{}",service,cmd,str::from_utf8(&data).unwrap())[..]);
+    trace!("Making host call {}::{}::{}",service,cmd,str::from_utf8(&data).unwrap());
     let res = host_call("wapc", &service[..], &cmd[..],&data).unwrap();
     res
 }
@@ -61,26 +56,28 @@ pub fn runtime_host_call(service: String, cmd: String, data: Vec<u8>) -> Vec<u8>
 /// handle_tx_invoke called with the buffer that contains the request 
 /// of what transaction function should be invoked
 fn handle_tx_invoke(msg: &[u8]) -> CallResult {
-    log("handler_tx_invoke>>");  
+    trace!("handler_tx_invoke>>");  
 
     // decode the message and arguments
     let invoke_request = parse_from_bytes::<InvokeTransactionRequest>(&msg).unwrap();
+    let fn_name = invoke_request.get_transaction_name();
+    let args = invoke_request.get_args();
+    let transient_args = invoke_request.get_transient_args();
+    let request_ctx = invoke_request.get_context();
+    let ctx = Context::new(request_ctx);
 
-    let fn_name = invoke_request.transaction_name;
-    let args = invoke_request.args;
-    let ctx = Context::new(invoke_request.context.unwrap());
-    
     // pass over to the contract manager to route
-    log(&format!("making the routing call ::{}::",fn_name)[..]);
+    trace!("making the routing call tx::{}  fn::{}",request_ctx.get_transaction_id(),fn_name);
+    
     let mut response_msg = InvokeTransactionResponse::new();
 
-    let ret = match ContractManager::route(&ctx,fn_name,args.into_vec()) {
+    let ret = match ContractManager::route(&ctx,fn_name.to_string(), args, transient_args) {
         Ok(r) =>  response_msg.set_payload( r.into_bytes() ),
         Err(e) => response_msg.set_payload( e.into_bytes() ),
     };
    
     let buffer: Vec<u8> = response_msg.write_to_bytes()?;
-    log("handler_tx_invoke<<");
+    trace!("handler_tx_invoke<<");
     Ok(buffer)
 
 }
