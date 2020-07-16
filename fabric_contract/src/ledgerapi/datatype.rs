@@ -2,7 +2,7 @@
 
 use crate::ledgerapi::state::State;
 
-pub trait DataType {
+pub trait DataType : Default {
 
     /// Converts into a state that can be handled and put into
     /// the ledger and private collections
