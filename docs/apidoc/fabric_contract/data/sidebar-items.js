@@ -1,1 +1,1 @@
-initSidebarItems({"attr":[["Property","Define the properties of the datatype"]],"trait":[["DataType",""]]});
+initSidebarItems({"attr":[["Property","Define the properties of the datatype"]],"struct":[["TypeSchema",""],["WireBuffer",""]],"trait":[["DataType",""],["WireBufferFromReturnType",""]]});

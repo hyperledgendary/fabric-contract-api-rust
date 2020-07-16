@@ -21,22 +21,35 @@
 <span id="21">21</span>
 <span id="22">22</span>
 <span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
  */</span>
-
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">context</span>::<span class="kw-2">*</span>;
+<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">dataapi</span>::{<span class="ident">TypeSchema</span>, <span class="ident">WireBuffer</span>}, <span class="ident">contractapi</span>::<span class="ident">context</span>::<span class="kw-2">*</span>, <span class="ident">prelude</span>::<span class="ident">TransactionFn</span>, <span class="ident">contract</span>::<span class="ident">ContractError</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">contractdefn</span>::<span class="ident">ContractDefn</span>;
 
 <span class="comment">// trait that is implemented by macro for each struct that does the final step in the routing to</span>
 <span class="comment">// the transaction functions</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Routing</span>  {
-    <span class="kw">fn</span> <span class="ident">route2</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span>, <span class="ident">tx_fn</span>: <span class="ident">String</span>, <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>,<span class="ident">String</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">route3</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">tx_fn</span>: <span class="ident">String</span>, <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">WireBuffer</span><span class="op">&gt;</span>, <span class="ident">return_wb</span>: <span class="ident">TypeSchema</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">WireBuffer</span>,<span class="ident">ContractError</span><span class="op">&gt;</span>;
+}
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Metadata</span> { 
+    <span class="doccomment">/// Gets the detail of the functions, which is vector of strings</span>
+    <span class="kw">fn</span> <span class="ident">get_fn_metadata</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TransactionFn</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Trait that is implemented for each contract</span>
 <span class="doccomment">/// Default implementations here</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Contract</span> : <span class="ident">Routing</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Contract</span> : <span class="ident">Routing</span>  <span class="op">+</span> <span class="ident">Metadata</span> {
 
     <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>;
     <span class="comment">// fn before_transaction(&amp;self, ctx: Context);</span>
@@ -45,5 +58,6 @@
     <span class="comment">// }</span>
     
 }
+
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "fabric_contract";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

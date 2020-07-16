@@ -3,8 +3,11 @@
  */
 
 //! Basic CRUD style asset contract
-//!
-//!
+//! 
+//! The business logic in these is very simple.
+//! 
+//! Note: the transaction APIs should maybe take &String instead of String.
+
 
 // Use the Fabric Contract modules
 use fabric_contract::contract::*;
@@ -29,10 +32,15 @@ impl Contract for AssetContract {
     fn name(&self) -> String {
         format!("AssetContract")
     }
+
 }
 
 /// The contract implementation
 /// Should be marked with the macro `#[contrant_impl]`
+/// 
+/// All transactions functions should have the `#[Transaction(evaluate)]` or `#[Transaction(submit)]`
+/// This indicates that the function should be submitted (sent for endorsing to all peers) or is a query
+/// operation, that does not need to be written to the ledger.
 /// 
 #[Contract_Impl]
 impl AssetContract {
@@ -43,9 +51,9 @@ impl AssetContract {
         AssetContract {}
     }
 
-    /// Does the Asset with the supplied key exist
+    /// Does the Asset with the supplied key exist?
     ///
-    /// Returns true or false.
+    /// Returns true or false or ContractError
     #[Transaction(evaluate)]
     pub fn asset_exists(&self, asset_id: String) -> Result<bool, ContractError> {
         info!("# asset_exists");
@@ -54,6 +62,10 @@ impl AssetContract {
         Ok(world.state_exists(&asset_id)?)
     }
     
+    /// Creates a new asset, with supplied id, and value
+    /// Marked as submit as this updates the ledger
+    /// 
+    /// 
     #[Transaction(submit)]
     pub fn create_asset(&self, my_assset_id: String, value: String) -> Result<(), ContractError> {
 
@@ -68,16 +80,19 @@ impl AssetContract {
         Ok(())
     }
    
+    /// Reads the value with the supplied asset id
+    /// 
+    /// Returns the string value
     #[Transaction(evaluate)]
     pub fn read_asset_value(&self, my_assset_id: String) -> Result<String, ContractError> {
         // get the collection that is backed by the world state
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
 
+        // Doing a check to see if the asset exists explicitly.
+        // so we can return a business specific result
         match self.asset_exists(my_assset_id.clone()) {
             Ok(true) => {
-                info!("#confirmed that asset exists");
-                let v = world.retrieve::<MyAsset>(my_assset_id).unwrap().get_value();
-                info!("{}",v);
+                let v = world.retrieve::<MyAsset>(my_assset_id)?.get_value();
                 Ok(v)
             },
             _ => return Err(ContractError::from(String::from("Unable to find asset"))),

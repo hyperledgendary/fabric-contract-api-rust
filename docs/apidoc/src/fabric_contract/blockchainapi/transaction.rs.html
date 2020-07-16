@@ -66,13 +66,11 @@
 <span id="66">66</span>
 <span id="67">67</span>
 <span id="68">68</span>
-<span id="69">69</span>
-<span id="70">70</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
  */</span>
-
+<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">blockchainapi</span>::<span class="ident">clientidentity</span>::<span class="ident">ClientIdentity</span>;
 
 
@@ -83,8 +81,6 @@
 <span class="doccomment">/// </span>
 <span class="doccomment">/// Timestamp and MSPID are two important fields</span>
 <span class="doccomment">/// </span>
-<span class="doccomment">/// TODO: Check for others to be added</span>
-<span class="doccomment">/// </span>
 <span class="doccomment">/// # Example</span>
 <span class="doccomment">/// </span>
 <span class="doccomment">/// ```</span>
@@ -93,7 +89,7 @@
 <span class="doccomment">/// </span>
 <span class="doccomment">///   let id = tx.get_id();</span>
 <span class="doccomment">///   let timestamp = tx.get_timestamp();</span>
-<span class="doccomment">///   let mspid = tx.get_mspid();</span>
+<span class="doccomment">///   let mspid = tx.get_peer_mspid();</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///  </span>

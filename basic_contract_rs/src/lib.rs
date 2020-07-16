@@ -2,18 +2,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-//! Main library module 
+//! A basic Smart Contract
 //! 
-//! The purpose of this is to do register the contracts.
+//! Implements Creation, and Retrieval of a simple asset
 //! 
-//! Other setup can take place here but do so with
-//! caution. Any failure will terminate the container
-//! and there is limited scope for logging at stage in
-//! the lifecyle
+
 mod contracts;
 pub use crate::contracts::AssetContract;
 
-// TODO: will need this when add 'myasset'
 mod types;
 pub use crate::types::MyAsset;
 

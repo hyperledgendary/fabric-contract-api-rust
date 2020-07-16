@@ -23,6 +23,7 @@ use quote::{format_ident, quote, ToTokens};
 use syn::{parse_macro_input, AttributeArgs, FnArg, ItemFn, Type, TypePath, TypeReference, punctuated::Punctuated, Pat};
 
 // DevNote: Most basic attribute procedural macro, keep here for reference and debug
+
 // #[proc_macro_attribute]
 // pub fn transient(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
 //     println!("attr: \"{}\"", attr.to_string());
@@ -34,7 +35,7 @@ use syn::{parse_macro_input, AttributeArgs, FnArg, ItemFn, Type, TypePath, TypeR
 ///
 /// # Example
 ///
-///
+/// ```
 /// use fabric_contract::contract::*;
 /// struct MyContract {}
 ///
@@ -47,7 +48,7 @@ use syn::{parse_macro_input, AttributeArgs, FnArg, ItemFn, Type, TypePath, TypeR
 /// // this is NOT callable as transaction function
 /// fn helper() { }
 /// }
-///
+/// ```
 ///
 /// This macro's purpose is to implement the 'routing' trait for the contract. This permits
 /// the message from peer to correctly routed to the transaction function required.
@@ -92,23 +93,14 @@ pub fn contract_impl(
                     method_md.push(syn::Ident::new(&format!("md_{}", name), name.span()));
                     method_names.push(ident_to_litstr(name));
                 }
-
-                // todo: sort out the arguments; left to another day
-                // this code will be long and boring, but conceptually simple based
-                // on the other contract implementations
-                //
                 // build up the list arguments to the function we're going to call
-                let call_args = extract_arg_idents(method.sig.inputs);
-
-               
+                let call_args = extract_arg_idents(method.sig.inputs);              
             }
             _ => {}
         }
     }
 
     // quote! the existing code, and also the new routing implementation
-    // TODO: Need to ensure this is full hardened against errors
-    //
     let output = quote! {
        #existing
 
@@ -159,7 +151,7 @@ fn ident_to_litstr(ident: &syn::Ident) -> syn::LitStr {
 ///
 /// # Example
 ///
-///
+/// ```
 /// use fabric_contract::contract::*;
 /// #[Transaction]
 /// pub fn createAsset() { }
@@ -172,7 +164,7 @@ fn ident_to_litstr(ident: &syn::Ident) -> syn::LitStr {
 ///
 /// #[Transaction(tranisent = {price, owner} )]
 /// pub fn createDetailedAsset(id: String, price: u32, owner: String ) { }
-///
+/// ```
 ///
 #[proc_macro_attribute]
 pub fn transaction(
@@ -198,8 +190,7 @@ pub fn transaction(
 
     // the overall algorthim here should be consiered candidate for optimization
     // It iterates over the signature, skipping the self reference
-    // then kets the name of the argument
-// log::info!("{:?}, {}",a,#stringify);
+    // then gets the name of the argument
     for input in psitem.sig.inputs.iter().skip(1) {
         match input {
             FnArg::Typed(arg) => {
@@ -289,18 +280,6 @@ fn impl_hello_macro(ast: &syn::DeriveInput) -> proc_macro::TokenStream {
     gen.into()
 }
 
-
-// fn extract_arg_types(fn_args: Punctuated<FnArg, syn::token::Comma>) -> Vec<syn::LitStr> {
-//     return fn_args.into_iter().skip(1).map(extract_type).collect::<Vec<_>>();
-// }
-
-// fn extract_type(a: FnArg) -> syn::LitStr {
-//     match a {
-//         FnArg::Typed(p) => p.ty, 
-//         _ => panic!("Not supported on types with `self`!"),
-//     }
-// }
-
 fn extract_arg_idents(fn_args: Punctuated<FnArg, syn::token::Comma>) -> Vec<Box<Pat>> {
     return fn_args.into_iter().skip(1).map(extract_arg_pat).collect::<Vec<_>>();
 }
@@ -308,7 +287,6 @@ fn extract_arg_idents(fn_args: Punctuated<FnArg, syn::token::Comma>) -> Vec<Box<
 fn extract_arg_pat(a: FnArg) -> Box<Pat> {
     match a {
         FnArg::Typed(p) => { 
-            println!("{:?}", p.to_token_stream().to_string());
             p.pat
         },
         _ => panic!(),

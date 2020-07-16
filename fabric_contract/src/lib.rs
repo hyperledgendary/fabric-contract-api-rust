@@ -5,11 +5,11 @@
 #![allow(unused_variables)]
 
 //! This is the main crate for providing support for writing Smart Contracts to work with
-//! Hyperledger Fabric.
+//! Hyperledger Fabric's Wasm chaincode
 //!
-//! Any rust contract must be compiled to target Wasm. They can then be run in the Wasm chaincode
-//!
-//! In addition to this crate, there is the `contract_macros` crate that contains the macros needed
+//! The `contract_macros` crate that contains the macros needed.
+//! 
+//! `basic_contract_rs` shows a simple Asset contract.
 //!
 
 mod blockchainapi;
@@ -33,10 +33,10 @@ mod bootstrap {
 /// 
 /// # Example
 /// 
-/// 
+/// ``` 
 /// use fabric_contract::contract::*;
 /// fabric_contract::register!( AssetContract::new );
-/// 
+/// ```
 /// 
 #[macro_export]
 macro_rules! register {
