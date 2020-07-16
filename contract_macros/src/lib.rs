@@ -19,8 +19,8 @@ extern crate proc_macro;
 
 // Bring in quite a lot of different crates, noteably the syn crate for handling the
 // AST.
-use quote::{format_ident, quote};
-use syn::{parse_macro_input, AttributeArgs, FnArg, ItemFn, Type, TypePath, TypeReference};
+use quote::{format_ident, quote, ToTokens};
+use syn::{parse_macro_input, AttributeArgs, FnArg, ItemFn, Type, TypePath, TypeReference, punctuated::Punctuated, Pat};
 
 // DevNote: Most basic attribute procedural macro, keep here for reference and debug
 // #[proc_macro_attribute]
@@ -77,6 +77,7 @@ pub fn contract_impl(
     // and identifiers to call
     let mut method_names = Vec::new();
     let mut method_fns = Vec::new();
+    let mut method_md = Vec::new();
     for i in ty.items {
         match i {
             syn::ImplItem::Method(ref method) => {
@@ -86,8 +87,9 @@ pub fn contract_impl(
                 // ignore the new method
                 // TODO this in a better way! i.e. only the fns marked #[transaction]
 
-                if name != "new" {
+                if name != "new" && !name.to_string().starts_with("invoke") && !name.to_string().starts_with("md"){
                     method_fns.push(syn::Ident::new(&format!("invoke_{}", name), name.span()));
+                    method_md.push(syn::Ident::new(&format!("md_{}", name), name.span()));
                     method_names.push(ident_to_litstr(name));
                 }
 
@@ -96,14 +98,9 @@ pub fn contract_impl(
                 // on the other contract implementations
                 //
                 // build up the list arguments to the function we're going to call
-                // let mut call_args = Vec::new();
-                // for input in method.sig.decl.inputs.iter().skip(1) {
-                //     match input {
-                //         syn::FnArg::Captured(arg) => { let pat = &arg.pat; call_args.push(quote!(#pat)) }
-                //         _ => { panic!() }
-                //     }
-                // }
-                // println!("{:?}",call_args);
+                let call_args = extract_arg_idents(method.sig.inputs);
+
+               
             }
             _ => {}
         }
@@ -115,24 +112,32 @@ pub fn contract_impl(
     let output = quote! {
        #existing
 
-         impl Routing for #type_name {
+        impl Metadata for #type_name {
 
-                fn route2(&self, ctx: &Context, tx_fn: String, args: Vec<String>) -> Result<String,String>{
-                    log::debug!("Inside the contract {} {:?}",tx_fn,args);
-                 let _r = match &tx_fn[..] {
-
-                      #(#method_names =>
-                          {
-                              log::debug!("calling");
-                              let _r = self.#method_fns(args);
-                              Ok(())
-                          }
-
-                          , )*
-                     _ => Err(String::from("Unknown transaction fn "))
-                 };
-                 Ok(String::from("200"))
+           fn get_fn_metadata(&self) -> std::vec::Vec<fabric_contract::prelude::TransactionFn> {
+                 let mut fns = Vec::new();
+                 #(fns.push(self.#method_md()); )*
+                fns
              }
+        }
+
+         impl Routing for #type_name {
+          
+                fn route3(&self, tx_fn: String, args: Vec<WireBuffer>, return_wb: TypeSchema) -> Result<WireBuffer,ContractError> {
+                    log::debug!("Inside the contract (route3) {} {:?}",tx_fn,args);
+                    match &tx_fn[..] {
+   
+                         #(#method_names =>
+                             {
+                                log::debug!("calling");
+                                self.#method_fns(args,return_wb) 
+                             }
+   
+                             , )*
+                        _ => Err(ContractError::from(String::from("Unknown transaction fn ")))
+                    }
+                  
+                }
          }
 
     };
@@ -178,6 +183,8 @@ pub fn transaction(
 
     let name = psitem.sig.ident.clone();
     let classname = syn::Ident::new(&format!("{}{}", "invoke_", name), psitem.sig.ident.span());
+    let metadata = syn::Ident::new(&format!("{}{}", "md_", name), psitem.sig.ident.span());
+    let name_as_literal = ident_to_litstr(&name);
 
     let ret_type = match psitem.sig.output.clone() {
         syn::ReturnType::Default => Box::new(syn::parse_quote!(())),
@@ -187,37 +194,61 @@ pub fn transaction(
     let mut arg_names = Vec::new();
     let mut aargs = Vec::new();
 
+    let mut metadata_args = Vec::new();
+
     // the overall algorthim here should be consiered candidate for optimization
     // It iterates over the signature, skipping the self reference
     // then kets the name of the argument
-
+// log::info!("{:?}, {}",a,#stringify);
     for input in psitem.sig.inputs.iter().skip(1) {
         match input {
             FnArg::Typed(arg) => {
+                let stringify = arg.to_token_stream().to_string();
                 let pat = &arg.pat;
                 let ty = &arg.ty;
                 let comment = format!("{:?}", ty);
                 aargs.push(quote! {
-                   log::info!("{:?}",a);
-                   let #pat = a.remove(0); // and convert convert_from( );
-
+                   
+                   let #pat = #ty::from(&args[i]);
+                   i+=1; // and convert convert_from( );
+                    
                 });
                 arg_names.push(quote! { # pat });
+
+                metadata_args.push(quote! {
+                    tx.add_arg(#stringify);
+                });
             }
             _ => panic!(),
         }
     }
 
     let output = quote! {
-
+    
         #psitem
 
         // hello
-       pub fn #classname(&self, args: Vec<String>) -> #ret_type {
-            let mut a = args.clone();
+       //pub fn #classname(&self, args: Vec<WireBuffer>) -> #ret_type {
+        pub fn #classname(&self, args: Vec<WireBuffer>, return_wb: TypeSchema) -> Result<WireBuffer,ContractError> {
+            let mut i=0;
             #(#aargs)*
 
-            self.#name(#(#arg_names),*)
+            match self.#name(#(#arg_names),*) {
+                Ok(r) => {
+                    let mut wb = WireBuffer::new_unfilled(return_wb);
+                    wb.from_rt(r);
+                    Ok(wb)
+                }, Err(e) => Err(e)
+            }
+        }
+
+        pub fn #metadata(&self) -> fabric_contract::prelude::TransactionFn {
+            let mut tx = fabric_contract::prelude::TransactionFnBuilder::new();
+            tx.name(#name_as_literal);
+          
+            #(#metadata_args)*
+
+            tx.build()
         }
     };
     output.into()
@@ -256,4 +287,30 @@ fn impl_hello_macro(ast: &syn::DeriveInput) -> proc_macro::TokenStream {
         }
     };
     gen.into()
+}
+
+
+// fn extract_arg_types(fn_args: Punctuated<FnArg, syn::token::Comma>) -> Vec<syn::LitStr> {
+//     return fn_args.into_iter().skip(1).map(extract_type).collect::<Vec<_>>();
+// }
+
+// fn extract_type(a: FnArg) -> syn::LitStr {
+//     match a {
+//         FnArg::Typed(p) => p.ty, 
+//         _ => panic!("Not supported on types with `self`!"),
+//     }
+// }
+
+fn extract_arg_idents(fn_args: Punctuated<FnArg, syn::token::Comma>) -> Vec<Box<Pat>> {
+    return fn_args.into_iter().skip(1).map(extract_arg_pat).collect::<Vec<_>>();
+}
+
+fn extract_arg_pat(a: FnArg) -> Box<Pat> {
+    match a {
+        FnArg::Typed(p) => { 
+            println!("{:?}", p.to_token_stream().to_string());
+            p.pat
+        },
+        _ => panic!(),
+    }
 }

@@ -17,9 +17,14 @@ mod contractapi;
 mod error;
 mod ledgerapi;
 mod runtimeapi;
+mod dataapi;
 
 pub use contract_macros::*;
 
+mod bootstrap {
+    use std::sync::Once;
+    static START: Once = Once::new();
+}
 
 /// Macro to use in the lib.rs file of your contract's crate
 /// 
@@ -37,8 +42,8 @@ pub use contract_macros::*;
 macro_rules! register {
 
     (  $( $contract:path ),*   )=> {
-        // extern crate wapc_guest as guest;
-        // use guest::prelude::*;
+ 
+        use log::{debug};
 
         use fabric_contract::contract::ContractManager;
         use fabric_contract::prelude::*;
@@ -49,10 +54,10 @@ macro_rules! register {
         
         pub fn __launch() {
             fabric_contract::runtime::init_logger();
-
-            host_log("__launch");
+            debug!("Logger setup and launched");
+            
             $( ContractManager::register_contract(Box::new($contract())); )*
-            host_log("__launched");
+            debug!("Contracts registered");
         }
 
         pub fn once_wapc(operation: &str, msg: &[u8]) -> wapc_guest::prelude::CallResult {
@@ -73,11 +78,18 @@ pub mod prelude {
     pub use crate::runtimeapi::wapc::handle_wapc as handle_wapc;
     pub use crate::runtimeapi::wapc::log as host_log;
     pub use wapc_guest::prelude::*;    
+
+    pub use crate::contractapi::transaction::TransactionFnBuilder as TransactionFnBuilder;
+    pub use crate::contractapi::transaction::TransactionFn as TransactionFn;
+    pub use crate::contractapi::contractdefn::ContractDefn as ContractDefn;
 }
 
 pub mod data {
     pub use crate::ledgerapi::datatype::DataType;
     pub use contract_macros::property as Property;
+    pub use crate::dataapi::typeschema::TypeSchema;
+    pub use crate::dataapi::wirebuffer::WireBuffer as WireBuffer;
+    pub use crate::dataapi::wirebuffer::WireBufferFromReturnType as WireBufferFromReturnType;
 }
 
 /// Module to provide 'runtime' services.
@@ -99,6 +111,7 @@ pub mod contract {
     pub use crate::contractapi::context::Context;
     pub use crate::contractapi::contract::Contract;
     pub use crate::contractapi::contract::Routing;
+    pub use crate::contractapi::contract::Metadata;
     pub use crate::contractapi::contractmanager::ContractManager;
     pub use crate::ledgerapi::collection::Collection;
     pub use crate::ledgerapi::collection::CollectionName;
@@ -109,6 +122,7 @@ pub mod contract {
     pub use contract_macros::transaction as Transaction;
 
     pub use crate::error::ContractError as ContractError;
+    pub use crate::error::LedgerError as LedgerError;
 }
 
 /// Module to provide APIs to get information about Fabric

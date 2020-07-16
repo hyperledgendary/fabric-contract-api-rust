@@ -11,14 +11,6 @@ pub trait DataType {
     /// 
     fn get_key(&self) -> String; 
 
-}
-
-pub trait LedgerSerializer {
-    fn restore_from( );
-    fn encode_to();    
-}
-
-pub trait WireSerializer {
-    fn restore_from( );
-    fn encode_to();
+    ///
+    fn from_state(&mut self, state: State);
 }

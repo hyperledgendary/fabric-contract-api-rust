@@ -90,6 +90,7 @@ impl From<()> for State {
     }
 }
 
+
 /// Implementation of converting to a state from a datatype
 /// 
 /// # Example
@@ -98,11 +99,11 @@ impl From<()> for State {
 /// let myAsset = MyAsset::new();
 /// state.from(myAsset);
 /// 
-impl From<Box<dyn DataType>> for State {
-    fn from(_:Box<dyn DataType>) -> Self {
-       Self::default()
-    }
-}
+// impl From<Box<dyn DataType>> for State {
+//     fn from(_:Box<dyn DataType>) -> Self {
+//        Self::default()
+//     }
+// }
 
 impl From<(String,Vec<u8>)> for State {
     fn from((a, b): (String, Vec<u8>)) -> Self {
@@ -116,4 +117,15 @@ impl From<&ledger_messages::State> for State {
     }
 }
 
+impl From<ledger_messages::State> for State {
+    fn from(lms: ledger_messages::State) -> Self {
+         Self { key: lms.get_key().to_string() , data: lms.get_value().to_vec()}
+     }
+ }
 
+ impl std::convert::From<State> for fabric_ledger_protos::ledger_messages::State {
+    fn from(_: State) -> Self {
+        todo!()
+    }
+
+}

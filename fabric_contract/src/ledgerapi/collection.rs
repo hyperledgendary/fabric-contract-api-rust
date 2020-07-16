@@ -5,10 +5,8 @@
 #![allow(dead_code)]
 
 use crate::ledgerapi::state::*;
-use crate::ledgerapi::datatype::*;
-
-
-use crate::runtimeapi::ledgerservice::*;
+use crate::{error::LedgerError, runtimeapi::ledgerservice::*};
+use super::DataType;
 
 /// Collection Name
 /// 
@@ -58,54 +56,46 @@ impl Collection {
         }
     }
 
-    pub fn retrieve<T: DataType>(&self, key: &String) -> Result<T,String> {
-         todo!("getstate")
+    pub fn create<T>(&self, asset:T ) -> Result<State,LedgerError> where T:  DataType {
+        let s = asset.to_state();
+        LedgerService::create_state(s.key(), s.value())
     }
 
-    pub fn create<T: DataType>(&self, value: T) -> Result<State,String> {
-         
-        let s = value.to_state();
-        self.create_state(s.key(), s.value())
-
+    pub fn retrieve<T>(&self, key: String) -> Result<T,LedgerError> where T: Default + DataType  {        
+        let s = LedgerService::read_state(key).unwrap();
+        let mut asset = T::default();
+        asset.from_state(s);
+        Ok(asset)
     }
-
-    pub fn update<T: DataType>(&self, _value: T) -> Result<State,String> {
-         todo!("getstate")
-    }
-
-    pub fn delete<T: DataType>(&self, _value: T) -> Result<(),String> {
-         todo!("getstate")
-    }
-
 
     /// Does this key exist
-    pub fn state_exists(&self, key: &String) -> bool {
-        LedgerService::exists_state(key).unwrap()
+    pub fn state_exists(&self, key: &String) -> Result<bool,LedgerError>  {
+        LedgerService::exists_state(key)
     }
     
     /// Return the state for this key
     /// 
-    pub fn get_state(&self, key: String) -> Result<State,String> {
+    pub fn retrieve_state(&self, key: String) -> Result<State,LedgerError> {
         LedgerService::read_state(key)
     }
 
     /// Creates the state
     /// 
     /// If it it already exists, this is an error
-    pub fn create_state(&self, key: String, data: Vec<u8>) -> Result<State,String> {     
+    pub fn create_state(&self, key: String, data: Vec<u8>) -> Result<State,LedgerError> {     
        LedgerService::create_state(key,data)
     }
 
     /// Update the states
     /// 
     /// If it doesn't exist, this is an error
-    pub fn update_state(&self, key: String, data: Vec<u8>) -> State {
-        todo!("update")
+    pub fn update_state(&self, key: String, data: Vec<u8>) -> Result<State,LedgerError> {
+       LedgerService::update_state(key, data)
     }
 
     /// Deletes the key 
-    pub fn delete_state(&self, key: String) -> State {
-        todo!("update")
+    pub fn delete_state(&self, key: String) -> Result<(),LedgerError>  {
+        LedgerService::delete_state(key)
     }
 
     /// Performs a key range query
@@ -118,12 +108,12 @@ impl Collection {
     /// let collection = Ledger::access_ledger().get_collection(CollectionName::World); 
     /// collection.get_states(KeyQueryHandler::Range("Car001","Car002"));
     /// 
-    pub fn get_states(handler: KeyQueryHandler) -> String{
+    pub fn get_states(handler: KeyQueryHandler) -> Result<(),LedgerError> {
          todo!("getstates");
     //     // https://users.rust-lang.org/t/how-to-return-an-iterator/25133/3
     }
 
-    pub fn query_states(handler: RichQueryHandler) -> String {
+    pub fn query_states(handler: RichQueryHandler) -> Result<(),LedgerError>  {
         todo!("getstates");
     }
 }

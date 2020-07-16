@@ -2,35 +2,56 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #![allow(dead_code)]
-
+#![allow(unused_imports)]
 use std::collections::HashMap;
 
 use crate::contractapi::transaction;
 use crate::contractapi::contract::*;
-use crate::contractapi::context::*;
+use crate::{dataapi::WireBuffer, dataapi::serializer::*, contractapi::context::*};
+use crate::{contract::ContractError, dataapi::WireBufferFromReturnType};
 
 use log::{debug, trace};
 
 /// Internal definition of a contract
-pub(super) struct ContractDefn {
-    name: String,
+
+pub struct ContractDefn {
+    name:  String,
     methods: HashMap<String, transaction::TransactionFn>,
     contract: Box<dyn Contract +Send>,
+    converter: Box<dyn Converter + Send>,
 }
 
 
 impl ContractDefn {
     pub fn new(c: Box<dyn Contract+Send>) -> ContractDefn {
-        ContractDefn {
+        let mut cd = ContractDefn {
             name: String::from(c.name()),
             methods: HashMap::new(),
-            contract:c,
-        }
+            contract: c,
+            converter: Box::new(JSONConverter {}),
+        };
+
+        let fns = cd.contract.get_fn_metadata();
+        for t in fns {
+            debug!("Function {:?}",t);
+            cd.add_tx_fn(t);
+        };
+
+
+        // last thing that we need to do is setup the data converter that
+        // is required for this contract
+        
+
+        cd
+    }
+
+    pub fn add_tx_fn(self: &mut ContractDefn, tx: transaction::TransactionFn) {
+        self.methods.insert(String::from(tx.get_name()), tx);
     }
 
     pub fn add_new_method(self: &mut ContractDefn, name: &str, func: fn(&str) -> bool) {
 
-        let tx = transaction::TransactionFn::new(name,func);
+        let tx = transaction::TransactionFn::new(name);
         debug!("{:?}",tx);
         self.methods.insert(String::from(name), tx);
     }
@@ -43,11 +64,21 @@ impl ContractDefn {
         
     }
 
-    pub fn invoke(self: &ContractDefn, ctx: &Context, name:String, args:Vec<String>) -> Result<String,String> {
-        trace!(">> invoke {} {:#?}",name, args);
-        let _r = self.contract.route2(ctx,name,args); 
-        Ok(String::from("ok"))
+    pub fn invoke(self: &ContractDefn, ctx: &Context, name:String, args:&[Vec<u8>]) -> Result<WireBuffer,ContractError> {
+        // trace!(">> invoke {} {:#?}",name, args);
+        debug!("Invoking tx fn");
+
+        let txfn = self.get_txfn(&name[..])?;
+        let mut updated_args = Vec::<WireBuffer>::new();
+        // got the tx fn, now to loop over the supplied args 
+        for (pos, p) in txfn.get_parameters().iter().enumerate() {
+            updated_args.push(WireBuffer::new(args[pos].clone(),
+                                                p.type_schema.clone()/*,Box::new(JSONConverter {})*/ )) ;
+        }
+
+        self.contract.route3(name, updated_args, txfn.get_return())
     }
+   
 }
 
 

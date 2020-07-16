@@ -7,7 +7,7 @@ use crate::runtimeapi::wapc::log;
 /// 
 /// Default to the Info level.
 /// 
-static LOGGER: RuntimeLogger = RuntimeLogger { level: Level::Info };
+static LOGGER: RuntimeLogger = RuntimeLogger { level: Level::Trace };
 
 struct RuntimeLogger {
     level: Level
