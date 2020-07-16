@@ -48,55 +48,38 @@ impl AssetContract {
     /// Returns true or false.
     #[Transaction(evaluate)]
     pub fn asset_exists(&self, asset_id: String) -> Result<bool, ContractError> {
+        info!("# asset_exists");
 
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
-        info!("Accessed collection");
-
-        Ok(world.state_exists(&asset_id))
+        Ok(world.state_exists(&asset_id)?)
     }
-
-
-    /// Creates an asset
-    ///
+    
     #[Transaction(submit)]
     pub fn create_asset(&self, my_assset_id: String, value: String) -> Result<(), ContractError> {
 
-        info!("#create_asset");
+        info!("#> create_asset");
         // get the collection that is backed by the world state
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
         
         let new_asset = MyAsset::new(my_assset_id, value);
         world.create(new_asset)?;
 
-        info!("#create_asset");
+        info!("#< create_asset");
         Ok(())
     }
-
-    // pub fn invoke_create_asset(&self, args: Vec<WireBuffer>) -> Result<(), ContractError> {
-    //     let mut i = 0;
-    //     let my_assset_id = String::from(&args[i]);
-    //     i += 1;
-    //     let value = String::from(&args[i]);
-    //     i += 1;
-    //     self.create_asset(my_assset_id, value)
-    // }
-
-    // pub fn md_create_asset(&self) -> fabric_contract::prelude::TransactionFn {
-    //     let mut tx = fabric_contract::prelude::TransactionFnBuilder::new();
-    //     tx.name("create_asset");
-    //     tx.add_arg("my_assset_id : String");
-    //     tx.add_arg("value : String");
-    //     tx.build()
-    // }
-
-    /// reads an asset and returns the value
+   
     #[Transaction(evaluate)]
     pub fn read_asset_value(&self, my_assset_id: String) -> Result<String, ContractError> {
         // get the collection that is backed by the world state
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
 
         match self.asset_exists(my_assset_id.clone()) {
-            Ok(true) => Ok(world.retrieve::<MyAsset>(&my_assset_id)?.get_value()),
+            Ok(true) => {
+                info!("#confirmed that asset exists");
+                let v = world.retrieve::<MyAsset>(my_assset_id).unwrap().get_value();
+                info!("{}",v);
+                Ok(v)
+            },
             _ => return Err(ContractError::from(String::from("Unable to find asset"))),
         }
     }

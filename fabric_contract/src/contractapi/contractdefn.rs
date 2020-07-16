@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use crate::contractapi::transaction;
 use crate::contractapi::contract::*;
 use crate::{dataapi::WireBuffer, dataapi::serializer::*, contractapi::context::*};
+use crate::{contract::ContractError, dataapi::WireBufferFromReturnType};
 
 use log::{debug, trace};
 
@@ -63,7 +64,7 @@ impl ContractDefn {
         
     }
 
-    pub fn invoke(self: &ContractDefn, ctx: &Context, name:String, args:&[Vec<u8>]) -> Result<String,String> {
+    pub fn invoke(self: &ContractDefn, ctx: &Context, name:String, args:&[Vec<u8>]) -> Result<WireBuffer,ContractError> {
         // trace!(">> invoke {} {:#?}",name, args);
         debug!("Invoking tx fn");
 
@@ -72,12 +73,10 @@ impl ContractDefn {
         // got the tx fn, now to loop over the supplied args 
         for (pos, p) in txfn.get_parameters().iter().enumerate() {
             updated_args.push(WireBuffer::new(args[pos].clone(),
-                                                p.type_schema.clone(),Box::new(JSONConverter {})) );
+                                                p.type_schema.clone()/*,Box::new(JSONConverter {})*/ )) ;
         }
 
-        // let _r = self.contract.route2(ctx,name,args); 
-        let _r = self.contract.route3(name, updated_args);
-        Ok(String::from("ok"))
+        self.contract.route3(name, updated_args, txfn.get_return())
     }
    
 }

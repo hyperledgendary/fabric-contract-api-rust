@@ -123,40 +123,21 @@ pub fn contract_impl(
 
          impl Routing for #type_name {
           
-                fn route3(&self, tx_fn: String, args: Vec<WireBuffer>) -> Result<String,String> {
+                fn route3(&self, tx_fn: String, args: Vec<WireBuffer>, return_wb: TypeSchema) -> Result<WireBuffer,ContractError> {
                     log::debug!("Inside the contract (route3) {} {:?}",tx_fn,args);
-                    let _r = match &tx_fn[..] {
+                    match &tx_fn[..] {
    
                          #(#method_names =>
                              {
-                                 log::debug!("calling");
-                                 let _r = self.#method_fns(args);
-                                 Ok(())
+                                log::debug!("calling");
+                                self.#method_fns(args,return_wb) 
                              }
    
                              , )*
-                        _ => Err(String::from("Unknown transaction fn "))
-                    };
-                    Ok(String::from("200"))
+                        _ => Err(ContractError::from(String::from("Unknown transaction fn ")))
+                    }
+                  
                 }
-
-                fn route2(&self, ctx: &Context, tx_fn: String, args: Vec<String>) -> Result<String,String>{
-                //  log::debug!("Inside the contract {} {:?}",tx_fn,args);
-                //  let _r = match &tx_fn[..] {
-
-                //       #(#method_names =>
-                //           {
-                //               log::debug!("calling");
-                //               let _r = self.#method_fns(args);
-                //               Ok(())
-                //           }
-
-                //           , )*
-                //      _ => Err(String::from("Unknown transaction fn "))
-                //  };
-                //  Ok(String::from("200"))
-                todo!("route 2 for deletion")
-             }
          }
 
     };
@@ -247,11 +228,18 @@ pub fn transaction(
         #psitem
 
         // hello
-       pub fn #classname(&self, args: Vec<WireBuffer>) -> #ret_type {
+       //pub fn #classname(&self, args: Vec<WireBuffer>) -> #ret_type {
+        pub fn #classname(&self, args: Vec<WireBuffer>, return_wb: TypeSchema) -> Result<WireBuffer,ContractError> {
             let mut i=0;
             #(#aargs)*
 
-            self.#name(#(#arg_names),*)
+            match self.#name(#(#arg_names),*) {
+                Ok(r) => {
+                    let mut wb = WireBuffer::new_unfilled(return_wb);
+                    wb.from_rt(r);
+                    Ok(wb)
+                }, Err(e) => Err(e)
+            }
         }
 
         pub fn #metadata(&self) -> fabric_contract::prelude::TransactionFn {

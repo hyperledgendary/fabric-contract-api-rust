@@ -77,11 +77,15 @@ impl TransactionFn {
     }
 
     pub fn get_name(&self) -> String {
-        return self.name.clone();
+        self.name.clone()
+    }
+
+    pub fn get_return(&self) -> TypeSchema {
+        self.return_type.clone()
     }
 
     pub fn get_parameters(&self) -> Vec<ParameterDefn> {
-        return self.parameters.clone();
+        self.parameters.clone()
     }
 }
 

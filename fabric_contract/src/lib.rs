@@ -89,6 +89,7 @@ pub mod data {
     pub use contract_macros::property as Property;
     pub use crate::dataapi::typeschema::TypeSchema;
     pub use crate::dataapi::wirebuffer::WireBuffer as WireBuffer;
+    pub use crate::dataapi::wirebuffer::WireBufferFromReturnType as WireBufferFromReturnType;
 }
 
 /// Module to provide 'runtime' services.
@@ -121,6 +122,7 @@ pub mod contract {
     pub use contract_macros::transaction as Transaction;
 
     pub use crate::error::ContractError as ContractError;
+    pub use crate::error::LedgerError as LedgerError;
 }
 
 /// Module to provide APIs to get information about Fabric

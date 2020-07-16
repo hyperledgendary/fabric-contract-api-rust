@@ -81,8 +81,14 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
     let mut response_msg = InvokeTransactionResponse::new();
 
     let ret = match ContractManager::route(&ctx, fn_name.to_string(), args, transient_args) {
-        Ok(r) => response_msg.set_payload(r.into_bytes()),
-        Err(e) => response_msg.set_payload(e.into_bytes()),
+        Ok(r) => {
+            let buffer = match r.buffer {
+                Some(r) => r,
+                None => Vec::new()
+            };
+            response_msg.set_payload(buffer)
+        },
+        Err(e) => response_msg.set_payload(e.to_string().into_bytes()),
     };
 
     let buffer: Vec<u8> = response_msg.write_to_bytes()?;

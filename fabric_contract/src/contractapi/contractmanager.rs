@@ -5,7 +5,7 @@
 #![allow(unused_imports)]
 use crate::contractapi::context::*;
 use crate::contractapi::contract::*;
-use crate::{dataapi::WireBuffer, contractapi::contractdefn};
+use crate::{dataapi::WireBuffer, contractapi::contractdefn, contract::ContractError};
 
 use lazy_static::lazy_static;
 
@@ -47,7 +47,7 @@ impl ContractManager {
         tx: String,
         args: &[Vec<u8>],
         transient: &[Vec<u8>]
-    ) -> Result<String, String> {
+    ) -> Result<WireBuffer, ContractError> {
         debug!("contractmanager::evaluate {} {}", contract_name, tx);
 
         match self.contracts.get(&contract_name) {
@@ -60,7 +60,7 @@ impl ContractManager {
                     "Unable to find contract Failed {}.{},{:?}",
                     contract_name, tx, args
                 );
-                Err(String::from("Unable to find contract"))
+                Err(ContractError::from(String::from("Unable to find contract")))
             }
         }
     }
@@ -74,7 +74,7 @@ impl ContractManager {
     }
 
     /// Route the call to the correct contract
-    pub fn route(ctx: &Context, tx: String, args: &[Vec<u8>], transient: &[Vec<u8>]) -> Result<String, String> {
+    pub fn route(ctx: &Context, tx: String, args: &[Vec<u8>], transient: &[Vec<u8>]) -> Result<WireBuffer, ContractError> {
         trace!("contractmanager::route>>");
 
         // parse out the contract_name here
