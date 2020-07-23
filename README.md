@@ -21,6 +21,7 @@ A SmartContract is single crate, containing one or more contract sructs, compile
 ## Build
 
 To build a Wasm binary you will need to have rust installed (stable branch is good, nightly is not required). You will need to add the wasm target.
+(`rustup target add wasm32-unknown-unknown` if you don't have the Wasm toolchain. Note that wasm-pack is not required here as there is no JavaScript host)
 
 ```
 cargo build --target wasm32-unknown-unknown

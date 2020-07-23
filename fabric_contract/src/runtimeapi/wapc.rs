@@ -9,6 +9,7 @@ use crate::contractapi::context::Context;
 use crate::contractapi::contractmanager::*;
 use protobuf::{parse_from_bytes, Message};
 use std::str;
+use std::cell::RefCell;
 
 extern crate wapc_guest as guest;
 use guest::prelude::*;
@@ -69,7 +70,8 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
     let args = invoke_request.get_args();
     let transient_args = invoke_request.get_transient_args();
     let request_ctx = invoke_request.get_context();
-    let ctx = Context::new(request_ctx);
+    set_context(Context::new(request_ctx));
+    let ctx = get_context();
 
     // pass over to the contract manager to route
     trace!(
@@ -94,4 +96,20 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
     let buffer: Vec<u8> = response_msg.write_to_bytes()?;
     trace!("handler_tx_invoke<<");
     Ok(buffer)
+}
+
+
+thread_local! {
+    pub static CONTEXT: RefCell<Context>
+    = RefCell::new( Default::default() );
+}
+
+fn set_context(name: Context) {
+    CONTEXT.with(|ctx| {
+        *ctx.borrow_mut() = name
+    });
+}
+
+pub fn get_context() -> Context {
+    CONTEXT.with(|ctx| ctx.borrow().clone())
 }

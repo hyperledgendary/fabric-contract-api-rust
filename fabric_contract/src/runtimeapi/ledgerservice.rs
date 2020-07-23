@@ -112,10 +112,13 @@ impl LedgerService {
         Ok(response.get_exists())
     }
 
-    // TODO: need to get the txid from LTS or similar
+    // Gets the thread-local transaction context and creates the protobuf from it.
     fn get_context() -> Result<common_messages::TransactionContext,LedgerError> {
+        let ctx = crate::runtimeapi::wapc::get_context();
+
         let mut tx_context = common_messages::TransactionContext::new();
-        tx_context.set_transaction_id("1234".to_string());
+        tx_context.set_transaction_id(ctx.get_txid());
+        tx_context.set_channel_id(ctx.get_channelid());
         Ok(tx_context)
     }
 
