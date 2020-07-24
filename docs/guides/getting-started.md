@@ -4,6 +4,8 @@ layout: page
 category: guides
 ---
 
+## Introduction
+
 Here are the steps to run the `basic_contract_rs`. 
 - Rust Smart Contract hosted within a Wasm engine
 - Hyperledger Fabric v2
@@ -29,7 +31,6 @@ We need Fabric Version 2, which you may already have so can skip this.
 ```bash
 curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/bootstrap.sh | bash -s -- 2.2.0 1.4.4 0.4.18 -s -b
 ```
-
 
 ### Fabric Network
 
