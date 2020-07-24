@@ -30,7 +30,6 @@ We need Fabric Version 2, which you may already have so can skip this.
 curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/bootstrap.sh | bash -s -- 2.2.0 1.4.4 0.4.18 -s -b
 ```
 
-
 ### Fabric Network
 
 It's perfectly possible to use the `fabric-samples` test-network for this, that's 2 Organization network. For these instructions, we want to use a smaller network purely for development purposes.
