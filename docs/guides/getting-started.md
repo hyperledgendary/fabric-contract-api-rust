@@ -1,5 +1,5 @@
 ---
-Title: Getting Rust Contract in Wasm Working End to End
+title: Getting Rust Contract in Wasm Working
 layout: page
 category: guides
 ---
@@ -29,7 +29,6 @@ We need Fabric Version 2, which you may already have so can skip this.
 ```bash
 curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/bootstrap.sh | bash -s -- 2.2.0 1.4.4 0.4.18 -s -b
 ```
-
 
 ### Fabric Network
 
