@@ -1,0 +1,5 @@
+theme: minima
+title: "fabric-contract-api-rust"
+header_pages:
+    - guides/getting-started.md
+baseurl: /fabric-contract-api-rust
