@@ -1,5 +1,5 @@
 ---
-Title: Getting Rust Contract in Wasm Working End to End
+title: Getting Rust Contract in Wasm Working
 layout: page
 category: guides
 ---

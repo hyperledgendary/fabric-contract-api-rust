@@ -1,6 +1,6 @@
 ---
 layout: home
-Title: Rust Smart Contract API
+title: Rust Smart Contract API
 ---
 
 This **Technology Preview** provides an updated Contract and Ledger API in Rust. It is targetted to be compiled to WebAssembly and run in the `fabric-chaincode-wasm` engine.
@@ -28,9 +28,10 @@ VSCode is our preferred editor, with the Rust Extension and the Rust Analyser. Y
 ## Guides
 
 - [API Documentation](./apidoc/fabric_contract/index.html)
-{% for doc in site.pages %} {% if doc.category == "guides" %}
+{% for doc in site.pages %} {% if doc.category =='guides' %}
 - [{{ doc.title }}]({{site.baseurl}}{{ doc.url }})
-{% endif %} {% endfor %}
+{% endif %}
+{% endfor %}
 
 ## Samples
 
