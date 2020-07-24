@@ -11,12 +11,16 @@ A SmartContract is single crate, containing one or more contract sructs, compile
 
 ## To write and deploy a Smart Contract
 
+At a very highlevel the stpes are
+
 0. As the crates are not published yet, clone this entire cargo workspace to build both the fabric_contract and your own crates
 1. Write the Smart Contract in rust, see `basic_contract_rs` for an example
 2. Compile this targetting wasm. `cargo build --target wasm32-unknown-unknown`
 3. Take the resulting Wasm binary and use the `https://github.com/hyperledgendary/fabric-chaincode-wasm` project to encapsualte this Wasm file in the 'Wasm Chaincode Runtime'
 4. Once deployed this you interact with this like another contract
 
+
+For all the steps please follow the [Getting Started Guide](https://hyperledgendary.github.io/fabric-contract-api-rust/guides/getting-started.html)
 
 ## Build
 
