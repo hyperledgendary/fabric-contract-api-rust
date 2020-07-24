@@ -4,6 +4,8 @@ layout: page
 category: guides
 ---
 
+## Introduction
+
 Here are the steps to run the `basic_contract_rs`. 
 - Rust Smart Contract hosted within a Wasm engine
 - Hyperledger Fabric v2
