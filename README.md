@@ -4,14 +4,21 @@
 
 A SmartContract is single crate, containing one or more contract sructs, compiled to a Wasm library. In this repo the `basic_contract_rs` is an example. This is a simple asset based contract based on the standard vs code extension examples.
 
-`fabric_contract` is the main crate that provides the apis for writing a contract and accessing the ledger. 
+[End-to-End Getting Started Guide](https://hyperledgendary.github.io/fabric-contract-api-rust/guides/getting-started.html)
 
 [Check the API Documentation for fabric_contract](https://hyperledgendary.github.io/fabric-contract-api-rust/apidoc/fabric_contract/index.html)
 
+[Full Documentation](https://hyperledgendary.github.io/fabric-contract-api-rust/)
 
-## To write and deploy a Smart Contract
+## Technology Preview
 
-At a very highlevel the stpes are
+NOTE this is a technology preview, rather than production ready. Released for feedback and community experimentation.
+
+## Tl;Dr; docs
+
+### To write and deploy a Smart Contract
+
+At a very highlevel the steps are
 
 0. As the crates are not published yet, clone this entire cargo workspace to build both the fabric_contract and your own crates
 1. Write the Smart Contract in rust, see `basic_contract_rs` for an example
@@ -22,7 +29,7 @@ At a very highlevel the stpes are
 
 For all the steps please follow the [Getting Started Guide](https://hyperledgendary.github.io/fabric-contract-api-rust/guides/getting-started.html)
 
-## Build
+### Summary of how to build for Wasm
 
 To build a Wasm binary you will need to have rust installed (stable branch is good, nightly is not required). You will need to add the wasm target.
 (`rustup target add wasm32-unknown-unknown` if you don't have the Wasm toolchain. Note that wasm-pack is not required here as there is no JavaScript host)
@@ -42,9 +49,3 @@ just docs
 
 There is also a `justfile` for quick command running.
 
-## Information
-
-For information on Rust and Wasm see [the book](https://rustwasm.github.io/docs/book/).
-Please note that section on [what crates may and may not work](https://rustwasm.github.io/docs/book/reference/which-crates-work-with-wasm.html) with Wasm for any dependencies that you use)
-
-For informtion on how to write the contract, and how to do various fabric operations, please look at the `basic_contract_rs` first. Aim is try an add examples of the various fabric functions here.
