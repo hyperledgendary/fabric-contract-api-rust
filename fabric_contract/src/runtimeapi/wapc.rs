@@ -8,8 +8,8 @@
 use crate::contractapi::context::Context;
 use crate::contractapi::contractmanager::*;
 use protobuf::{parse_from_bytes, Message};
-use std::str;
 use std::cell::RefCell;
+use std::str;
 
 extern crate wapc_guest as guest;
 use guest::prelude::*;
@@ -55,8 +55,7 @@ pub fn runtime_host_call(service: String, cmd: String, data: Vec<u8>) -> Vec<u8>
         cmd,
         data.len()
     );
-    let res = host_call("wapc", &service[..], &cmd[..], &data).unwrap();
-    res
+    host_call("wapc", &service[..], &cmd[..], &data).unwrap()
 }
 
 /// handle_tx_invoke called with the buffer that contains the request
@@ -86,10 +85,10 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
         Ok(r) => {
             let buffer = match r.buffer {
                 Some(r) => r,
-                None => Vec::new()
+                None => Vec::new(),
             };
             response_msg.set_payload(buffer)
-        },
+        }
         Err(e) => response_msg.set_payload(e.to_string().into_bytes()),
     };
 
@@ -98,16 +97,13 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
     Ok(buffer)
 }
 
-
 thread_local! {
     pub static CONTEXT: RefCell<Context>
     = RefCell::new( Default::default() );
 }
 
 fn set_context(name: Context) {
-    CONTEXT.with(|ctx| {
-        *ctx.borrow_mut() = name
-    });
+    CONTEXT.with(|ctx| *ctx.borrow_mut() = name);
 }
 
 pub fn get_context() -> Context {

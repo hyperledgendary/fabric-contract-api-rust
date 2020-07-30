@@ -5,16 +5,16 @@
 #![allow(unused_imports)]
 use crate::dataapi::{typeschema::ContractType, typeschema::Format, TypeSchema};
 use std::fmt;
-use Format::Other;
 use std::str::FromStr;
+use Format::Other;
 
-#[derive(Debug,Clone,Copy)]
+#[derive(Debug, Clone, Copy)]
 /// Should this transaction be submitted or evaluated?
 pub enum TxType {
     Submit,
     Evaluate,
 }
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct ParameterDefn {
     pub name: String,
     pub type_schema: TypeSchema,
@@ -23,35 +23,35 @@ pub struct ParameterDefn {
 
 impl std::fmt::Display for ParameterDefn {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?} {:?}", self.name,self.type_schema)
+        write!(f, "{:?} {:?}", self.name, self.type_schema)
     }
-  }
+}
 
 impl std::convert::From<&str> for ParameterDefn {
     fn from(tx: &str) -> Self {
         // parse out the contract_name here
         let type_name: String;
         let arg_name: String;
-        match tx.find(":") {
+        match tx.find(':') {
             Some(s) => {
-                arg_name = tx[..s-1].to_string();
+                arg_name = tx[..s - 1].to_string();
                 type_name = tx[s + 2..].to_string();
             }
-            None => {panic!("Code is not correct")}
+            None => panic!("Code is not correct"),
         }
-        
+
         Self {
-            name : arg_name.clone(),
-            transient : false,
-            type_schema:TypeSchema {
-                contract_type : ContractType::from_str(&type_name[..]).unwrap(),
+            name: arg_name,
+            transient: false,
+            type_schema: TypeSchema {
+                contract_type: ContractType::from_str(&type_name[..]).unwrap(),
                 format: Option::None,
-            }
+            },
         }
     }
 }
 
-#[derive(Default,Debug,Clone)]
+#[derive(Default, Debug, Clone)]
 pub struct TransactionFn {
     name: String,
     return_type: TypeSchema,
@@ -81,7 +81,7 @@ impl TransactionFn {
     }
 
     pub fn get_return(&self) -> TypeSchema {
-        self.return_type.clone()
+        self.return_type
     }
 
     pub fn get_parameters(&self) -> Vec<ParameterDefn> {
@@ -89,7 +89,7 @@ impl TransactionFn {
     }
 }
 
-#[derive(Default,Debug,Clone)]
+#[derive(Default, Debug, Clone)]
 pub struct TransactionFnBuilder {
     name: String,
     return_type: TypeSchema,

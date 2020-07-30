@@ -5,11 +5,11 @@
 #![allow(unused_imports)]
 use crate::contractapi::context::*;
 use crate::contractapi::contract::*;
-use crate::{dataapi::WireBuffer, contractapi::contractdefn, contract::ContractError};
+use crate::{contract::ContractError, contractapi::contractdefn, dataapi::WireBuffer};
 
 use lazy_static::lazy_static;
 
-use log::{debug, trace, warn, info};
+use log::{debug, info, trace, warn};
 
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -33,9 +33,8 @@ impl ContractManager {
 
     fn register_contract_impl(self: &mut ContractManager, contract: Box<dyn Contract + Send>) {
         let name = contract.name();
-        
+
         let contract_defn = contractdefn::ContractDefn::new(contract);
-        
 
         self.contracts.insert(name, contract_defn);
     }
@@ -46,14 +45,13 @@ impl ContractManager {
         contract_name: String,
         tx: String,
         args: &[Vec<u8>],
-        transient: &[Vec<u8>]
+        transient: &[Vec<u8>],
     ) -> Result<WireBuffer, ContractError> {
         debug!("contractmanager::evaluate {} {}", contract_name, tx);
 
         match self.contracts.get(&contract_name) {
-            Some(defn) => { 
-                let r = defn.invoke(ctx,tx,args/*,transient*/);
-                r
+            Some(defn) => {
+                defn.invoke(ctx, tx, args /*,transient*/)
             }
             None => {
                 warn!(
@@ -74,13 +72,18 @@ impl ContractManager {
     }
 
     /// Route the call to the correct contract
-    pub fn route(ctx: &Context, tx: String, args: &[Vec<u8>], transient: &[Vec<u8>]) -> Result<WireBuffer, ContractError> {
+    pub fn route(
+        ctx: &Context,
+        tx: String,
+        args: &[Vec<u8>],
+        transient: &[Vec<u8>],
+    ) -> Result<WireBuffer, ContractError> {
         trace!("contractmanager::route>>");
 
         // parse out the contract_name here
         let namespace: String;
         let fn_name: String;
-        match tx.find(":") {
+        match tx.find(':') {
             None => {
                 namespace = "default".to_string();
                 fn_name = tx.clone();
@@ -94,7 +97,7 @@ impl ContractManager {
         let r = CONTRACT_MGR
             .lock()
             .unwrap()
-            .evaluate(ctx, namespace, fn_name, args,transient);
+            .evaluate(ctx, namespace, fn_name, args, transient);
 
         trace!("contractmanager::route<<");
         r

@@ -20,7 +20,10 @@ extern crate proc_macro;
 // Bring in quite a lot of different crates, noteably the syn crate for handling the
 // AST.
 use quote::{format_ident, quote, ToTokens};
-use syn::{parse_macro_input, AttributeArgs, FnArg, ItemFn, Type, TypePath, TypeReference, punctuated::Punctuated, Pat};
+use syn::{
+    parse_macro_input, punctuated::Punctuated, AttributeArgs, FnArg, ItemFn, Pat, Type, TypePath,
+    TypeReference,
+};
 
 // DevNote: Most basic attribute procedural macro, keep here for reference and debug
 
@@ -80,23 +83,23 @@ pub fn contract_impl(
     let mut method_fns = Vec::new();
     let mut method_md = Vec::new();
     for i in ty.items {
-        match i {
-            syn::ImplItem::Method(ref method) => {
-                let method = method.clone();
-                let name = &method.sig.ident;
+        if let syn::ImplItem::Method(ref method) = i {
+            let method = method.clone();
+            let name = &method.sig.ident;
 
-                // ignore the new method
-                // TODO this in a better way! i.e. only the fns marked #[transaction]
+            // ignore the new method
+            // TODO this in a better way! i.e. only the fns marked #[transaction]
 
-                if name != "new" && !name.to_string().starts_with("invoke") && !name.to_string().starts_with("md"){
-                    method_fns.push(syn::Ident::new(&format!("invoke_{}", name), name.span()));
-                    method_md.push(syn::Ident::new(&format!("md_{}", name), name.span()));
-                    method_names.push(ident_to_litstr(name));
-                }
-                // build up the list arguments to the function we're going to call
-                let call_args = extract_arg_idents(method.sig.inputs);              
+            if name != "new"
+                && !name.to_string().starts_with("invoke")
+                && !name.to_string().starts_with("md")
+            {
+                method_fns.push(syn::Ident::new(&format!("invoke_{}", name), name.span()));
+                method_md.push(syn::Ident::new(&format!("md_{}", name), name.span()));
+                method_names.push(ident_to_litstr(name));
             }
-            _ => {}
+            // build up the list arguments to the function we're going to call
+            let call_args = extract_arg_idents(method.sig.inputs);
         }
     }
 
@@ -114,21 +117,21 @@ pub fn contract_impl(
         }
 
          impl Routing for #type_name {
-          
+
                 fn route3(&self, tx_fn: String, args: Vec<WireBuffer>, return_wb: TypeSchema) -> Result<WireBuffer,ContractError> {
                     log::debug!("Inside the contract (route3) {} {:?}",tx_fn,args);
                     match &tx_fn[..] {
-   
+
                          #(#method_names =>
                              {
                                 log::debug!("calling");
-                                self.#method_fns(args,return_wb) 
+                                self.#method_fns(args,return_wb)
                              }
-   
+
                              , )*
                         _ => Err(ContractError::from(String::from("Unknown transaction fn ")))
                     }
-                  
+
                 }
          }
 
@@ -199,10 +202,10 @@ pub fn transaction(
                 let ty = &arg.ty;
                 let comment = format!("{:?}", ty);
                 aargs.push(quote! {
-                   
+
                    let #pat = #ty::from(&args[i]);
                    i+=1; // and convert convert_from( );
-                    
+
                 });
                 arg_names.push(quote! { # pat });
 
@@ -215,7 +218,7 @@ pub fn transaction(
     }
 
     let output = quote! {
-    
+
         #psitem
 
         // hello
@@ -236,7 +239,7 @@ pub fn transaction(
         pub fn #metadata(&self) -> fabric_contract::prelude::TransactionFn {
             let mut tx = fabric_contract::prelude::TransactionFnBuilder::new();
             tx.name(#name_as_literal);
-          
+
             #(#metadata_args)*
 
             tx.build()
@@ -280,15 +283,17 @@ fn impl_hello_macro(ast: &syn::DeriveInput) -> proc_macro::TokenStream {
     gen.into()
 }
 
-fn extract_arg_idents(fn_args: Punctuated<FnArg, syn::token::Comma>) -> Vec<Box<Pat>> {
-    return fn_args.into_iter().skip(1).map(extract_arg_pat).collect::<Vec<_>>();
+fn extract_arg_idents(fn_args: Punctuated<FnArg, syn::token::Comma>) -> Vec<Pat> {
+    fn_args
+        .into_iter()
+        .skip(1)
+        .map(extract_arg_pat)
+        .collect::<Vec<_>>()
 }
 
-fn extract_arg_pat(a: FnArg) -> Box<Pat> {
+fn extract_arg_pat(a: FnArg) -> Pat {
     match a {
-        FnArg::Typed(p) => { 
-            p.pat
-        },
+        FnArg::Typed(p) => *p.pat,
         _ => panic!(),
     }
 }
