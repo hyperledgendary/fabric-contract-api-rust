@@ -3,11 +3,10 @@
  */
 
 //! Basic CRUD style asset contract
-//! 
+//!
 //! The business logic in these is very simple.
-//! 
+//!
 //! Note: the transaction APIs should maybe take &String instead of String.
-
 
 // Use the Fabric Contract modules
 use fabric_contract::contract::*;
@@ -27,26 +26,23 @@ pub struct AssetContract {}
 ///
 /// Recommended that the name() function is always modified
 impl Contract for AssetContract {
-    
     /// Name of the contract
     fn name(&self) -> String {
-        format!("AssetContract")
+        "AssetContract".to_string()
     }
-
 }
 
 /// The contract implementation
 /// Should be marked with the macro `#[contrant_impl]`
-/// 
+///
 /// All transactions functions should have the `#[Transaction(evaluate)]` or `#[Transaction(submit)]`
 /// This indicates that the function should be submitted (sent for endorsing to all peers) or is a query
 /// operation, that does not need to be written to the ledger.
-/// 
+///
 #[Contract_Impl]
 impl AssetContract {
-
     /// Some form of 'new' function is required.
-    /// See the lib.rs of this example for how this is used. 
+    /// See the lib.rs of this example for how this is used.
     pub fn new() -> AssetContract {
         AssetContract {}
     }
@@ -61,27 +57,26 @@ impl AssetContract {
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
         Ok(world.state_exists(&asset_id)?)
     }
-    
+
     /// Creates a new asset, with supplied id, and value
     /// Marked as submit as this updates the ledger
-    /// 
-    /// 
+    ///
+    ///
     #[Transaction(submit)]
     pub fn create_asset(&self, my_assset_id: String, value: String) -> Result<(), ContractError> {
-
         info!("#> create_asset");
         // get the collection that is backed by the world state
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
-        
+
         let new_asset = MyAsset::new(my_assset_id, value);
         world.create(new_asset)?;
 
         info!("#< create_asset");
         Ok(())
     }
-   
+
     /// Reads the value with the supplied asset id
-    /// 
+    ///
     /// Returns the string value
     #[Transaction(evaluate)]
     pub fn read_asset_value(&self, my_assset_id: String) -> Result<String, ContractError> {
@@ -94,8 +89,8 @@ impl AssetContract {
             Ok(true) => {
                 let v = world.retrieve::<MyAsset>(my_assset_id)?.get_value();
                 Ok(v)
-            },
-            _ => return Err(ContractError::from(String::from("Unable to find asset"))),
+            }
+            _ => Err(ContractError::from(String::from("Unable to find asset"))),
         }
     }
 }

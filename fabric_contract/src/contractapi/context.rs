@@ -4,28 +4,25 @@
 
 use fabric_ledger_protos::common_messages::TransactionContext;
 
-#[derive(Default)]
-#[derive(Clone)]
+#[derive(Default, Clone)]
 pub struct Context {
     tx_id: std::string::String,
     channel_id: std::string::String,
 }
 
 impl Context {
-    pub fn new(context:  &TransactionContext) -> Context {
+    pub fn new(context: &TransactionContext) -> Context {
         Context {
-            channel_id : context.channel_id.clone(),
-            tx_id: context.transaction_id.clone()
+            channel_id: context.channel_id.clone(),
+            tx_id: context.transaction_id.clone(),
         }
     }
 
     pub fn get_txid(&self) -> std::string::String {
-        return self.tx_id.clone();
+        self.tx_id.clone()
     }
 
     pub fn get_channelid(&self) -> std::string::String {
-        return self.channel_id.clone();
+        self.channel_id.clone()
     }
-
-
 }
