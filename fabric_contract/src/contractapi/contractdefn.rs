@@ -84,3 +84,54 @@ impl ContractDefn {
         self.contract.route3(name, updated_args, txfn.get_return())
     }
 }
+
+// Test section
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use mockall::{automock, mock, predicate::*};
+    use crate::contractapi::transaction::*;
+    use crate::data::TypeSchema;
+    use claim::assert_ok;
+    
+    mock! {
+        TestContract {}
+        // First trait to implement on C
+        trait Metadata {
+            fn get_fn_metadata(&self) -> Vec<TransactionFn>;
+        }
+        // Second trait to implement on C
+        trait Routing {
+            fn route3(
+                &self,
+                tx_fn: String,
+                args: Vec<WireBuffer>,
+                return_wb: TypeSchema,
+            ) -> Result<WireBuffer, ContractError>;
+        }
+    }
+
+    impl Contract for MockTestContract {
+        fn name(&self) -> String {
+            "TestContract".to_string()
+        }            
+    }
+
+    #[test]
+    fn new_defn() {
+
+        let contract = MockTestContract::new();
+        let mut b=  Box::new(contract);
+
+        let mut tx_fns = Vec::<TransactionFn>::new();
+        let mut txfn1 = TransactionFnBuilder::new();
+        txfn1.name("testfn");
+        let t = txfn1.build();
+        tx_fns.push(t);
+
+        b.expect_get_fn_metadata().return_const(tx_fns);
+        let contract_defn = ContractDefn::new(b);
+        assert_ok!(contract_defn.get_txfn("testfn"));
+        
+    }
+}

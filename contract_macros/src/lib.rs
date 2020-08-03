@@ -38,8 +38,8 @@ use syn::{
 ///
 /// # Example
 ///
-/// ```
-/// use fabric_contract::contract::*;
+///
+/// use crate::fabric_contract::contract::*;
 /// struct MyContract {}
 ///
 /// #[Contract_Impl]
@@ -51,7 +51,7 @@ use syn::{
 /// // this is NOT callable as transaction function
 /// fn helper() { }
 /// }
-/// ```
+///
 ///
 /// This macro's purpose is to implement the 'routing' trait for the contract. This permits
 /// the message from peer to correctly routed to the transaction function required.
@@ -154,7 +154,7 @@ fn ident_to_litstr(ident: &syn::Ident) -> syn::LitStr {
 ///
 /// # Example
 ///
-/// ```
+///
 /// use fabric_contract::contract::*;
 /// #[Transaction]
 /// pub fn createAsset() { }
@@ -167,7 +167,7 @@ fn ident_to_litstr(ident: &syn::Ident) -> syn::LitStr {
 ///
 /// #[Transaction(tranisent = {price, owner} )]
 /// pub fn createDetailedAsset(id: String, price: u32, owner: String ) { }
-/// ```
+///
 ///
 #[proc_macro_attribute]
 pub fn transaction(

@@ -19,14 +19,15 @@
  */</span>
 
 <span class="doccomment">//! All the ContractApi modules</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">ledger</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">collection</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">state</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">datatype</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">ledger</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">state</span>;
 
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">collection</span>::<span class="ident">CollectionName</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">collection</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">datatype</span>::<span class="ident">DataType</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">ledger</span>::<span class="ident">Ledger</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">collection</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">collection</span>::<span class="ident">CollectionName</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">state</span>::<span class="ident">State</span>;</pre></div>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">state</span>::<span class="ident">State</span>;
+</pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "fabric_contract";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

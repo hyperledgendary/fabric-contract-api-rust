@@ -1,6 +1,5 @@
-
-use std::fmt;
 use std::error;
+use std::fmt;
 
 /// Contract Error is what the contract will return to indicate an error
 /// Typically this would be for contract developers to use to mark that a failure
@@ -9,28 +8,33 @@ use std::error;
 #[derive(Debug)]
 pub struct ContractError {
     msg: String,
-    ledger_error: Option<LedgerError>
+    ledger_error: Option<LedgerError>,
 }
 
 impl std::convert::From<String> for ContractError {
     fn from(msg: String) -> Self {
-       Self { msg,  ledger_error: Option::None }
-     }
+        Self {
+            msg,
+            ledger_error: Option::None,
+        }
+    }
 }
 
 impl std::convert::From<LedgerError> for ContractError {
     fn from(ledger_error: LedgerError) -> Self {
-       Self { msg:"Error caused by LedgerError".to_string(), ledger_error: Some(ledger_error) }
-     }
+        Self {
+            msg: "Error caused by LedgerError".to_string(),
+            ledger_error: Some(ledger_error),
+        }
+    }
 }
 
 impl fmt::Display for ContractError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.ledger_error {
-            Some(le) =>  write!(f, "{} caused by {}", self.msg,le),
+            Some(le) => write!(f, "{} caused by {}", self.msg, le),
             None => write!(f, "{}", self.msg),
         }
-     
     }
 }
 
@@ -42,9 +46,9 @@ impl error::Error for ContractError {
 
 /// Ledger Error is returned by the API calls made against the ledger
 /// api, eg, if a state can be found
-#[derive(Debug)] 
+#[derive(Debug)]
 pub struct LedgerError {
-    msg: String
+    msg: String,
 }
 
 impl error::Error for LedgerError {
@@ -55,13 +59,12 @@ impl error::Error for LedgerError {
 
 impl std::convert::From<String> for LedgerError {
     fn from(msg: String) -> Self {
-       Self { msg }
-     }
+        Self { msg }
+    }
 }
-
 
 impl fmt::Display for LedgerError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-       write!(f, "{}", self.msg)
+        write!(f, "{}", self.msg)
     }
 }

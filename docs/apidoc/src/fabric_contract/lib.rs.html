@@ -140,6 +140,10 @@
 <span id="140">140</span>
 <span id="141">141</span>
 <span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -151,41 +155,49 @@
 <span class="doccomment">//! Hyperledger Fabric&#39;s Wasm chaincode</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The `contract_macros` crate that contains the macros needed.</span>
-<span class="doccomment">//! </span>
+<span class="doccomment">//!</span>
 <span class="doccomment">//! `basic_contract_rs` shows a simple Asset contract.</span>
 <span class="doccomment">//!</span>
 
 <span class="kw">mod</span> <span class="ident">blockchainapi</span>;
 <span class="kw">mod</span> <span class="ident">contractapi</span>;
+<span class="kw">mod</span> <span class="ident">dataapi</span>;
 <span class="kw">mod</span> <span class="ident">error</span>;
 <span class="kw">mod</span> <span class="ident">ledgerapi</span>;
 <span class="kw">mod</span> <span class="ident">runtimeapi</span>;
-<span class="kw">mod</span> <span class="ident">dataapi</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">contract_macros</span>::<span class="kw-2">*</span>;
 
-<span class="kw">mod</span> <span class="ident">bootstrap</span> {
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Once</span>;
-    <span class="kw">static</span> <span class="ident">START</span>: <span class="ident">Once</span> <span class="op">=</span> <span class="ident">Once</span>::<span class="ident">new</span>();
-}
+<span class="comment">// mod bootstrap {</span>
+<span class="comment">//     use std::sync::Once;</span>
+<span class="comment">//     //static START: Once = Once::new();</span>
+<span class="comment">// }</span>
 
 <span class="doccomment">/// Macro to use in the lib.rs file of your contract&#39;s crate</span>
-<span class="doccomment">/// </span>
-<span class="doccomment">/// Should be called with the functions that create new instances of </span>
-<span class="doccomment">/// the contract structures. </span>
-<span class="doccomment">/// </span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Should be called with the functions that create new instances of</span>
+<span class="doccomment">/// the contract structures.</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// # Example</span>
-<span class="doccomment">/// </span>
-<span class="doccomment">/// ``` </span>
-<span class="doccomment">/// use fabric_contract::contract::*;</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// use crate::fabric_contract::*;</span>
+<span class="doccomment">/// struct AssetContract {};</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// impl AssetContract {</span>
+<span class="doccomment">///    pub fn new() -&gt; AssetContract {</span>
+<span class="doccomment">///        AssetContract {}</span>
+<span class="doccomment">///    }</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// fabric_contract::register!( AssetContract::new );</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// </span>
+<span class="doccomment">///</span>
+<span class="doccomment">///</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">register</span> {
 
     (  $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">contract</span>:<span class="ident">path</span> ),<span class="op">*</span>   )<span class="op">=</span><span class="op">&gt;</span> {
- 
+
         <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>};
 
         <span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">contract</span>::<span class="ident">ContractManager</span>;
@@ -194,11 +206,11 @@
         <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Once</span>;
 
         <span class="kw">static</span> <span class="ident">START</span>: <span class="ident">Once</span> <span class="op">=</span> <span class="ident">Once</span>::<span class="ident">new</span>();
-        
+
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">__launch</span>() {
             <span class="ident">fabric_contract</span>::<span class="ident">runtime</span>::<span class="ident">init_logger</span>();
             <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Logger setup and launched&quot;</span>);
-            
+
             $( <span class="ident">ContractManager</span>::<span class="ident">register_contract</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">contract</span>())); )<span class="op">*</span>
             <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Contracts registered&quot;</span>);
         }
@@ -216,23 +228,22 @@
     };
 }
 
-
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">prelude</span> {   
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">runtimeapi</span>::<span class="ident">wapc</span>::<span class="ident">handle_wapc</span> <span class="kw">as</span> <span class="ident">handle_wapc</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">prelude</span> {
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">runtimeapi</span>::<span class="ident">wapc</span>::<span class="ident">handle_wapc</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">runtimeapi</span>::<span class="ident">wapc</span>::<span class="ident">log</span> <span class="kw">as</span> <span class="ident">host_log</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">wapc_guest</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;    
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">wapc_guest</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">transaction</span>::<span class="ident">TransactionFnBuilder</span> <span class="kw">as</span> <span class="ident">TransactionFnBuilder</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">transaction</span>::<span class="ident">TransactionFn</span> <span class="kw">as</span> <span class="ident">TransactionFn</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contractdefn</span>::<span class="ident">ContractDefn</span> <span class="kw">as</span> <span class="ident">ContractDefn</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contractdefn</span>::<span class="ident">ContractDefn</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">transaction</span>::<span class="ident">TransactionFn</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">transaction</span>::<span class="ident">TransactionFnBuilder</span>;
 }
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">data</span> {
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">dataapi</span>::<span class="ident">typeschema</span>::<span class="ident">TypeSchema</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">dataapi</span>::<span class="ident">wirebuffer</span>::<span class="ident">WireBuffer</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">dataapi</span>::<span class="ident">wirebuffer</span>::<span class="ident">WireBufferFromReturnType</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">datatype</span>::<span class="ident">DataType</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">contract_macros</span>::<span class="ident">property</span> <span class="kw">as</span> <span class="ident">Property</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">dataapi</span>::<span class="ident">typeschema</span>::<span class="ident">TypeSchema</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">dataapi</span>::<span class="ident">wirebuffer</span>::<span class="ident">WireBuffer</span> <span class="kw">as</span> <span class="ident">WireBuffer</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">dataapi</span>::<span class="ident">wirebuffer</span>::<span class="ident">WireBufferFromReturnType</span> <span class="kw">as</span> <span class="ident">WireBufferFromReturnType</span>;
 }
 
 <span class="doccomment">/// Module to provide &#39;runtime&#39; services.</span>
@@ -243,7 +254,7 @@
 <span class="doccomment">/// - Logging</span>
 <span class="doccomment">///</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">runtime</span> {
-   <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">runtimeapi</span>::<span class="ident">logger</span>::<span class="kw-2">*</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">runtimeapi</span>::<span class="ident">logger</span>::<span class="kw-2">*</span>;
 }
 
 <span class="doccomment">/// Module to provide APIs to write contracts and interact with the ledger</span>
@@ -253,8 +264,8 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">contract</span> {
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">context</span>::<span class="ident">Context</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contract</span>::<span class="ident">Contract</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contract</span>::<span class="ident">Routing</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contract</span>::<span class="ident">Metadata</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contract</span>::<span class="ident">Routing</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contractmanager</span>::<span class="ident">ContractManager</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">collection</span>::<span class="ident">Collection</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">collection</span>::<span class="ident">CollectionName</span>;
@@ -264,8 +275,8 @@
     <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">contract_macros</span>::<span class="ident">contract_impl</span> <span class="kw">as</span> <span class="ident">Contract_Impl</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">contract_macros</span>::<span class="ident">transaction</span> <span class="kw">as</span> <span class="ident">Transaction</span>;
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">ContractError</span> <span class="kw">as</span> <span class="ident">ContractError</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">LedgerError</span> <span class="kw">as</span> <span class="ident">LedgerError</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">ContractError</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">LedgerError</span>;
 }
 
 <span class="doccomment">/// Module to provide APIs to get information about Fabric</span>
@@ -277,11 +288,8 @@
 <span class="doccomment">/// - Events to be added to the read/write set of the tranasction</span>
 <span class="doccomment">/// - Invoking chaincode on other channels</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">blockchain</span> {
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">blockchainapi</span>::<span class="ident">transaction</span>::<span class="ident">Transaction</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">blockchainapi</span>::<span class="ident">clientidentity</span>::<span class="ident">ClientIdentity</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">blockchainapi</span>::<span class="ident">transaction</span>::<span class="ident">Transaction</span>;
 }
-
-
-
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "fabric_contract";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

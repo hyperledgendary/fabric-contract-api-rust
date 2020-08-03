@@ -1,4 +1,4 @@
-# Run using either make or just 
+# Run using just (make deriative written in Rust)
 #
 # https://github.com/casey/just
 #
@@ -17,10 +17,13 @@ docs:
 expand:
 	cargo expand --package basic_contract_rs
 
-azure:
-	cargo clean
-	cargo build --target wasm32-unknown-unknown
-	cargo test --all
+clippy:
 	cargo clippy --all-targets --all-features
 
-	
+fmt:
+	cargo fmt --all	
+
+clean:
+	cargo clean
+
+all: clean wasm fmt clippy docs

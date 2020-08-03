@@ -65,10 +65,12 @@
 <span id="65">65</span>
 <span id="66">66</span>
 <span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
 </pre><div class="example-wrap"><pre class="rust ">
-
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
 <span class="doccomment">/// Contract Error is what the contract will return to indicate an error</span>
 <span class="doccomment">/// Typically this would be for contract developers to use to mark that a failure</span>
@@ -77,28 +79,33 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ContractError</span> {
     <span class="ident">msg</span>: <span class="ident">String</span>,
-    <span class="ident">ledger_error</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">LedgerError</span><span class="op">&gt;</span>
+    <span class="ident">ledger_error</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">LedgerError</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">From</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ContractError</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">msg</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-       <span class="self">Self</span> { <span class="ident">msg</span>,  <span class="ident">ledger_error</span>: <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span> }
-     }
+        <span class="self">Self</span> {
+            <span class="ident">msg</span>,
+            <span class="ident">ledger_error</span>: <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>,
+        }
+    }
 }
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">From</span><span class="op">&lt;</span><span class="ident">LedgerError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ContractError</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">ledger_error</span>: <span class="ident">LedgerError</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-       <span class="self">Self</span> { <span class="ident">msg</span>:<span class="string">&quot;Error caused by LedgerError&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">ledger_error</span>: <span class="prelude-val">Some</span>(<span class="ident">ledger_error</span>) }
-     }
+        <span class="self">Self</span> {
+            <span class="ident">msg</span>: <span class="string">&quot;Error caused by LedgerError&quot;</span>.<span class="ident">to_string</span>(),
+            <span class="ident">ledger_error</span>: <span class="prelude-val">Some</span>(<span class="ident">ledger_error</span>),
+        }
+    }
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ContractError</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ledger_error</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">le</span>) <span class="op">=</span><span class="op">&gt;</span>  <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{} caused by {}&quot;</span>, <span class="self">self</span>.<span class="ident">msg</span>,<span class="ident">le</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">le</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{} caused by {}&quot;</span>, <span class="self">self</span>.<span class="ident">msg</span>, <span class="ident">le</span>),
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">msg</span>),
         }
-     
     }
 }
 
@@ -110,9 +117,9 @@
 
 <span class="doccomment">/// Ledger Error is returned by the API calls made against the ledger</span>
 <span class="doccomment">/// api, eg, if a state can be found</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span> 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LedgerError</span> {
-    <span class="ident">msg</span>: <span class="ident">String</span>
+    <span class="ident">msg</span>: <span class="ident">String</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">error</span>::<span class="ident">Error</span> <span class="kw">for</span> <span class="ident">LedgerError</span> {
@@ -123,14 +130,13 @@
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">From</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">LedgerError</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">msg</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-       <span class="self">Self</span> { <span class="ident">msg</span> }
-     }
+        <span class="self">Self</span> { <span class="ident">msg</span> }
+    }
 }
-
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">LedgerError</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-       <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">msg</span>)
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">msg</span>)
     }
 }
 </pre></div>

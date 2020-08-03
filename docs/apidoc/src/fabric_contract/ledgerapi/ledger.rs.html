@@ -73,13 +73,6 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -88,27 +81,26 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">collection</span>::<span class="kw-2">*</span>;
 
-
 <span class="doccomment">///</span>
 <span class="doccomment">/// Ledger representing high level concept of the Fabric Blockchain network</span>
-<span class="doccomment">/// </span>
-<span class="doccomment">/// Provides the access points for </span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Provides the access points for</span>
 <span class="doccomment">///  - getting access to data in both world state and peer&#39;s private collections</span>
 <span class="doccomment">///  - invoking chaincode on this and other networks</span>
-<span class="doccomment">/// </span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// When a transaction is invoked, it takes place under a &#39;transactional context&#39;</span>
-<span class="doccomment">/// This context can be queried to provide the current transaction id, and information </span>
+<span class="doccomment">/// This context can be queried to provide the current transaction id, and information</span>
 <span class="doccomment">/// about the identity requesting the transaction.</span>
-<span class="doccomment">/// </span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// All operations need to be done under this transactional context, therefore</span>
 <span class="doccomment">/// the context needs to be passed to obtain the Ledger instance</span>
-<span class="doccomment">/// </span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// # Example</span>
-<span class="doccomment">/// </span>
-<span class="doccomment">/// ```</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// use fabric_contract::contract::*;</span>
-<span class="doccomment">/// </span>
-<span class="doccomment">/// </span>
+<span class="doccomment">///</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// pub fn asset_exists(my_assset_id: String) -&gt; Result&lt;bool,String&gt; {</span>
 <span class="doccomment">///    let ledger = Ledger::access_ledger();</span>
 <span class="doccomment">///    </span>
@@ -117,50 +109,45 @@
 <span class="doccomment">///    Ok(world.state_exists(&amp;my_assset_id))</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// }</span>
-<span class="doccomment">/// ``` </span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Ledger</span> {
-
-}
+<span class="doccomment">///  </span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Ledger</span> {}
 
 <span class="kw">impl</span> <span class="ident">Ledger</span> {
-
     <span class="doccomment">/// Get the Ledger based on the current transactional context</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// The Tranasctional Context is available via the [Transaction API](../../transaction/struct.Transaction.html)</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">access_ledger</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Ledger</span> {
-       <span class="ident">Ledger</span>::<span class="ident">new</span>()
+        <span class="ident">Ledger</span>::<span class="ident">new</span>()
     }
-    
+
     <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Ledger</span> {
-        <span class="ident">Ledger</span> {
-           
-        }
+        <span class="ident">Ledger</span> {}
     }
-    
+
     <span class="doccomment">/// Return the collection based on the name</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// The collection provides access to the put &amp; get Fabric</span>
     <span class="doccomment">/// semantics of the underlying world state, or private data</span>
-    <span class="doccomment">/// that is specified by the Collection name. </span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">/// that is specified by the Collection name.</span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Example</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// use fabric_contract::contract::*;</span>
     <span class="doccomment">/// let ledger = Ledger::access_ledger();</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// // get the collectin that is backed by the World State</span>
     <span class="doccomment">/// let world = ledger.get_collection(CollectionName::World);  </span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// // get the collection that is backed by the Organization&#39;s Implicity Private Data Collection</span>
     <span class="doccomment">/// let orgs_collection = ledger.get_collection(CollectionName::Organization(String::from(&quot;org1&quot;)));</span>
     <span class="doccomment">///    </span>
     <span class="doccomment">/// // get the collection that is backed by the named Private Data Collection</span>
     <span class="doccomment">/// let private_collection = ledger.get_collection(CollectionName::Private(String::from(&quot;my_private_details&quot;)));</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_collection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="ident">CollectionName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Collection</span> {
-         <span class="ident">Collection</span>::<span class="ident">new</span>()
-    }   
-
-}</pre></div>
+        <span class="ident">Collection</span>::<span class="ident">new</span>()
+    }
+}
+</pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "fabric_contract";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

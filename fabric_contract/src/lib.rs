@@ -8,41 +8,49 @@
 //! Hyperledger Fabric's Wasm chaincode
 //!
 //! The `contract_macros` crate that contains the macros needed.
-//! 
+//!
 //! `basic_contract_rs` shows a simple Asset contract.
 //!
 
 mod blockchainapi;
 mod contractapi;
+mod dataapi;
 mod error;
 mod ledgerapi;
 mod runtimeapi;
-mod dataapi;
 
 pub use contract_macros::*;
 
-mod bootstrap {
-    use std::sync::Once;
-    static START: Once = Once::new();
-}
+// mod bootstrap {
+//     use std::sync::Once;
+//     //static START: Once = Once::new();
+// }
 
 /// Macro to use in the lib.rs file of your contract's crate
-/// 
-/// Should be called with the functions that create new instances of 
-/// the contract structures. 
-/// 
+///
+/// Should be called with the functions that create new instances of
+/// the contract structures.
+///
 /// # Example
-/// 
-/// ``` 
-/// use fabric_contract::contract::*;
+///
+///
+/// use crate::fabric_contract::*;
+/// struct AssetContract {};
+///
+/// impl AssetContract {
+///    pub fn new() -> AssetContract {
+///        AssetContract {}
+///    }
+/// }
+///
 /// fabric_contract::register!( AssetContract::new );
-/// ```
-/// 
+///
+///
 #[macro_export]
 macro_rules! register {
 
     (  $( $contract:path ),*   )=> {
- 
+
         use log::{debug};
 
         use fabric_contract::contract::ContractManager;
@@ -51,11 +59,11 @@ macro_rules! register {
         use std::sync::Once;
 
         static START: Once = Once::new();
-        
+
         pub fn __launch() {
             fabric_contract::runtime::init_logger();
             debug!("Logger setup and launched");
-            
+
             $( ContractManager::register_contract(Box::new($contract())); )*
             debug!("Contracts registered");
         }
@@ -73,23 +81,22 @@ macro_rules! register {
     };
 }
 
-
-pub mod prelude {   
-    pub use crate::runtimeapi::wapc::handle_wapc as handle_wapc;
+pub mod prelude {
+    pub use crate::runtimeapi::wapc::handle_wapc;
     pub use crate::runtimeapi::wapc::log as host_log;
-    pub use wapc_guest::prelude::*;    
+    pub use wapc_guest::prelude::*;
 
-    pub use crate::contractapi::transaction::TransactionFnBuilder as TransactionFnBuilder;
-    pub use crate::contractapi::transaction::TransactionFn as TransactionFn;
-    pub use crate::contractapi::contractdefn::ContractDefn as ContractDefn;
+    pub use crate::contractapi::contractdefn::ContractDefn;
+    pub use crate::contractapi::transaction::TransactionFn;
+    pub use crate::contractapi::transaction::TransactionFnBuilder;
 }
 
 pub mod data {
+    pub use crate::dataapi::typeschema::TypeSchema;
+    pub use crate::dataapi::wirebuffer::WireBuffer;
+    pub use crate::dataapi::wirebuffer::WireBufferFromReturnType;
     pub use crate::ledgerapi::datatype::DataType;
     pub use contract_macros::property as Property;
-    pub use crate::dataapi::typeschema::TypeSchema;
-    pub use crate::dataapi::wirebuffer::WireBuffer as WireBuffer;
-    pub use crate::dataapi::wirebuffer::WireBufferFromReturnType as WireBufferFromReturnType;
 }
 
 /// Module to provide 'runtime' services.
@@ -100,7 +107,7 @@ pub mod data {
 /// - Logging
 ///
 pub mod runtime {
-   pub use crate::runtimeapi::logger::*;
+    pub use crate::runtimeapi::logger::*;
 }
 
 /// Module to provide APIs to write contracts and interact with the ledger
@@ -110,8 +117,8 @@ pub mod runtime {
 pub mod contract {
     pub use crate::contractapi::context::Context;
     pub use crate::contractapi::contract::Contract;
-    pub use crate::contractapi::contract::Routing;
     pub use crate::contractapi::contract::Metadata;
+    pub use crate::contractapi::contract::Routing;
     pub use crate::contractapi::contractmanager::ContractManager;
     pub use crate::ledgerapi::collection::Collection;
     pub use crate::ledgerapi::collection::CollectionName;
@@ -121,8 +128,8 @@ pub mod contract {
     pub use contract_macros::contract_impl as Contract_Impl;
     pub use contract_macros::transaction as Transaction;
 
-    pub use crate::error::ContractError as ContractError;
-    pub use crate::error::LedgerError as LedgerError;
+    pub use crate::error::ContractError;
+    pub use crate::error::LedgerError;
 }
 
 /// Module to provide APIs to get information about Fabric
@@ -134,9 +141,6 @@ pub mod contract {
 /// - Events to be added to the read/write set of the tranasction
 /// - Invoking chaincode on other channels
 pub mod blockchain {
-    pub use crate::blockchainapi::transaction::Transaction;
     pub use crate::blockchainapi::clientidentity::ClientIdentity;
+    pub use crate::blockchainapi::transaction::Transaction;
 }
-
-
-

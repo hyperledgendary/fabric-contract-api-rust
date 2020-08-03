@@ -23,6 +23,8 @@ lazy_static = "1.4.0"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.2"
+mockall = "0.7.2"
+claim = "0.3"
 
 [build-dependencies]
 prost-build = { version = "0.6.1" }

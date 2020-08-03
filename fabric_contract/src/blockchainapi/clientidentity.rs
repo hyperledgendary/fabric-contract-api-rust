@@ -3,17 +3,12 @@
  */
 #![allow(dead_code)]
 /// Represents the identity that is requesting this transaction
-/// 
-pub struct ClientIdentity {
-
-}
+///
+pub struct ClientIdentity {}
 
 impl ClientIdentity {
-
     fn new() -> ClientIdentity {
-        ClientIdentity{
-
-        }
+        ClientIdentity {}
     }
 
     /// The String id associated with this identiy
@@ -22,13 +17,13 @@ impl ClientIdentity {
     }
 
     /// The MSP Identifier of this identity
-    /// 
+    ///
     pub fn get_mspid(&self) -> String {
         todo!("get_mspid")
     }
 
     /// Returns the value of the client's attribute named `attrName`.
-    /// 
+    ///
     pub fn get_attribute(&self, attr_name: String) -> Option<String> {
         todo!("get_attributed")
     }
@@ -36,5 +31,4 @@ impl ClientIdentity {
     // GetX509Certificate returns the X509 certificate associated with the client,
     // or nil if it was not identified by an X509 certificate.
     // GetX509Certificate() (*x509.Certificate, error)
-
 }
