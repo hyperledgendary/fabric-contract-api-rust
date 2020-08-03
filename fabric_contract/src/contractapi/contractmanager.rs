@@ -58,7 +58,7 @@ impl ContractManager {
                     "Unable to find contract Failed {}.{},{:?}",
                     contract_name, tx, args
                 );
-                Err(ContractError::from(String::from("Unable to find contract")))
+                Err(ContractError::from(format!("Unable to find contract Failed {}:{}",contract_name, tx)))
             }
         }
     }
@@ -93,6 +93,15 @@ impl ContractManager {
                 fn_name = tx[s + 1..].to_string();
             }
         }
+
+        // two early checks on the validity of the requested function
+        if namespace.is_empty() {
+            return Err(ContractError::from(String::from("Emptry namespace, for default just give fn name")));
+        };
+
+        if fn_name.is_empty() {
+            return Err(ContractError::from(String::from("Empty function name")));
+        };
 
         let r = CONTRACT_MGR
             .lock()

@@ -34,7 +34,7 @@ pub fn handle_wapc(operation: &str, msg: &[u8]) -> CallResult {
         "InvokeTransaction" => handle_tx_invoke(msg),
         "GetMetadata" => todo!("GetMetadata"),
         "RegisterPeer" => todo!("RegisterPeer"),
-        _ => Err("Unknown function being called".into()),
+        _ => Err("Unknown operation being called".into()),
     }
 }
 
