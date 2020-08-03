@@ -33,5 +33,13 @@ jobs:
       - script: cargo test --all
         displayName: Cargo test  
 
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '12.x'
+          checkLatest: true
+          
+      - script: |
+          ./tests/setup.sh
+        
 
 
