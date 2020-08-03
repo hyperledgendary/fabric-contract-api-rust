@@ -32,29 +32,18 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
  */</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="doccomment">/// Represents the identity that is requesting this transaction</span>
-<span class="doccomment">/// </span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ClientIdentity</span> {
-
-}
+<span class="doccomment">///</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ClientIdentity</span> {}
 
 <span class="kw">impl</span> <span class="ident">ClientIdentity</span> {
-
     <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ClientIdentity</span> {
-        <span class="ident">ClientIdentity</span>{
-
-        }
+        <span class="ident">ClientIdentity</span> {}
     }
 
     <span class="doccomment">/// The String id associated with this identiy</span>
@@ -63,13 +52,13 @@
     }
 
     <span class="doccomment">/// The MSP Identifier of this identity</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_mspid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;get_mspid&quot;</span>)
     }
 
     <span class="doccomment">/// Returns the value of the client&#39;s attribute named `attrName`.</span>
-    <span class="doccomment">/// </span>
+    <span class="doccomment">///</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_attribute</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">attr_name</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;get_attributed&quot;</span>)
     }
@@ -77,6 +66,6 @@
     <span class="comment">// GetX509Certificate returns the X509 certificate associated with the client,</span>
     <span class="comment">// or nil if it was not identified by an X509 certificate.</span>
     <span class="comment">// GetX509Certificate() (*x509.Certificate, error)</span>
-
-}</pre></div>
+}
+</pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "fabric_contract";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

@@ -101,7 +101,7 @@ impl TransactionFnBuilder {
         TransactionFnBuilder::default()
     }
 
-    pub fn name(&mut self, name: &str) {
+    pub fn name(&mut self, name: &str)  {
         self.name = name.to_string();
     }
 

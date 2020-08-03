@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["hook","Hook function to capture the panic and route it  to the logger"],["init_logger","Called from the register contract macro."]]});
+initSidebarItems({"fn":[["hook","Hook function to capture the panic and route it to the logger"],["init_logger","Called from the register contract macro."]]});

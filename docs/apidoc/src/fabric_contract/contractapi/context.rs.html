@@ -29,6 +29,19 @@
 <span id="29">29</span>
 <span id="30">30</span>
 <span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -36,30 +49,43 @@
 
 <span class="kw">use</span> <span class="ident">fabric_ledger_protos</span>::<span class="ident">common_messages</span>::<span class="ident">TransactionContext</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Context</span> {
     <span class="ident">tx_id</span>: <span class="ident">std</span>::<span class="ident">string</span>::<span class="ident">String</span>,
     <span class="ident">channel_id</span>: <span class="ident">std</span>::<span class="ident">string</span>::<span class="ident">String</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Context</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">context</span>:  <span class="kw-2">&amp;</span><span class="ident">TransactionContext</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Context</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">TransactionContext</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Context</span> {
         <span class="ident">Context</span> {
-            <span class="ident">channel_id</span> : <span class="ident">context</span>.<span class="ident">channel_id</span>.<span class="ident">clone</span>(),
-            <span class="ident">tx_id</span>: <span class="ident">context</span>.<span class="ident">transaction_id</span>.<span class="ident">clone</span>()
+            <span class="ident">channel_id</span>: <span class="ident">context</span>.<span class="ident">channel_id</span>.<span class="ident">clone</span>(),
+            <span class="ident">tx_id</span>: <span class="ident">context</span>.<span class="ident">transaction_id</span>.<span class="ident">clone</span>(),
         }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_txid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">string</span>::<span class="ident">String</span> {
-        <span class="kw">return</span> <span class="self">self</span>.<span class="ident">tx_id</span>.<span class="ident">clone</span>();
+        <span class="self">self</span>.<span class="ident">tx_id</span>.<span class="ident">clone</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_channelid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">string</span>::<span class="ident">String</span> {
-        <span class="kw">return</span> <span class="self">self</span>.<span class="ident">channel_id</span>.<span class="ident">clone</span>();
+        <span class="self">self</span>.<span class="ident">channel_id</span>.<span class="ident">clone</span>()
     }
+}
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">new_context</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">txctx</span> <span class="op">=</span> <span class="ident">fabric_ledger_protos</span>::<span class="ident">common_messages</span>::<span class="ident">TransactionContext</span>::<span class="ident">new</span>();
+        <span class="ident">txctx</span>.<span class="ident">set_channel_id</span>(<span class="string">&quot;0x12345&quot;</span>.<span class="ident">to_string</span>());
+        <span class="ident">txctx</span>.<span class="ident">set_transaction_id</span>(<span class="string">&quot;0xCAFEBABE&quot;</span>.<span class="ident">to_string</span>());
+        <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">Context</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">txctx</span>);
+
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">ctx</span>.<span class="ident">get_txid</span>(), <span class="string">&quot;0xCAFEBABE&quot;</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">ctx</span>.<span class="ident">get_channelid</span>(), <span class="string">&quot;0x12345&quot;</span>);
+    }
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "fabric_contract";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

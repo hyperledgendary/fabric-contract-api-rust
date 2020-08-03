@@ -13,20 +13,18 @@
 <span id="13">13</span>
 <span id="14">14</span>
 <span id="15">15</span>
-<span id="16">16</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">state</span>::<span class="ident">State</span>;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DataType</span> : <span class="ident">Default</span> {
-
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DataType</span>: <span class="ident">Default</span> {
     <span class="doccomment">/// Converts into a state that can be handled and put into</span>
     <span class="doccomment">/// the ledger and private collections</span>
     <span class="kw">fn</span> <span class="ident">to_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">State</span>;
 
-    <span class="doccomment">/// </span>
-    <span class="kw">fn</span> <span class="ident">get_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>; 
+    <span class="doccomment">///</span>
+    <span class="kw">fn</span> <span class="ident">get_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span>;
 
     <span class="doccomment">///</span>
     <span class="kw">fn</span> <span class="ident">from_state</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">state</span>: <span class="ident">State</span>);

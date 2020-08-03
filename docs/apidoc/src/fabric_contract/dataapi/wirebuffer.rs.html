@@ -71,29 +71,32 @@
 <span id="71">71</span>
 <span id="72">72</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">TypeSchema</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">TypeSchema</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span>;
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WireBuffer</span> {
     <span class="kw">pub</span> <span class="ident">buffer</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">schema</span>: <span class="ident">TypeSchema</span>,
-  <span class="comment">//  pub converter: Box&lt;dyn Converter&gt;,</span>
+    <span class="comment">//  pub converter: Box&lt;dyn Converter&gt;,</span>
 }
 
 <span class="kw">impl</span> <span class="ident">WireBuffer</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">buffer</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,<span class="ident">schema</span>: <span class="ident">TypeSchema</span><span class="comment">/*, converter: Box&lt;dyn Converter&gt;*/</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
+        <span class="ident">buffer</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+        <span class="ident">schema</span>: <span class="ident">TypeSchema</span>, <span class="comment">/*, converter: Box&lt;dyn Converter&gt;*/</span>
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
-            <span class="ident">buffer</span> : <span class="prelude-val">Some</span>(<span class="ident">buffer</span>),
+            <span class="ident">buffer</span>: <span class="prelude-val">Some</span>(<span class="ident">buffer</span>),
             <span class="ident">schema</span>,
             <span class="comment">//converter,</span>
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_unfilled</span>(<span class="ident">schema</span>: <span class="ident">TypeSchema</span><span class="comment">/*, converter: Box&lt;dyn Converter&gt;*/</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_unfilled</span>(<span class="ident">schema</span>: <span class="ident">TypeSchema</span> <span class="comment">/*, converter: Box&lt;dyn Converter&gt;*/</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">buffer</span>: <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>,
             <span class="ident">schema</span>,
-           <span class="comment">// converter,</span>
+            <span class="comment">// converter,</span>
         }
     }
 }
@@ -108,7 +111,7 @@
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">wb</span>: <span class="kw-2">&amp;</span><span class="ident">WireBuffer</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">wb</span>.<span class="ident">buffer</span> {
             <span class="prelude-val">Some</span>(<span class="ident">buffer</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">from_utf8</span>(<span class="kw-2">&amp;</span><span class="ident">buffer</span>).<span class="ident">unwrap</span>().<span class="ident">to_string</span>(),
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(),
         }
     }
 }
@@ -116,31 +119,29 @@
 <span class="comment">// implementations here that given a value, of a certain type will fill out the wirebuffer</span>
 <span class="comment">// they should also pay attention to the schema and ensure that the types meet the correct specifciation</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">WireBufferFromReturnType</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">from_rt</span>(<span class="self">self</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="kw">_</span>: <span class="ident">T</span>) ;
+    <span class="kw">fn</span> <span class="ident">from_rt</span>(<span class="self">self</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="kw">_</span>: <span class="ident">T</span>);
 }
 
 <span class="kw">impl</span> <span class="ident">WireBufferFromReturnType</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">WireBuffer</span> {
     <span class="kw">fn</span> <span class="ident">from_rt</span>(<span class="self">self</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="ident">s</span>: <span class="ident">String</span>) {
         <span class="comment">// we&#39;ve got a wire buffer object and we need to set the bytes here from the string</span>
         <span class="self">self</span>.<span class="ident">buffer</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">s</span>.<span class="ident">into_bytes</span>());
-   
     }
 }
 
 <span class="kw">impl</span> <span class="ident">WireBufferFromReturnType</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">WireBuffer</span> {
-    <span class="kw">fn</span> <span class="ident">from_rt</span>(<span class="self">self</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="kw">_</span>: ())  {
+    <span class="kw">fn</span> <span class="ident">from_rt</span>(<span class="self">self</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="kw">_</span>: ()) {
         <span class="self">self</span>.<span class="ident">buffer</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-     
     }
 }
 
 <span class="kw">impl</span> <span class="ident">WireBufferFromReturnType</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">WireBuffer</span> {
-    <span class="kw">fn</span> <span class="ident">from_rt</span>(<span class="self">self</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="ident">b</span>: <span class="ident">bool</span>)  {
-       <span class="self">self</span>.<span class="ident">buffer</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">b</span> {
-           <span class="bool-val">true</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="string">&quot;true&quot;</span>.<span class="ident">as_bytes</span>().<span class="ident">to_vec</span>()),
-           <span class="bool-val">false</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="string">&quot;false&quot;</span>.<span class="ident">as_bytes</span>().<span class="ident">to_vec</span>())
-       };
-     
+    <span class="kw">fn</span> <span class="ident">from_rt</span>(<span class="self">self</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="ident">b</span>: <span class="ident">bool</span>) {
+        <span class="self">self</span>.<span class="ident">buffer</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">b</span> {
+            <span class="bool-val">true</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="string">b&quot;true&quot;</span>.<span class="ident">to_vec</span>()),
+            <span class="bool-val">false</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="string">b&quot;false&quot;</span>.<span class="ident">to_vec</span>()),
+        };
     }
-}</pre></div>
+}
+</pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "fabric_contract";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
