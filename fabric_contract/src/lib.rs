@@ -7,7 +7,7 @@
 //! This is the main crate for providing support for writing Smart Contracts to work with
 //! Hyperledger Fabric's Wasm chaincode
 //!
-//! The `contract_macros` crate that contains the macros needed.
+//! The `fabric_contract_macros` crate that contains the macros needed.
 //!
 //! `basic_contract_rs` shows a simple Asset contract.
 //!
@@ -19,7 +19,7 @@ mod error;
 mod ledgerapi;
 mod runtimeapi;
 
-pub use contract_macros::*;
+pub use fabric_contract_macros::*;
 
 // mod bootstrap {
 //     use std::sync::Once;
@@ -96,7 +96,7 @@ pub mod data {
     pub use crate::dataapi::wirebuffer::WireBuffer;
     pub use crate::dataapi::wirebuffer::WireBufferFromReturnType;
     pub use crate::ledgerapi::datatype::DataType;
-    pub use contract_macros::property as Property;
+    pub use fabric_contract_macros::property as Property;
 }
 
 /// Module to provide 'runtime' services.
@@ -125,8 +125,8 @@ pub mod contract {
     pub use crate::ledgerapi::ledger::Ledger;
     pub use crate::ledgerapi::state::State;
 
-    pub use contract_macros::contract_impl as Contract_Impl;
-    pub use contract_macros::transaction as Transaction;
+    pub use fabric_contract_macros::contract_impl as Contract_Impl;
+    pub use fabric_contract_macros::transaction as Transaction;
 
     pub use crate::error::ContractError;
     pub use crate::error::LedgerError;

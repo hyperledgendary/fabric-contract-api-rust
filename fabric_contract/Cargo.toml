@@ -1,8 +1,13 @@
 [package]
 name = "fabric_contract"
-version = "0.1.0"
-authors = ["Matthew B White <whitemat@uk.ibm.com>"]
+description = "Hyperledger Fabric Contract API in Rust"
+version = "0.1.1"
+authors = ["Hyperledger Fabric Developers"]
 edition = "2018"
+repository = "https://github.com/hyperledgendary/fabric-contract-api-rust"
+license = "Apache-2.0"
+documentation = "https://hyperledgendary.github.io/fabric-contract-api-rust/"
+readme = "README.md"
 
 [lib]
 #crate-type = ["cdylib"]
@@ -13,7 +18,7 @@ opt-level = "s"
 
 [dependencies]
 wapc-guest = "0.3.1"
-contract_macros = { path = "../contract_macros" }
+fabric_contract_macros = { version = "0.1.0" }
 fabric_ledger_protos = "0.4.0"
 log = "0.4.8"
 protobuf = "2.14.0"
