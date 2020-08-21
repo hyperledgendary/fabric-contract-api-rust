@@ -21,13 +21,13 @@ use log::{debug, error, info, trace, warn};
 ///
 /// Map to the ContractService
 ///
-///
+/// ```ignore
 /// service ContractService {
 ///  rpc GetMetadata (GetMetadataRequest) returns (GetMetadataResponse);
 ///  rpc InvokeTransaction (InvokeTransactionRequest) returns (InvokeTransactionResponse);
 ///  rpc RegisterPeer (RegisterPeerRequest) returns (RegisterPeerResponse);
 /// }
-///
+/// ```
 ///
 pub fn handle_wapc(operation: &str, msg: &[u8]) -> CallResult {
     match operation {

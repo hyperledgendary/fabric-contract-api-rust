@@ -5,16 +5,14 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 #![recursion_limit = "128"]
-// #![feature(trace_macros)] trace_macros!(true);
-//! Definitions of the macros used for the Contracts
-//!
-//! TODO: Ensure all code generated is full hardened against errors
-//! TODO: Does not generate any metadata as yet.
 
+//! Definitions of the macros used for the Contracts.
+//!  
+//! There are macros for use with the Contract Structs, and the Transaction
+//! Functions
 // DevNote: did experiment with macros that can added on parameters but these are experimental nightly only
 // moving to arguments in the transaction decorator
 // #![feature(proc_macro_diagnostic,param_attrs)]
-
 extern crate proc_macro;
 
 // Bring in quite a lot of different crates, noteably the syn crate for handling the
@@ -37,28 +35,32 @@ use syn::{
 /// Use this macro to mark the implementation of the your contract structure
 ///
 /// # Example
-///
-///
-/// use crate::fabric_contract::contract::*;
-/// struct MyContract {}
+/// ```ignore
+/// // Use the Fabric Contract modules
+ /// struct MyContract {}
 ///
 /// #[Contract_Impl]
 /// impl MyContract {
 ///
-/// #[Transaction]
-/// pub fn my_asset_fn() {  }
+/// #[Transaction(evaluate)]
+/// pub fn my_query_style_fn() {  }
+///
+/// #[Transaction(submit)]
+/// pub fn my_submit_asset_fn() {  }
 ///
 /// // this is NOT callable as transaction function
 /// fn helper() { }
 /// }
-///
+/// ```
 ///
 /// This macro's purpose is to implement the 'routing' trait for the contract. This permits
-/// the message from peer to correctly routed to the transaction function required.
+/// the message from the peer to correctly routed to the transaction function required.
 ///
 /// This trait relies on the transaction functions also being marked with the `#[transaction]`
 /// macro.
 ///
+/// If you wished you could provide the implementations of these macros yourself, but it is 
+/// recommended to not do this unless you really have to.
 #[proc_macro_attribute]
 pub fn contract_impl(
     _args: proc_macro::TokenStream,
@@ -150,11 +152,11 @@ fn ident_to_litstr(ident: &syn::Ident) -> syn::LitStr {
 ///
 /// Arguments to this provide the ability to indicate
 /// - that this function is intended to be evaluated or submitted
-/// - which arguments are from the set of transient data
+/// - which arguments are from the set of transient data (use variable names)
 ///
 /// # Example
 ///
-///
+/// ```ignore
 /// use fabric_contract::contract::*;
 /// #[Transaction]
 /// pub fn createAsset() { }
@@ -167,7 +169,7 @@ fn ident_to_litstr(ident: &syn::Ident) -> syn::LitStr {
 ///
 /// #[Transaction(tranisent = {price, owner} )]
 /// pub fn createDetailedAsset(id: String, price: u32, owner: String ) { }
-///
+/// ```
 ///
 #[proc_macro_attribute]
 pub fn transaction(

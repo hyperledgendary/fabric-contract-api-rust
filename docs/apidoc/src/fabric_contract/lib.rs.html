@@ -154,7 +154,7 @@
 <span class="doccomment">//! This is the main crate for providing support for writing Smart Contracts to work with</span>
 <span class="doccomment">//! Hyperledger Fabric&#39;s Wasm chaincode</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! The `contract_macros` crate that contains the macros needed.</span>
+<span class="doccomment">//! The `fabric_contract_macros` crate that contains the macros needed.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! `basic_contract_rs` shows a simple Asset contract.</span>
 <span class="doccomment">//!</span>
@@ -166,7 +166,7 @@
 <span class="kw">mod</span> <span class="ident">ledgerapi</span>;
 <span class="kw">mod</span> <span class="ident">runtimeapi</span>;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">contract_macros</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">fabric_contract_macros</span>::<span class="kw-2">*</span>;
 
 <span class="comment">// mod bootstrap {</span>
 <span class="comment">//     use std::sync::Once;</span>
@@ -243,7 +243,7 @@
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">dataapi</span>::<span class="ident">wirebuffer</span>::<span class="ident">WireBuffer</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">dataapi</span>::<span class="ident">wirebuffer</span>::<span class="ident">WireBufferFromReturnType</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">datatype</span>::<span class="ident">DataType</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">contract_macros</span>::<span class="ident">property</span> <span class="kw">as</span> <span class="ident">Property</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">fabric_contract_macros</span>::<span class="ident">property</span> <span class="kw">as</span> <span class="ident">Property</span>;
 }
 
 <span class="doccomment">/// Module to provide &#39;runtime&#39; services.</span>
@@ -272,8 +272,8 @@
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">ledger</span>::<span class="ident">Ledger</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">state</span>::<span class="ident">State</span>;
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">contract_macros</span>::<span class="ident">contract_impl</span> <span class="kw">as</span> <span class="ident">Contract_Impl</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">contract_macros</span>::<span class="ident">transaction</span> <span class="kw">as</span> <span class="ident">Transaction</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">fabric_contract_macros</span>::<span class="ident">contract_impl</span> <span class="kw">as</span> <span class="ident">Contract_Impl</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">fabric_contract_macros</span>::<span class="ident">transaction</span> <span class="kw">as</span> <span class="ident">Transaction</span>;
 
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">ContractError</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">LedgerError</span>;

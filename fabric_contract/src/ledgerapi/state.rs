@@ -87,15 +87,16 @@ impl From<()> for State {
 ///
 /// # Example
 ///
-///
+/// ```ignore
 /// let myAsset = MyAsset::new();
 /// state.from(myAsset);
 ///
-// impl From<Box<dyn DataType>> for State {
-//     fn from(_:Box<dyn DataType>) -> Self {
-//        Self::default()
-//     }
-// }
+/// impl From<Box<dyn DataType>> for State {
+///     fn from(_:Box<dyn DataType>) -> Self {
+///        Self::default()
+///     }
+/// }
+/// ```
 
 impl From<(String, Vec<u8>)> for State {
     fn from((a, b): (String, Vec<u8>)) -> Self {

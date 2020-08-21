@@ -97,7 +97,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// # Example</span>
 <span class="doccomment">///</span>
-<span class="doccomment">///</span>
+<span class="doccomment">/// ```ignore</span>
 <span class="doccomment">/// use fabric_contract::contract::*;</span>
 <span class="doccomment">///</span>
 <span class="doccomment">///</span>
@@ -109,7 +109,7 @@
 <span class="doccomment">///    Ok(world.state_exists(&amp;my_assset_id))</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// }</span>
-<span class="doccomment">///  </span>
+<span class="doccomment">/// ``` </span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Ledger</span> {}
 
 <span class="kw">impl</span> <span class="ident">Ledger</span> {
@@ -132,7 +132,7 @@
     <span class="doccomment">/// that is specified by the Collection name.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```ignore</span>
     <span class="doccomment">/// use fabric_contract::contract::*;</span>
     <span class="doccomment">/// let ledger = Ledger::access_ledger();</span>
     <span class="doccomment">///</span>
@@ -144,7 +144,7 @@
     <span class="doccomment">///    </span>
     <span class="doccomment">/// // get the collection that is backed by the named Private Data Collection</span>
     <span class="doccomment">/// let private_collection = ledger.get_collection(CollectionName::Private(String::from(&quot;my_private_details&quot;)));</span>
-    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_collection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="ident">CollectionName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Collection</span> {
         <span class="ident">Collection</span>::<span class="ident">new</span>()
     }

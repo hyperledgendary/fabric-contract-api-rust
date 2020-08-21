@@ -257,12 +257,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Example</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```ignore</span>
     <span class="doccomment">/// use fabric_contract::contract::*;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let collection = Ledger::access_ledger().get_collection(CollectionName::World);</span>
     <span class="doccomment">/// collection.get_states(KeyQueryHandler::Range(&quot;Car001&quot;,&quot;Car002&quot;));</span>
-    <span class="doccomment">///</span>
+    <span class="doccomment">/// ``` </span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_states</span>(<span class="ident">handler</span>: <span class="ident">KeyQueryHandler</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LedgerError</span><span class="op">&gt;</span> {
         <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;getstates&quot;</span>);
         <span class="comment">//     // https://users.rust-lang.org/t/how-to-return-an-iterator/25133/3</span>
