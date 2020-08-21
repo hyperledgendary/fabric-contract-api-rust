@@ -1,3 +1,7 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 pub mod typeschema;
 pub use typeschema::TypeSchema;
 

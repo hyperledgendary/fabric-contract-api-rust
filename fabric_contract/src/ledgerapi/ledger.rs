@@ -21,7 +21,7 @@ use crate::ledgerapi::collection::*;
 ///
 /// # Example
 ///
-///
+/// ```ignore
 /// use fabric_contract::contract::*;
 ///
 ///
@@ -33,7 +33,7 @@ use crate::ledgerapi::collection::*;
 ///    Ok(world.state_exists(&my_assset_id))
 ///
 /// }
-///  
+/// ``` 
 pub struct Ledger {}
 
 impl Ledger {
@@ -56,7 +56,7 @@ impl Ledger {
     /// that is specified by the Collection name.
     ///
     /// # Example
-    ///
+    /// ```ignore
     /// use fabric_contract::contract::*;
     /// let ledger = Ledger::access_ledger();
     ///
@@ -68,7 +68,7 @@ impl Ledger {
     ///    
     /// // get the collection that is backed by the named Private Data Collection
     /// let private_collection = ledger.get_collection(CollectionName::Private(String::from("my_private_details")));
-    ///
+    /// ```
     pub fn get_collection(&self, name: CollectionName) -> Collection {
         Collection::new()
     }
