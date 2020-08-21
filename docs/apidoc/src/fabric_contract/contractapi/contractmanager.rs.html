@@ -103,6 +103,15 @@
 <span id="103">103</span>
 <span id="104">104</span>
 <span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -164,7 +173,7 @@
                     <span class="string">&quot;Unable to find contract Failed {}.{},{:?}&quot;</span>,
                     <span class="ident">contract_name</span>, <span class="ident">tx</span>, <span class="ident">args</span>
                 );
-                <span class="prelude-val">Err</span>(<span class="ident">ContractError</span>::<span class="ident">from</span>(<span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;Unable to find contract&quot;</span>)))
+                <span class="prelude-val">Err</span>(<span class="ident">ContractError</span>::<span class="ident">from</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Unable to find contract Failed {}:{}&quot;</span>,<span class="ident">contract_name</span>, <span class="ident">tx</span>)))
             }
         }
     }
@@ -199,6 +208,15 @@
                 <span class="ident">fn_name</span> <span class="op">=</span> <span class="ident">tx</span>[<span class="ident">s</span> <span class="op">+</span> <span class="number">1</span>..].<span class="ident">to_string</span>();
             }
         }
+
+        <span class="comment">// two early checks on the validity of the requested function</span>
+        <span class="kw">if</span> <span class="ident">namespace</span>.<span class="ident">is_empty</span>() {
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ContractError</span>::<span class="ident">from</span>(<span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;Emptry namespace, for default just give fn name&quot;</span>)));
+        };
+
+        <span class="kw">if</span> <span class="ident">fn_name</span>.<span class="ident">is_empty</span>() {
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ContractError</span>::<span class="ident">from</span>(<span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;Empty function name&quot;</span>)));
+        };
 
         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">CONTRACT_MGR</span>
             .<span class="ident">lock</span>()

@@ -6,7 +6,7 @@
 //!
 //! The business logic in these is very simple.
 //!
-//! Note: the transaction APIs should maybe take &String instead of String.
+//! Note: the transaction APIs should maybe take &String instead of String?
 
 // Use the Fabric Contract modules
 use fabric_contract::contract::*;

@@ -5,9 +5,10 @@
 #![allow(unused_variables)]
 
 //! This is the main crate for providing support for writing Smart Contracts to work with
-//! Hyperledger Fabric's Wasm chaincode
+//! Hyperledger Fabric's Wasm chaincode runtime.
 //!
-//! The `fabric_contract_macros` crate that contains the macros needed.
+//! The `fabric_contract_macros` crate contains the macros to assist with development of the Smart
+//! Contracts
 //!
 //! `basic_contract_rs` shows a simple Asset contract.
 //!
@@ -21,11 +22,6 @@ mod runtimeapi;
 
 pub use fabric_contract_macros::*;
 
-// mod bootstrap {
-//     use std::sync::Once;
-//     //static START: Once = Once::new();
-// }
-
 /// Macro to use in the lib.rs file of your contract's crate
 ///
 /// Should be called with the functions that create new instances of
@@ -33,7 +29,7 @@ pub use fabric_contract_macros::*;
 ///
 /// # Example
 ///
-///
+/// ```ignore
 /// use crate::fabric_contract::*;
 /// struct AssetContract {};
 ///
@@ -44,7 +40,7 @@ pub use fabric_contract_macros::*;
 /// }
 ///
 /// fabric_contract::register!( AssetContract::new );
-///
+/// ```
 ///
 #[macro_export]
 macro_rules! register {
@@ -91,6 +87,7 @@ pub mod prelude {
     pub use crate::contractapi::transaction::TransactionFnBuilder;
 }
 
+/// Module to use to define the complex datatypes
 pub mod data {
     pub use crate::dataapi::typeschema::TypeSchema;
     pub use crate::dataapi::wirebuffer::WireBuffer;
