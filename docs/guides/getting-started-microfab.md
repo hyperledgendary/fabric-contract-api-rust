@@ -124,7 +124,7 @@ docker network create wasm_network
 Then issue this docker command to run MicroFab
 
 ```bash
-docker run --name microfab --rm -d -p 8080:8080 -e MICROFAB_CONFIG="${MICROFAB_CONFIG}"  --network=wasm_microfab sstone1/microfab
+docker run --name microfab --rm -d -p 8080:8080 -e MICROFAB_CONFIG="${MICROFAB_CONFIG}"  --network=wasm_network sstone1/microfab
 ```
 
 ### Get the MicroFab configuration
@@ -190,7 +190,7 @@ Create a `chaincode.env` file, making sure the CHAINCODE_ID matches the chaincod
 
 ```
 CHAINCODE_SERVER_ADDRESS=wasmcc.example.com:9999
-CHAINCODE_ID=wasmftw:a5ceee0db53cdb4b50975c2379cc346075697873341af71a7440b5d4d7f1ca0c
+CHAINCODE_ID=wasmftw:eeae07c6e9455f329e28f9a0eed977ae3549be68e68247018f71dc5a5f511c0d
 CHAINCODE_WASM_FILE=/local/basic_contract_rs.wasm
 ```
 
@@ -206,7 +206,7 @@ Run the chaincode: note that this docker command runs it in foreground so you ca
 If you've built you wown fabric-chaincode-wasm container adjust the image name.
 
 ```
-docker run -it --rm -v ${PWD}/contracts:/local:ro --name wasmcc.example.com --hostname wasmcc.example.com --env-file chaincode.env --network=wasm_microfab calanais/fabric-chaincode-wasm:tp1
+docker run -it --rm -v ${PWD}/contracts:/local:ro --name wasmcc.example.com --hostname wasmcc.example.com --env-file chaincode.env --network=wasm_network hyperledgendary/fabric-chaincode-wasm
 ```
 
 ### Approve and commit the Wasm chaincode
