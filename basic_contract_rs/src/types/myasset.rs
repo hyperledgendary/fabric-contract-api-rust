@@ -60,6 +60,13 @@ impl DataType for MyAsset {
         self.uid = Some(state.key());
         self.value = Some(String::from_utf8(state.value()).unwrap());
     }
+
+    fn build_from_state(state: State) -> Self {
+        MyAsset {
+            uid: Some(state.key()),
+            value: Some(String::from_utf8(state.value()).unwrap()),
+        }
+    }
 }
 
 /// Implementing the Default trait

@@ -25,13 +25,13 @@ impl std::str::FromStr for ContractType {
 
     fn from_str(s: &str) -> Result<ContractType, ()> {
         match s {
-            "Integer" => Ok(ContractType::Integer),
-            "Long" => Ok(ContractType::Long),
-            "Float" => Ok(ContractType::Float),
-            "Double" => Ok(ContractType::Double),
+            "Integer" | "i32" | "u32" => Ok(ContractType::Integer),
+            "Long" | "i64" | "u64" => Ok(ContractType::Long),
+            "Float" | "f32" => Ok(ContractType::Float),
+            "Double" | "d32" => Ok(ContractType::Double),
             "String" => Ok(ContractType::CTString),
-            "Byte" => Ok(ContractType::Byte),
-            "Boolean" => Ok(ContractType::Boolean),
+            "Byte" | "i8" | "u8" => Ok(ContractType::Byte),
+            "Boolean" | "bool" => Ok(ContractType::Boolean),
             "Date" => Ok(ContractType::Date),
             "DateTime" => Ok(ContractType::DateTime),
             _ => Err(()),

@@ -81,7 +81,9 @@ impl ContractDefn {
             ));
         }
 
-        self.contract.route3(name, updated_args, txfn.get_return())
+        let buffer = self.contract.route3(name, updated_args, txfn.get_return())?;
+        debug!("Returned buffer {:?}",&buffer);
+        Ok(buffer)
     }
 }
 

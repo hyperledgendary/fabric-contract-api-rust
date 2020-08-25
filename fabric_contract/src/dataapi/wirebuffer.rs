@@ -1,3 +1,6 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ */
 use super::TypeSchema;
 use std::fmt::Debug;
 
@@ -30,7 +33,14 @@ impl WireBuffer {
 
 impl Debug for WireBuffer {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "WireBuffer: xxx")
+        match &self.buffer {
+            Some(b) =>{
+                write!(f, "WireBuffer: {:?}", b.as_slice())
+            },
+            None => { 
+                write!(f, "WireBuffer: <emptry>")
+            }
+        }
     }
 }
 
@@ -40,6 +50,12 @@ impl From<&WireBuffer> for String {
             Some(buffer) => std::str::from_utf8(&buffer).unwrap().to_string(),
             None => "".to_string(),
         }
+    }
+}
+
+impl From<&WireBuffer> for i32 {
+    fn from(_: &WireBuffer) -> Self {
+        todo!()
     }
 }
 
@@ -68,5 +84,89 @@ impl WireBufferFromReturnType<bool> for WireBuffer {
             true => Some(b"true".to_vec()),
             false => Some(b"false".to_vec()),
         };
+    }
+}
+
+impl WireBufferFromReturnType<i8> for WireBuffer {
+    fn from_rt(self: &mut Self, s: i8) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<i16> for WireBuffer {
+    fn from_rt(self: &mut Self, s: i16) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<i32> for WireBuffer {
+    fn from_rt(self: &mut Self, s: i32) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<i64> for WireBuffer {
+    fn from_rt(self: &mut Self, s: i64) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<isize> for WireBuffer {
+    fn from_rt(self: &mut Self, s: isize) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<u8> for WireBuffer {
+    fn from_rt(self: &mut Self, s: u8) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<u16> for WireBuffer {
+    fn from_rt(self: &mut Self, s: u16) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<u32> for WireBuffer {
+    fn from_rt(self: &mut Self, s: u32) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<u64> for WireBuffer {
+    fn from_rt(self: &mut Self, s: u64) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<usize> for WireBuffer {
+    fn from_rt(self: &mut Self, s: usize) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<f32> for WireBuffer {
+    fn from_rt(self: &mut Self, s: f32) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
+    }
+}
+
+impl WireBufferFromReturnType<f64> for WireBuffer {
+    fn from_rt(self: &mut Self, s: f64) {
+        // we've got a wire buffer object and we need to set the bytes here from the string
+        self.buffer = Some(s.to_string().into_bytes());
     }
 }

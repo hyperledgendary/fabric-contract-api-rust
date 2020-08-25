@@ -87,10 +87,40 @@ impl AssetContract {
         // so we can return a business specific result
         match self.asset_exists(my_assset_id.clone()) {
             Ok(true) => {
-                let v = world.retrieve::<MyAsset>(my_assset_id)?.get_value();
+                let v = world.retrieve::<MyAsset>(&my_assset_id)?.get_value();
                 Ok(v)
             }
             _ => Err(ContractError::from(String::from("Unable to find asset"))),
         }
     }
+
+    /// Counts the number of assets
+    ///
+    /// An example of how to use iterators
+    #[Transaction(evaluate)]
+    pub fn count_assets(&self) -> Result<String, ContractError> {
+        // get the collection that is backed by the world state
+        let world = Ledger::access_ledger().get_collection(CollectionName::World);
+
+        // Create a KeyQueryHandler, to start at the query 000
+        let key_handler = KeyQueryHandler::RangeFrom("000".to_string());
+
+        // execute the query
+        let all_000 = world.get_states(key_handler)?;
+
+        // Return the count
+        let count = all_000.into_iter().count();
+        Ok(format!("Number of 00 agents is {}", count).to_string())
+    }
+
+    #[Transaction(evaluate)]
+    pub fn the_answer(&self) -> Result<i32,ContractError>{
+        Ok(self.what_is_the_answer())
+    }
+
+    fn what_is_the_answer(&self) -> i32{
+        42
+    }
+
+   
 }

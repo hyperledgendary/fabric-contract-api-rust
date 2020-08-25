@@ -1,2 +1,2 @@
-mod myasset;
-pub use myasset::MyAsset as MyAsset;
+mod asset;
+pub use asset::Asset as Asset;

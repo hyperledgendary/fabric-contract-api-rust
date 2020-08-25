@@ -5,8 +5,9 @@
 #![allow(dead_code)]
 
 use super::DataType;
-use crate::ledgerapi::state::*;
+use crate::ledgerapi::{state::*, statequerylist::*};
 use crate::{error::LedgerError, runtimeapi::ledgerservice::*};
+
 
 /// Collection Name
 ///
@@ -38,6 +39,9 @@ pub enum KeyQueryHandler {
 
     /// RangeTo(string)      From the start to the given key
     RangeTo(String),
+
+    /// RangeAll(),  All composite keys. use with caution
+    RangeAll()
 }
 
 /// Specify the Rich Query Handler
@@ -46,14 +50,14 @@ pub enum RichQueryHandler {
     Query(String),
 }
 
-pub struct Collection {
+pub struct Collection{
     name: CollectionName,
 }
 
 impl Collection {
-    pub fn new() -> Collection {
+    pub fn new(name: CollectionName) -> Self {
         Collection {
-            name: CollectionName::World,
+           name,
         }
     }
 
@@ -65,14 +69,20 @@ impl Collection {
         LedgerService::create_state(s.key(), s.value())
     }
 
-    pub fn retrieve<T>(&self, key: String) -> Result<T, LedgerError>
+    pub fn retrieve<T>(&self, key: &String) -> Result<T, LedgerError>
     where
         T: Default + DataType,
     {
         let s = LedgerService::read_state(key).unwrap();
-        let mut asset = T::default();
-        asset.from_state(s);
-        Ok(asset)
+        // let mut asset = T::default();
+        // asset.from_state(s);     
+        Ok(T::build_from_state(s))
+    }
+
+    pub fn update<T>(&self, asset: T) -> Result<State, LedgerError> where T: DataType,
+    {
+        let s = asset.to_state();
+        LedgerService::update_state(s.key(), s.value())
     }
 
     /// Does this key exist
@@ -82,8 +92,8 @@ impl Collection {
 
     /// Return the state for this key
     ///
-    pub fn retrieve_state(&self, key: String) -> Result<State, LedgerError> {
-        LedgerService::read_state(key)
+    pub fn retrieve_state(&self, key: &String) -> Result<State, LedgerError> {
+        LedgerService::read_state(&key)
     }
 
     /// Creates the state
@@ -101,8 +111,8 @@ impl Collection {
     }
 
     /// Deletes the key
-    pub fn delete_state(&self, key: String) -> Result<(), LedgerError> {
-        LedgerService::delete_state(key)
+    pub fn delete_state(&self, key: &String) -> Result<(), LedgerError> {
+        LedgerService::delete_state(&key)
     }
 
     /// Performs a key range query
@@ -114,13 +124,19 @@ impl Collection {
     ///
     /// let collection = Ledger::access_ledger().get_collection(CollectionName::World);
     /// collection.get_states(KeyQueryHandler::Range("Car001","Car002"));
-    /// ``` 
-    pub fn get_states(handler: KeyQueryHandler) -> Result<(), LedgerError> {
-        todo!("getstates");
-        //     // https://users.rust-lang.org/t/how-to-return-an-iterator/25133/3
+    ///
+    pub fn get_states(&self,handler: KeyQueryHandler) -> Result<StateQueryList, LedgerError> {
+
+        let states = match handler {
+            KeyQueryHandler::Range(start_key,end_key) => LedgerService::get_range_states(start_key.as_str(), end_key.as_str()),
+            KeyQueryHandler::RangeTo(end_key) => LedgerService::get_range_states("", end_key.as_str()),
+            KeyQueryHandler::RangeFrom(start_key) => LedgerService::get_range_states(start_key.as_str(), ""),
+            KeyQueryHandler::RangeAll() => LedgerService::get_range_states("", ""),
+        }?;
+        Ok(StateQueryList::new(states))
     }
 
-    pub fn query_states(handler: RichQueryHandler) -> Result<(), LedgerError> {
+    pub fn query_states(&self,handler: RichQueryHandler) -> Result<(), LedgerError> {
         todo!("getstates");
     }
 }

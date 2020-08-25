@@ -35,9 +35,10 @@ use syn::{
 /// Use this macro to mark the implementation of the your contract structure
 ///
 /// # Example
+///
 /// ```ignore
-/// // Use the Fabric Contract modules
- /// struct MyContract {}
+/// use crate::fabric_contract::contract::*;
+/// struct MyContract {}
 ///
 /// #[Contract_Impl]
 /// impl MyContract {
@@ -91,10 +92,8 @@ pub fn contract_impl(
 
             // ignore the new method
             // TODO this in a better way! i.e. only the fns marked #[transaction]
-
-            if name != "new"
-                && !name.to_string().starts_with("invoke")
-                && !name.to_string().starts_with("md")
+            let number_attrs = method.attrs.len()!=0;
+            if name != "new"  && !name.to_string().starts_with("invoke") && !name.to_string().starts_with("md") && number_attrs
             {
                 method_fns.push(syn::Ident::new(&format!("invoke_{}", name), name.span()));
                 method_md.push(syn::Ident::new(&format!("md_{}", name), name.span()));
