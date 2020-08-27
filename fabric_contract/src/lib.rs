@@ -59,6 +59,7 @@ macro_rules! register {
         pub fn __launch() {
             fabric_contract::runtime::init_logger();
             debug!("Logger setup and launched");
+            
 
             $( ContractManager::register_contract(Box::new($contract())); )*
             debug!("Contracts registered");
@@ -119,8 +120,10 @@ pub mod contract {
     pub use crate::contractapi::contractmanager::ContractManager;
     pub use crate::ledgerapi::collection::Collection;
     pub use crate::ledgerapi::collection::CollectionName;
+    pub use crate::ledgerapi::collection::KeyQueryHandler;
     pub use crate::ledgerapi::ledger::Ledger;
     pub use crate::ledgerapi::state::State;
+    pub use crate::ledgerapi::statequerylist::StateQueryList;
 
     pub use fabric_contract_macros::contract_impl as Contract_Impl;
     pub use fabric_contract_macros::transaction as Transaction;

@@ -13,6 +13,7 @@ use std::str;
 
 extern crate wapc_guest as guest;
 use guest::prelude::*;
+use wapc_guest::console_log;
 
 use fabric_ledger_protos::contract_messages::*;
 
@@ -30,6 +31,7 @@ use log::{debug, error, info, trace, warn};
 /// ```
 ///
 pub fn handle_wapc(operation: &str, msg: &[u8]) -> CallResult {
+    log(">> handle_wapc");
     match operation {
         "InvokeTransaction" => handle_tx_invoke(msg),
         "GetMetadata" => todo!("GetMetadata"),
@@ -40,9 +42,7 @@ pub fn handle_wapc(operation: &str, msg: &[u8]) -> CallResult {
 
 #[inline(never)] // not sure why this is not inlined?
 pub fn log(s: &str) {
-    unsafe {
-        guest::__console_log(s.as_ptr(), s.len());
-    }
+    console_log(s);
 }
 
 /// The API calls made by the users contract implementation via the Collection, State interfaces etc..
@@ -55,7 +55,11 @@ pub fn runtime_host_call(service: String, cmd: String, data: Vec<u8>) -> Vec<u8>
         cmd,
         data.len()
     );
-    host_call("wapc", &service[..], &cmd[..], &data).unwrap()
+    match host_call("wapc", &service[..], &cmd[..], &data) {
+        Ok(v) => v,
+        Err(e) => panic!(e)
+    }
+    
 }
 
 /// handle_tx_invoke called with the buffer that contains the request

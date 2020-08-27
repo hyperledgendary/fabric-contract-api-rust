@@ -24,6 +24,15 @@ impl std::convert::From<String> for ContractError {
     }
 }
 
+impl std::convert::From<(String,LedgerError)> for ContractError {
+    fn from((msg,err): (String, LedgerError)) -> Self {
+        Self {
+            msg,
+            ledger_error: Some(err),
+        }
+    }
+}
+
 impl std::convert::From<LedgerError> for ContractError {
     fn from(ledger_error: LedgerError) -> Self {
         Self {

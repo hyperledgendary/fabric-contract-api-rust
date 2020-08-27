@@ -1,3 +1,3 @@
 
-mod transfercontract;
-pub use crate::contracts::transfercontract::TransferContract as TransferContract;
+mod assettransfer;
+pub use crate::contracts::assettransfer::AssetTransfer as AssetTransfer;

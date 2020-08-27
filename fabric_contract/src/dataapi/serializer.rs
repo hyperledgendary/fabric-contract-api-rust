@@ -1,3 +1,6 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ */
 use super::typeschema::ContractType::*;
 use super::TypeSchema;
 pub trait Converter {

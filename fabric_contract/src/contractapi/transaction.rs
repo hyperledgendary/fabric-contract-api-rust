@@ -7,7 +7,7 @@ use crate::dataapi::{typeschema::ContractType, typeschema::Format, TypeSchema};
 use std::fmt;
 use std::str::FromStr;
 use Format::Other;
-
+use log::{debug, trace};
 #[derive(Debug, Clone, Copy)]
 /// Should this transaction be submitted or evaluated?
 pub enum TxType {
@@ -40,6 +40,8 @@ impl std::convert::From<&str> for ParameterDefn {
             None => panic!("Code is not correct"),
         }
 
+        debug!("{} -> {} {}",tx,arg_name,type_name);
+        
         Self {
             name: arg_name,
             transient: false,

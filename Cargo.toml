@@ -1,5 +1,5 @@
 [workspace]
 
 members = [
-    "fabric_contract","fabric_contract_macros","basic_contract_rs"
+    "fabric_contract","fabric_contract_macros","basic_contract_rs",'asset_transfer_rs'
 ]

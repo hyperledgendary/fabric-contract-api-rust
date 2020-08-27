@@ -12,4 +12,7 @@ pub trait DataType: Default {
 
     ///
     fn from_state(&mut self, state: State);
+
+    ///
+    fn build_from_state(state: State) -> Self;
 }

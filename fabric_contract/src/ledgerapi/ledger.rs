@@ -1,8 +1,6 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-#![allow(unused_variables)]
-
 use crate::ledgerapi::collection::*;
 
 ///
@@ -37,6 +35,7 @@ use crate::ledgerapi::collection::*;
 pub struct Ledger {}
 
 impl Ledger {
+
     /// Get the Ledger based on the current transactional context
     ///
     /// The Tranasctional Context is available via the [Transaction API](../../transaction/struct.Transaction.html)
@@ -45,6 +44,7 @@ impl Ledger {
         Ledger::new()
     }
 
+    // Private new function
     fn new() -> Ledger {
         Ledger {}
     }
@@ -70,6 +70,6 @@ impl Ledger {
     /// let private_collection = ledger.get_collection(CollectionName::Private(String::from("my_private_details")));
     /// ```
     pub fn get_collection(&self, name: CollectionName) -> Collection {
-        Collection::new()
+        Collection::new(name)
     }
 }
