@@ -112,6 +112,17 @@
 <span id="112">112</span>
 <span id="113">113</span>
 <span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -132,6 +143,8 @@
 <span class="comment">// Static reference to the ContractManager</span>
 <span class="macro">lazy_static</span><span class="macro">!</span> {
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CONTRACT_MGR</span>: <span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">ContractManager</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">ContractManager</span>::<span class="ident">new</span>());
+    <span class="comment">//static ref CONTRACT_MGR: ContractManager = ContractManager::new();</span>
+
 }
 
 <span class="doccomment">/// Contract Manager structure that holds the list contract objects</span>
@@ -218,10 +231,19 @@
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ContractError</span>::<span class="ident">from</span>(<span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;Empty function name&quot;</span>)));
         };
 
-        <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">CONTRACT_MGR</span>
-            .<span class="ident">lock</span>()
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">evaluate</span>(<span class="ident">ctx</span>, <span class="ident">namespace</span>, <span class="ident">fn_name</span>, <span class="ident">args</span>, <span class="ident">transient</span>);
+        <span class="comment">// let r = CONTRACT_MGR</span>
+        <span class="comment">//     .lock()</span>
+        <span class="comment">//     .unwrap()</span>
+        <span class="comment">//     .evaluate(ctx, namespace, fn_name, args, transient);</span>
+
+
+        <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">CONTRACT_MGR</span>
+            .<span class="ident">lock</span>() {
+                <span class="prelude-val">Ok</span>(<span class="kw-2">mut</span> <span class="ident">ccm</span>) <span class="op">=</span><span class="op">&gt;</span> {            
+                    <span class="ident">ccm</span>.<span class="ident">evaluate</span>(<span class="ident">ctx</span>, <span class="ident">namespace</span>, <span class="ident">fn_name</span>, <span class="ident">args</span>, <span class="ident">transient</span>)
+                }
+                <span class="prelude-val">Err</span>(<span class="ident">poisoned</span>) <span class="op">=</span><span class="op">&gt;</span> {<span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;I&#39;ve been poisoned&quot;</span>)}
+            };
 
         <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;contractmanager::route&lt;&lt;&quot;</span>);
         <span class="ident">r</span>

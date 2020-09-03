@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["asset_transfer_rs"] = [{"text":"impl <a class=\"trait\" href=\"https://docs.rs/serde/1.0.115/serde/ser/trait.Serialize.html\" title=\"trait serde::ser::Serialize\">Serialize</a> for <a class=\"struct\" href=\"asset_transfer_rs/struct.Asset.html\" title=\"struct asset_transfer_rs::Asset\">Asset</a>","synthetic":false,"types":["asset_transfer_rs::types::asset::Asset"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

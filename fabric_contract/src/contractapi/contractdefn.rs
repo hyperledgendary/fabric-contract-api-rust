@@ -69,12 +69,13 @@ impl ContractDefn {
         args: &[Vec<u8>],
     ) -> Result<WireBuffer, ContractError> {
         // trace!(">> invoke {} {:#?}",name, args);
-        debug!("Invoking tx fn");
+        debug!("Invoking tx fn {} {:#?} {}", name, args, args.len());
 
         let txfn = self.get_txfn(&name[..])?;
         let mut updated_args = Vec::<WireBuffer>::new();
         // got the tx fn, now to loop over the supplied args
         for (pos, p) in txfn.get_parameters().iter().enumerate() {
+            debug!("{} {:?}",pos,p);
             updated_args.push(WireBuffer::new(
                 args[pos].clone(),
                 p.type_schema, /*,Box::new(JSONConverter {})*/
