@@ -68,7 +68,24 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="comment">/*
+ * SPDX-License-Identifier: Apache-2.0
+ */</span>
+
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
@@ -87,6 +104,15 @@
         <span class="self">Self</span> {
             <span class="ident">msg</span>,
             <span class="ident">ledger_error</span>: <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>,
+        }
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">String</span>,<span class="ident">LedgerError</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ContractError</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">msg</span>,<span class="ident">err</span>): (<span class="ident">String</span>, <span class="ident">LedgerError</span>)) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span> {
+            <span class="ident">msg</span>,
+            <span class="ident">ledger_error</span>: <span class="prelude-val">Some</span>(<span class="ident">err</span>),
         }
     }
 }

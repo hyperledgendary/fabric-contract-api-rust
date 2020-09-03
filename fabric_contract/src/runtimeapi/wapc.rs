@@ -2,7 +2,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #![allow(dead_code)]
-#![allow(unused_imports)]
 
 //! This is the runtime componet that marshalls the WAPC calls
 use crate::contractapi::context::Context;
@@ -17,7 +16,7 @@ use wapc_guest::console_log;
 
 use fabric_ledger_protos::contract_messages::*;
 
-use log::{debug, error, info, trace, warn};
+use log::{debug, trace};
 
 ///
 /// Map to the ContractService
@@ -48,7 +47,7 @@ pub fn log(s: &str) {
 /// The API calls made by the users contract implementation via the Collection, State interfaces etc..
 /// get rounted to here. They are then passed over the Wasm boundary to be sent off (somehow) to the peer
 ///
-pub fn runtime_host_call(service: String, cmd: String, data: Vec<u8>) -> Vec<u8> {
+pub fn runtime_host_call(service: String, cmd: String, data: Vec<u8>) -> Result<Vec<u8>> {
     trace!(
         "Making host call {}::{}::len={}::",
         service,
@@ -56,10 +55,12 @@ pub fn runtime_host_call(service: String, cmd: String, data: Vec<u8>) -> Vec<u8>
         data.len()
     );
     match host_call("wapc", &service[..], &cmd[..], &data) {
-        Ok(v) => v,
-        Err(e) => panic!(e)
+        Ok(v) => Ok(v),
+        Err(e) => {
+            debug!("{:?}", e);
+            Err(e)
+        }
     }
-    
 }
 
 /// handle_tx_invoke called with the buffer that contains the request

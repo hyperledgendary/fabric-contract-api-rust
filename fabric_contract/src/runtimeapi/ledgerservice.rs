@@ -4,9 +4,7 @@
 
 use crate::runtimeapi::wapc::runtime_host_call;
 use crate::{contract::LedgerError, ledgerapi::*};
-
 use protobuf::{parse_from_bytes, Message};
-
 use fabric_ledger_protos::{common_messages, ledger_messages};
 
 /// This module contains the APIs that the peer is logically
@@ -35,14 +33,14 @@ impl LedgerService {
 
         // make the host call
         // note the response here is empty, so no requirement to handle it
-        runtime_host_call(
+        match runtime_host_call(
             "LedgerService".to_string(),
             "CreateState".to_string(),
             buffer,
-        );
-
-        // Return the Ledger state object
-        Ok(State::from(state))
+        ) {
+            Ok(_) => Ok(State::from(state)),
+            Err(e) => return Err(LedgerError::from(format!("Unable to create State"))),
+        }
     }
 
     pub fn read_state(key: &String) -> Result<State, LedgerError> {
@@ -56,7 +54,12 @@ impl LedgerService {
 
         // need to handle the response to the request
         let response_buffer: Vec<u8> =
-            runtime_host_call("LedgerService".to_string(), "ReadState".to_string(), buffer);
+            match runtime_host_call("LedgerService".to_string(), "ReadState".to_string(), buffer) {
+                Ok(buffer) => buffer,
+                Err(e) => {
+                    return Err(LedgerError::from(format!("Unable to read State")));
+                }
+            };
 
         let response =
             parse_from_bytes::<ledger_messages::ReadStateResponse>(&response_buffer).unwrap();
@@ -83,14 +86,14 @@ impl LedgerService {
 
         // make the host call
         // note the response here is empty, so no requirement to handle it
-        runtime_host_call(
+        match runtime_host_call(
             "LedgerService".to_string(),
             "UpdateState".to_string(),
             buffer,
-        );
-
-        // Return the Ledger state object
-        Ok(State::from(state))
+        ) {
+            Ok(_) => Ok(State::from(state)),
+            Err(r) => return Err(LedgerError::from(format!("Unable to delete State"))),
+        }
     }
 
     pub fn delete_state(key: &String) -> Result<(), LedgerError> {
@@ -101,14 +104,14 @@ impl LedgerService {
         let buffer = dsr.write_to_bytes().unwrap();
         // make the host call
         // note the response here is empty, so no requirement to handle it
-        runtime_host_call(
+        match runtime_host_call(
             "LedgerService".to_string(),
             "DeleteState".to_string(),
             buffer,
-        );
-
-        // Return the Ledger state object
-        Ok(())
+        ) {
+            Ok(_) => Ok(()),
+            Err(e) => return Err(LedgerError::from(format!("Unable to delete State"))),
+        }
     }
 
     pub fn exists_state(key: &str) -> Result<bool, LedgerError> {
@@ -119,19 +122,21 @@ impl LedgerService {
 
         let buffer = esr.write_to_bytes().unwrap();
 
-        let response_buffer: Vec<u8> = runtime_host_call(
+        let response_buffer: Vec<u8> = match runtime_host_call(
             "LedgerService".to_string(),
             "ExistsState".to_string(),
             buffer,
-        );
+        ) {
+            Ok(buffer) => buffer,
+            Err(e) => return Err(LedgerError::from(format!("Unable to exists_state"))),
+        };
         let response =
             parse_from_bytes::<ledger_messages::ExistsStateResponse>(&response_buffer).unwrap();
 
         Ok(response.get_exists())
     }
 
-
-    pub fn get_range_states(start_key:&str, end_key:&str) -> Result<Vec<State>,LedgerError> {
+    pub fn get_range_states(start_key: &str, end_key: &str) -> Result<Vec<State>, LedgerError> {
         // create the protobuf message and pass to waPC
         let mut gsr = ledger_messages::GetStatesRequest::new();
         let mut key_range = ledger_messages::KeyRangeQuery::new();
@@ -146,17 +151,19 @@ impl LedgerService {
 
         // need to handle the response to the request
         let response_buffer: Vec<u8> =
-            runtime_host_call("LedgerService".to_string(), "GetStates".to_string(), buffer);
+            match runtime_host_call("LedgerService".to_string(), "GetStates".to_string(), buffer) {
+                Ok(buffer) => buffer,
+                Err(e) => return Err(LedgerError::from(format!("Unable to read State"))),
+            };
 
         let response =
             parse_from_bytes::<ledger_messages::GetStatesResponse>(&response_buffer).unwrap();
 
         let from_ledger_states = response.get_states();
-        let state_vec : Vec<_> = from_ledger_states.iter().map(|s| State::from(s)).collect();
+        let state_vec: Vec<_> = from_ledger_states.iter().map(|s| State::from(s)).collect();
 
         Ok(state_vec)
     }
-
 
     // Gets the thread-local transaction context and creates the protobuf from it.
     fn get_context() -> Result<common_messages::TransactionContext, LedgerError> {
@@ -167,6 +174,4 @@ impl LedgerService {
         tx_context.set_channel_id(ctx.get_channelid());
         Ok(tx_context)
     }
-
-
 }

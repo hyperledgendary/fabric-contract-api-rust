@@ -12,13 +12,14 @@
 //! the lifecyle
 mod contracts;
 pub use crate::contracts::AssetTransfer;
+pub use crate::contracts::AssetTransferQuery;
 
 mod types;
 pub use crate::types::Asset;
 
 // The macro to indicate the function that will be used to register the contracts.
 // if there is more than one, use a comma separated list
-//
+//, AssetTransferQuery::new
 // Provide the function that will create a new instance of the contract strcut
 // More than one contract struct can be provided. 
 fabric_contract::register!( AssetTransfer::new );

@@ -121,6 +121,8 @@
 <span id="121">121</span>
 <span id="122">122</span>
 <span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -131,7 +133,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
 <span class="kw">use</span> <span class="ident">Format</span>::<span class="ident">Other</span>;
-
+<span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">trace</span>};
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="doccomment">/// Should this transaction be submitted or evaluated?</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TxType</span> {
@@ -164,6 +166,8 @@
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Code is not correct&quot;</span>),
         }
 
+        <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;{} -&gt; {} {}&quot;</span>,<span class="ident">tx</span>,<span class="ident">arg_name</span>,<span class="ident">type_name</span>);
+        
         <span class="self">Self</span> {
             <span class="ident">name</span>: <span class="ident">arg_name</span>,
             <span class="ident">transient</span>: <span class="bool-val">false</span>,

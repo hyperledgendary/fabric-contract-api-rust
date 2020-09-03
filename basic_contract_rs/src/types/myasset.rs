@@ -56,10 +56,10 @@ impl DataType for MyAsset {
         self.uid.clone().unwrap()
     }
 
-    fn from_state(&mut self, state: State) {
-        self.uid = Some(state.key());
-        self.value = Some(String::from_utf8(state.value()).unwrap());
-    }
+    // fn from_state(&mut self, state: State) {
+    //     self.uid = Some(state.key());
+    //     self.value = Some(String::from_utf8(state.value()).unwrap());
+    // }
 
     fn build_from_state(state: State) -> Self {
         MyAsset {

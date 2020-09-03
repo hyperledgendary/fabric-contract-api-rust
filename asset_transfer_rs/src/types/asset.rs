@@ -9,30 +9,41 @@ use std::str::from_utf8;
 // Use the log crate to support logging
 use log::{debug};
 
+/// 
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Asset {
-    ID: String,
-    Color: String,
-    Size: i32,
-    Owner: String,
-    AppraisedValue: i32,
+    id: String,
+    color: String,
+    size: i32,
+    owner: String,
+    appraised_value: i32,
 }
 
 impl Asset {
-    pub fn new(ID: String, Color: String, Size: i32, Owner: String, AppraisedValue: i32) -> Asset {
+    pub fn new(id: String, color: String, size: i32, owner: String, appraised_value: i32) -> Asset {
         Asset {
-            ID,
-            Color,
-            Size,
-            Owner,
-            AppraisedValue,
+            id,
+            color,
+            size,
+            owner,
+            appraised_value,
         }
     }
 
     pub fn update_owner(&mut self, owner: String) -> () {
-        self.Owner = owner;
+        self.owner = owner;
+    }
+
+    pub fn get_color(&self) -> String {
+        return self.color.clone();
+    }
+
+    pub fn get_id(&self) -> String {
+        return self.id.clone();
     }
 }
+
 /// Very important to implement the DataType Trait for the Asset
 ///
 /// This provides the ability to store the data in the ledger
@@ -43,35 +54,35 @@ impl DataType for Asset {
         let buffer = json.into_bytes();
 
 
-        State::from((self.ID.clone(), buffer))
+        State::from((self.id.clone(), buffer))
     }
     fn get_key(&self) -> String {
-        self.ID.clone()
+        self.id.clone()
     }
-    fn from_state(&mut self, state: State) {
-        let b = state.value();
-        let str = match from_utf8(&b) {
-            Ok(a) => a,
-            Err(_) => panic!("Err"),
-        };
-        debug!("FromState:: {}",&str);
-        match serde_json::from_str(str) {
-            Ok(Asset {
-                ID,
-                Color,
-                Size,
-                Owner,
-                AppraisedValue,
-            }) => {
-                self.ID = ID;
-                self.Color = Color;
-                self.Size = Size;
-                self.Owner = Owner;
-                self.AppraisedValue = AppraisedValue;
-            }
-            Err(_) => panic!("Err"),
-        }
-    }
+    // fn from_state(&mut self, state: State) {
+    //     let b = state.value();
+    //     let str = match from_utf8(&b) {
+    //         Ok(a) => a,
+    //         Err(_) => panic!("Err"),
+    //     };
+    //     debug!("FromState:: {}",&str);
+    //     match serde_json::from_str(str) {
+    //         Ok(Asset {
+    //             ID,
+    //             Color,
+    //             Size,
+    //             Owner,
+    //             AppraisedValue,
+    //         }) => {
+    //             self.ID = ID;
+    //             self.Color = Color;
+    //             self.Size = Size;
+    //             self.Owner = Owner;
+    //             self.AppraisedValue = AppraisedValue;
+    //         }
+    //         Err(_) => panic!("Err"),
+    //     }
+    // }
 
     fn build_from_state(state: State) -> Self {
         let b = state.value();
@@ -92,11 +103,11 @@ impl DataType for Asset {
 impl Default for Asset {
     fn default() -> Self {
         Asset {
-            ID: "".to_string(),
-            Color: "".to_string(),
-            Size: -1,
-            Owner: "".to_string(),
-            AppraisedValue: -1,
+            id: "".to_string(),
+            color: "".to_string(),
+            size: -1,
+            owner: "".to_string(),
+            appraised_value: -1,
         }
     }
 }

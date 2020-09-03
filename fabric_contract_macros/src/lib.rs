@@ -222,9 +222,7 @@ pub fn transaction(
 
         #psitem
 
-        // hello
-       //pub fn #classname(&self, args: Vec<WireBuffer>) -> #ret_type {
-        pub fn #classname(&self, args: Vec<WireBuffer>, return_wb: TypeSchema) -> Result<WireBuffer,ContractError> {
+        fn #classname(&self, args: Vec<WireBuffer>, return_wb: TypeSchema) -> Result<WireBuffer,ContractError> {
             let mut i=0;
             #(#aargs)*
 
@@ -237,7 +235,7 @@ pub fn transaction(
             }
         }
 
-        pub fn #metadata(&self) -> fabric_contract::prelude::TransactionFn {
+        fn #metadata(&self) -> fabric_contract::prelude::TransactionFn {
             let mut tx = fabric_contract::prelude::TransactionFnBuilder::new();
             tx.name(#name_as_literal);
 

@@ -1,0 +1,18 @@
+[package]
+name = "asset_transfer_private_rs"
+version = "0.1.0"
+authors = ["Matthew B White <whitemat@uk.ibm.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+fabric_contract = { path = "../fabric_contract" }
+sha2 = "0.9.0"
+log = "0.4.8"
+wapc-guest = "0.3.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"

@@ -17,6 +17,8 @@ use std::sync::Mutex;
 // Static reference to the ContractManager
 lazy_static! {
     static ref CONTRACT_MGR: Mutex<ContractManager> = Mutex::new(ContractManager::new());
+    //static ref CONTRACT_MGR: ContractManager = ContractManager::new();
+
 }
 
 /// Contract Manager structure that holds the list contract objects
@@ -103,10 +105,19 @@ impl ContractManager {
             return Err(ContractError::from(String::from("Empty function name")));
         };
 
-        let r = CONTRACT_MGR
-            .lock()
-            .unwrap()
-            .evaluate(ctx, namespace, fn_name, args, transient);
+        // let r = CONTRACT_MGR
+        //     .lock()
+        //     .unwrap()
+        //     .evaluate(ctx, namespace, fn_name, args, transient);
+
+
+        let r = match CONTRACT_MGR
+            .lock() {
+                Ok(mut ccm) => {            
+                    ccm.evaluate(ctx, namespace, fn_name, args, transient)
+                }
+                Err(poisoned) => {panic!("I've been poisoned")}
+            };
 
         trace!("contractmanager::route<<");
         r

@@ -7,10 +7,11 @@ use fabric_contract::contract::*;
 use fabric_contract::data::*;
 
 // Use the log crate to support logging
-use log::{info,debug};
+use log::{info};
 
 // Our own asset types
 use crate::types::Asset;
+
 
 
 /// Structure for the AssetContract, on which implemenation transaction functions will be added
@@ -97,8 +98,12 @@ impl AssetTransfer {
         appraised_value: i32,
     ) -> Result<(), ContractError> {
         // get the collection that is backed by the world state
+        info!("create_asset");
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
-        world.create(Asset::new(id, color, size, owner, appraised_value))?;
+        
+        // create the new asset
+        let new_asset = Asset::new(id, color, size, owner, appraised_value);        
+        world.create(new_asset)?;
 
         Ok(())
     }

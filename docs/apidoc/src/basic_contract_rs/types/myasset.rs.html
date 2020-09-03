@@ -73,6 +73,13 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -132,9 +139,16 @@
         <span class="self">self</span>.<span class="ident">uid</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">from_state</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">state</span>: <span class="ident">State</span>) {
-        <span class="self">self</span>.<span class="ident">uid</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">state</span>.<span class="ident">key</span>());
-        <span class="self">self</span>.<span class="ident">value</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">String</span>::<span class="ident">from_utf8</span>(<span class="ident">state</span>.<span class="ident">value</span>()).<span class="ident">unwrap</span>());
+    <span class="comment">// fn from_state(&amp;mut self, state: State) {</span>
+    <span class="comment">//     self.uid = Some(state.key());</span>
+    <span class="comment">//     self.value = Some(String::from_utf8(state.value()).unwrap());</span>
+    <span class="comment">// }</span>
+
+    <span class="kw">fn</span> <span class="ident">build_from_state</span>(<span class="ident">state</span>: <span class="ident">State</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">MyAsset</span> {
+            <span class="ident">uid</span>: <span class="prelude-val">Some</span>(<span class="ident">state</span>.<span class="ident">key</span>()),
+            <span class="ident">value</span>: <span class="prelude-val">Some</span>(<span class="ident">String</span>::<span class="ident">from_utf8</span>(<span class="ident">state</span>.<span class="ident">value</span>()).<span class="ident">unwrap</span>()),
+        }
     }
 }
 
