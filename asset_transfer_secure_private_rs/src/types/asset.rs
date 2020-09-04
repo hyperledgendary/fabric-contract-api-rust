@@ -13,33 +13,42 @@ use log::{debug};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Asset {
-    ID: String,
-    Color: String,
-    Size: i32,
-    Owner: String
+    id: String, 
+    owner_org: String,
+    public_description: String,
+    on_the_market: bool
 }
 
 impl Asset {
-    pub fn new(ID: String, Color: String, Size: i32, Owner: String) -> Asset {
+    pub fn new(id: String,owner_org: String,public_description:String,on_the_market:bool) -> Asset {
         Asset {
-            ID,
-            Color,
-            Size,
-            Owner,
-            
+            id,owner_org,public_description,on_the_market
         }
     }
 
-    pub fn update_owner(&mut self, owner: String) -> () {
-        self.Owner = owner;
+    pub fn get_owner(&self) -> String {
+        self.owner_org.clone()
     }
 
-    pub fn get_color(&self) -> String {
-        return self.Color.clone();
+    pub fn update_owner(&mut self, owner: String) -> () {
+        self.owner_org = owner;
+    }
+
+    pub fn set_public_description(&mut self, desc: String) -> () {
+        self.public_description = desc.clone();
+    }
+
+    pub fn get_public_description(&self) -> String {
+        self.public_description.clone()
+    }
+
+
+    pub fn is_on_market(&self) -> bool {
+        self.on_the_market
     }
 
     pub fn get_id(&self) -> String {
-        return self.ID.clone();
+        self.id.clone()
     }
 }
 
@@ -51,11 +60,11 @@ impl DataType for Asset {
         let json = serde_json::to_string(self).unwrap();
         debug!("ToState::{}",&json.as_str());
         let buffer = json.into_bytes();
-        State::from((self.ID.clone(), buffer))
+        State::from((self.id.clone(), buffer))
     }
 
     fn get_key(&self) -> String {
-        self.ID.clone()
+        self.id.clone()
     }
 
     fn build_from_state(state: State) -> Self {
@@ -77,10 +86,10 @@ impl DataType for Asset {
 impl Default for Asset {
     fn default() -> Self {
         Asset {
-            ID: "".to_string(),
-            Color: "".to_string(),
-            Size: -1,
-            Owner: "".to_string()
+            id: "".to_string(),
+            public_description: "".to_string(),
+            on_the_market: false,
+            owner_org: "".to_string()
         }
     }
 }
@@ -92,5 +101,19 @@ impl WireBufferFromReturnType<Asset> for WireBuffer {
         debug!("wire buffer returning the value {}",json.as_str());
         let buffer = json.into_bytes();
         self.buffer = Some(buffer);
+    }
+}
+
+impl From<&WireBuffer> for Asset {
+    fn from(wb: &WireBuffer) -> Self {
+        match &wb.buffer {
+            Some(buffer) => {
+                match std::str::from_utf8(&buffer) {
+                    Ok(a) => serde_json::from_str(a).unwrap(),
+                    _ => unreachable!(),
+                }
+            }
+            None => panic!(),
+        }
     }
 }

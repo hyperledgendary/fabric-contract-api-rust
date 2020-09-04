@@ -54,10 +54,33 @@ impl From<&WireBuffer> for String {
 }
 
 impl From<&WireBuffer> for i32 {
-    fn from(_: &WireBuffer) -> Self {
-        todo!()
+    fn from(wb: &WireBuffer) -> Self {
+        match &wb.buffer {
+            Some(buffer) => {
+                match std::str::from_utf8(&buffer) {
+                    Ok(a) => i32::from_str_radix(a,10).unwrap_or(0),
+                    _ => unreachable!(),
+                }
+            }
+            None => 0,
+        }
     }
 }
+
+impl From<&WireBuffer> for u32 {
+    fn from(wb: &WireBuffer) -> Self {
+        match &wb.buffer {
+            Some(buffer) => {
+                match std::str::from_utf8(&buffer) {
+                    Ok(a) => u32::from_str_radix(a,10).unwrap_or(0),
+                    _ => unreachable!(),
+                }
+            }
+            None => 0,
+        }
+    }
+}
+
 
 // implementations here that given a value, of a certain type will fill out the wirebuffer
 // they should also pay attention to the schema and ensure that the types meet the correct specifciation
