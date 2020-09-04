@@ -13,6 +13,7 @@ use log::{debug};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Asset {
+<<<<<<< HEAD:asset_transfer_rs/src/types/asset.rs
     id: String,
     color: String,
     size: i32,
@@ -28,10 +29,27 @@ impl Asset {
             size,
             owner,
             appraised_value,
+=======
+    id: String, 
+    owner_org: String,
+    public_description: String,
+    on_the_market: bool
+}
+
+impl Asset {
+    pub fn new(id: String,owner_org: String,public_description:String,on_the_market:bool) -> Asset {
+        Asset {
+            id,owner_org,public_description,on_the_market
+>>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
         }
     }
 
+    pub fn get_owner(&self) -> String {
+        self.owner_org.clone()
+    }
+
     pub fn update_owner(&mut self, owner: String) -> () {
+<<<<<<< HEAD:asset_transfer_rs/src/types/asset.rs
         self.owner = owner;
     }
 
@@ -41,6 +59,26 @@ impl Asset {
 
     pub fn get_id(&self) -> String {
         return self.id.clone();
+=======
+        self.owner_org = owner;
+    }
+
+    pub fn set_public_description(&mut self, desc: String) -> () {
+        self.public_description = desc.clone();
+    }
+
+    pub fn get_public_description(&self) -> String {
+        self.public_description.clone()
+    }
+
+
+    pub fn is_on_market(&self) -> bool {
+        self.on_the_market
+    }
+
+    pub fn get_id(&self) -> String {
+        self.id.clone()
+>>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
     }
 }
 
@@ -56,7 +94,11 @@ impl DataType for Asset {
     }
 
     fn get_key(&self) -> String {
+<<<<<<< HEAD:asset_transfer_rs/src/types/asset.rs
         Asset::form_key(&self.id.clone())
+=======
+        self.id.clone()
+>>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
     }
 
     fn build_from_state(state: State) -> Self {
@@ -70,8 +112,22 @@ impl DataType for Asset {
         serde_json::from_str(str).unwrap()
     }
 
+<<<<<<< HEAD:asset_transfer_rs/src/types/asset.rs
     fn form_key(k: &String) -> String {
        format!("Asset::{}",k)
+=======
+/// Implementing the Default trait
+///
+/// Consider using a 'builder' style api on the DataTYpe above
+impl Default for Asset {
+    fn default() -> Self {
+        Asset {
+            id: "".to_string(),
+            public_description: "".to_string(),
+            on_the_market: false,
+            owner_org: "".to_string()
+        }
+>>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
     }
 }
 

@@ -37,7 +37,11 @@ impl DataType for PriceAgreement {
     }
 
     fn get_key(&self) -> String {
+<<<<<<< HEAD
         PriceAgreement::form_key(&self.id)
+=======
+        self.id.clone()
+>>>>>>> Examples update
     }
 
     fn build_from_state(state: State) -> Self {
@@ -50,10 +54,13 @@ impl DataType for PriceAgreement {
         debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
+<<<<<<< HEAD
     
     fn form_key(k: &String) -> String {
         format!("PriceAgreement#{}",k)
     }
+=======
+>>>>>>> Examples update
 }
 
 impl WireBufferFromReturnType<PriceAgreement> for WireBuffer {

@@ -13,6 +13,7 @@ use log::{debug};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Asset {
+<<<<<<< HEAD
     id: String, 
     owner_org: String,
     public_description: String
@@ -22,6 +23,36 @@ impl Asset {
     pub fn new(id: String,owner_org: String,public_description:String) -> Asset {
         Asset {
             id,owner_org,public_description
+=======
+<<<<<<< HEAD:asset_transfer_rs/src/types/asset.rs
+    id: String,
+    color: String,
+    size: i32,
+    owner: String,
+    appraised_value: i32,
+}
+
+impl Asset {
+    pub fn new(id: String, color: String, size: i32, owner: String, appraised_value: i32) -> Asset {
+        Asset {
+            id,
+            color,
+            size,
+            owner,
+            appraised_value,
+=======
+    id: String, 
+    owner_org: String,
+    public_description: String,
+    on_the_market: bool
+}
+
+impl Asset {
+    pub fn new(id: String,owner_org: String,public_description:String,on_the_market:bool) -> Asset {
+        Asset {
+            id,owner_org,public_description,on_the_market
+>>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
+>>>>>>> Examples update
         }
     }
 
@@ -30,6 +61,20 @@ impl Asset {
     }
 
     pub fn update_owner(&mut self, owner: String) -> () {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD:asset_transfer_rs/src/types/asset.rs
+        self.owner = owner;
+    }
+
+    pub fn get_color(&self) -> String {
+        return self.color.clone();
+    }
+
+    pub fn get_id(&self) -> String {
+        return self.id.clone();
+=======
+>>>>>>> Examples update
         self.owner_org = owner;
     }
 
@@ -41,8 +86,19 @@ impl Asset {
         self.public_description.clone()
     }
 
+<<<<<<< HEAD
     pub fn get_id(&self) -> String {
         self.id.clone()
+=======
+
+    pub fn is_on_market(&self) -> bool {
+        self.on_the_market
+    }
+
+    pub fn get_id(&self) -> String {
+        self.id.clone()
+>>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
+>>>>>>> Examples update
     }
 }
 
@@ -50,17 +106,32 @@ impl Asset {
 ///
 /// This provides the ability to store the data in the ledger
 impl DataType for Asset {
+<<<<<<< HEAD
 
     /// Converts to a State
     fn to_state(&self) -> State {
         let json = serde_json::to_string(self).unwrap();       
+=======
+    fn to_state(&self) -> State {
+        let json = serde_json::to_string(self).unwrap();
+        debug!("ToState::{}",&json.as_str());
+>>>>>>> Examples update
         let buffer = json.into_bytes();
         State::from((self.id.clone(), buffer))
     }
 
+<<<<<<< HEAD
     /// Returns the key for this specific object as a string
     fn get_key(&self) -> String {
         Asset::form_key(&self.id)
+=======
+    fn get_key(&self) -> String {
+<<<<<<< HEAD:asset_transfer_rs/src/types/asset.rs
+        Asset::form_key(&self.id.clone())
+=======
+        self.id.clone()
+>>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
+>>>>>>> Examples update
     }
 
     fn build_from_state(state: State) -> Self {
@@ -73,9 +144,29 @@ impl DataType for Asset {
         debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
+<<<<<<< HEAD
     
     fn form_key(k: &String) -> String {
         format!("Asset#{}",k)
+=======
+
+<<<<<<< HEAD:asset_transfer_rs/src/types/asset.rs
+    fn form_key(k: &String) -> String {
+       format!("Asset::{}",k)
+=======
+/// Implementing the Default trait
+///
+/// Consider using a 'builder' style api on the DataTYpe above
+impl Default for Asset {
+    fn default() -> Self {
+        Asset {
+            id: "".to_string(),
+            public_description: "".to_string(),
+            on_the_market: false,
+            owner_org: "".to_string()
+        }
+>>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
+>>>>>>> Examples update
     }
 }
 
