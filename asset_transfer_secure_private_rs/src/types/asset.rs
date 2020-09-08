@@ -11,35 +11,38 @@ use log::{debug};
 
 /// 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Asset {
-    ID: String,
-    Color: String,
-    Size: i32,
-    Owner: String
+    id: String, 
+    owner_org: String,
+    public_description: String
 }
 
 impl Asset {
-    pub fn new(ID: String, Color: String, Size: i32, Owner: String) -> Asset {
+    pub fn new(id: String,owner_org: String,public_description:String) -> Asset {
         Asset {
-            ID,
-            Color,
-            Size,
-            Owner,
-            
+            id,owner_org,public_description
         }
     }
 
-    pub fn update_owner(&mut self, owner: String) -> () {
-        self.Owner = owner;
+    pub fn get_owner(&self) -> String {
+        self.owner_org.clone()
     }
 
-    pub fn get_color(&self) -> String {
-        return self.Color.clone();
+    pub fn update_owner(&mut self, owner: String) -> () {
+        self.owner_org = owner;
+    }
+
+    pub fn set_public_description(&mut self, desc: String) -> () {
+        self.public_description = desc.clone();
+    }
+
+    pub fn get_public_description(&self) -> String {
+        self.public_description.clone()
     }
 
     pub fn get_id(&self) -> String {
-        return self.ID.clone();
+        self.id.clone()
     }
 }
 
@@ -47,15 +50,17 @@ impl Asset {
 ///
 /// This provides the ability to store the data in the ledger
 impl DataType for Asset {
+
+    /// Converts to a State
     fn to_state(&self) -> State {
-        let json = serde_json::to_string(self).unwrap();
-        debug!("ToState::{}",&json.as_str());
+        let json = serde_json::to_string(self).unwrap();       
         let buffer = json.into_bytes();
-        State::from((self.ID.clone(), buffer))
+        State::from((self.id.clone(), buffer))
     }
 
+    /// Returns the key for this specific object as a string
     fn get_key(&self) -> String {
-        self.ID.clone()
+        Asset::form_key(&self.id)
     }
 
     fn build_from_state(state: State) -> Self {
@@ -68,20 +73,9 @@ impl DataType for Asset {
         debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
-}
-
-
-/// Implementing the Default trait
-///
-/// Consider using a 'builder' style api on the DataTYpe above
-impl Default for Asset {
-    fn default() -> Self {
-        Asset {
-            ID: "".to_string(),
-            Color: "".to_string(),
-            Size: -1,
-            Owner: "".to_string()
-        }
+    
+    fn form_key(k: &String) -> String {
+        format!("Asset#{}",k)
     }
 }
 
@@ -92,5 +86,19 @@ impl WireBufferFromReturnType<Asset> for WireBuffer {
         debug!("wire buffer returning the value {}",json.as_str());
         let buffer = json.into_bytes();
         self.buffer = Some(buffer);
+    }
+}
+
+impl From<&WireBuffer> for Asset {
+    fn from(wb: &WireBuffer) -> Self {
+        match &wb.buffer {
+            Some(buffer) => {
+                match std::str::from_utf8(&buffer) {
+                    Ok(a) => serde_json::from_str(a).unwrap(),
+                    _ => unreachable!(),
+                }
+            }
+            None => panic!(),
+        }
     }
 }

@@ -11,8 +11,8 @@ pub trait DataType: Default {
     fn get_key(&self) -> String;
 
     ///
-    // fn from_state(&mut self, state: State);
+    fn build_from_state(state: State) -> Self;
 
     ///
-    fn build_from_state(state: State) -> Self;
+    fn form_key(k: &String) -> String;
 }

@@ -90,10 +90,16 @@ pub fn contract_impl(
             let method = method.clone();
             let name = &method.sig.ident;
 
-            // ignore the new method
-            // TODO this in a better way! i.e. only the fns marked #[transaction]
-            let number_attrs = method.attrs.len()!=0;
-            if name != "new"  && !name.to_string().starts_with("invoke") && !name.to_string().starts_with("md") && number_attrs
+            let mut is_transaction=false;
+            for attr in method.attrs.iter() {
+                if attr.path.segments.len() == 1
+                    && &attr.path.segments[0].ident == "Transaction" {
+                        is_transaction=true;
+                } 
+            }
+
+
+            if name != "new"  && !name.to_string().starts_with("invoke") && !name.to_string().starts_with("md") && is_transaction
             {
                 method_fns.push(syn::Ident::new(&format!("invoke_{}", name), name.span()));
                 method_md.push(syn::Ident::new(&format!("md_{}", name), name.span()));
@@ -176,6 +182,11 @@ pub fn transaction(
     input: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
     let psitem = parse_macro_input!(input as ItemFn);
+    let txargs = parse_macro_input!(args as AttributeArgs);
+
+
+
+
 
     let name = psitem.sig.ident.clone();
     let classname = syn::Ident::new(&format!("{}{}", "invoke_", name), psitem.sig.ident.span());

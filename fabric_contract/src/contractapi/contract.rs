@@ -4,6 +4,7 @@
 #![allow(unused_imports)]
 use super::contractdefn::ContractDefn;
 use crate::{
+    blockchain::Transaction,
     contract::ContractError,
     contractapi::context::*,
     dataapi::{TypeSchema, WireBuffer},
@@ -34,4 +35,19 @@ pub trait Contract: Routing + Metadata {
     // fn after_transaction(&self, _ctx: Context) {
     //         println!("Default After Tranasction");
     // }
+
+    /// Verify the client MSPID and the Peers MSPID are the same
+    fn get_verified_client_org(&self) -> Result<String, ContractError> {
+        let tx = Transaction::current_transaction();
+
+        let peers_msp = tx.get_peer_mspid();
+        let client_msp = tx.get_submitting_identity()?.get_mspid();
+        if peers_msp != client_msp {
+            Err(ContractError::from(
+                "Mismatch of Organization names".to_string(),
+            ))
+        } else {
+            Ok(client_msp)
+        }
+    }
 }

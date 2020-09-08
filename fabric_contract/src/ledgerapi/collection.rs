@@ -73,11 +73,22 @@ impl Collection {
     where
         T: Default + DataType,
     {
-        let s = LedgerService::read_state(key).unwrap();
+        let s = LedgerService::read_state(&T::form_key(key)).unwrap();
         // let mut asset = T::default();
         // asset.from_state(s);     
         Ok(T::build_from_state(s))
     }
+
+    pub fn retrieve_hash<T>(&self, key: &String) -> Result<T, LedgerError>
+    where
+        T: Default + DataType,
+    {
+        let s = LedgerService::read_state( &T::form_key(key)).unwrap();
+        // let mut asset = T::default();
+        // asset.from_state(s);     
+        Ok(T::build_from_state(s))
+    }
+
 
     pub fn update<T>(&self, asset: T) -> Result<State, LedgerError> where T: DataType,
     {
@@ -94,6 +105,12 @@ impl Collection {
     ///
     pub fn retrieve_state(&self, key: &String) -> Result<State, LedgerError> {
         LedgerService::read_state(&key)
+    }
+
+    /// Return the state has ONLY for this key
+    ///
+    pub fn retrieve_state_hash(&self, key: &String) -> Result<State, LedgerError> {
+       todo!()
     }
 
     /// Creates the state

@@ -15,7 +15,7 @@ pub use crate::contracts::AssetTransfer;
 
 
 mod types;
-pub use crate::types::{AssetPrivate, Asset};
+pub use crate::types::{AssetPrivate, Asset, PriceAgreement};
 
 // The macro to indicate the function that will be used to register the contracts.
 // if there is more than one, use a comma separated list

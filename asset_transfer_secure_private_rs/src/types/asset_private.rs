@@ -1,48 +1,48 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-
-//! Very simple custom Asset object
-
-// Use the required crates
 use fabric_contract::contract::*;
 use fabric_contract::data::*;
 use serde::{Deserialize, Serialize};
 use std::str::from_utf8;
-/// Basic definition of the asset object
+
+// Use the log crate to support logging
+use log::{debug};
+
 /// 
+
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct MyAsset {
+pub struct AssetPrivate {
     id: String,
-    value: String
+    appraised_value: u32,
+    itemcode: String,
+    description: String
 }
 
-/// Standard Implementation
-impl MyAsset {
-
-    pub fn new(id: String, value: String) -> MyAsset {
-        MyAsset {
+impl AssetPrivate {
+    pub fn new(id: String, appraised_value: u32,colour: String,itemcode:String, description: String) -> AssetPrivate {
+        AssetPrivate {
             id,
-            value,
+            appraised_value,
+            itemcode,
+            description
         }
     }
-
-    pub fn get_value(&self) -> String {
-        self.value.clone()
-    }
 }
 
-/// The DataType trait must be implemented for this struct to be handled
-/// by the contract
-impl DataType for MyAsset {
+/// Very important to implement the DataType Trait for the Asset
+///
+/// This provides the ability to store the data in the ledger
+impl DataType for AssetPrivate {
     fn to_state(&self) -> State {
         let json = serde_json::to_string(self).unwrap();
+        debug!("ToState::{}",&json.as_str());
         let buffer = json.into_bytes();
         State::from((self.id.clone(), buffer))
     }
 
     fn get_key(&self) -> String {
-       MyAsset::form_key(&self.id)
+        self.id.clone()
     }
 
     fn build_from_state(state: State) -> Self {
@@ -52,25 +52,25 @@ impl DataType for MyAsset {
             Ok(a) => a,
             Err(_) => panic!("Err"),
         };
+        debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
-
     fn form_key(k: &String) -> String {
-        format!("MyAsset::{}",k)
+        todo!()
     }
 }
 
-impl WireBufferFromReturnType<MyAsset> for WireBuffer {
-    fn from_rt(self: &mut Self, s: MyAsset) {
+impl WireBufferFromReturnType<AssetPrivate> for WireBuffer {
+    fn from_rt(self: &mut Self, s: AssetPrivate) {
         // we've got a wire buffer object and we need to set the bytes here from the string
         let json = serde_json::to_string(&s).unwrap();
-        
+        debug!("wire buffer returning the value {}",json.as_str());
         let buffer = json.into_bytes();
         self.buffer = Some(buffer);
     }
 }
 
-impl From<&WireBuffer> for MyAsset {
+impl From<&WireBuffer> for AssetPrivate {
     fn from(wb: &WireBuffer) -> Self {
         match &wb.buffer {
             Some(buffer) => {

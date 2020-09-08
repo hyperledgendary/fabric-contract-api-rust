@@ -122,8 +122,9 @@ pub mod contract {
     pub use crate::ledgerapi::collection::CollectionName;
     pub use crate::ledgerapi::collection::KeyQueryHandler;
     pub use crate::ledgerapi::ledger::Ledger;
-    pub use crate::ledgerapi::state::State;
+    pub use crate::ledgerapi::state::*;
     pub use crate::ledgerapi::statequerylist::StateQueryList;
+    pub use crate::ledgerapi::endorsement::*;
 
     pub use fabric_contract_macros::contract_impl as Contract_Impl;
     pub use fabric_contract_macros::transaction as Transaction;
