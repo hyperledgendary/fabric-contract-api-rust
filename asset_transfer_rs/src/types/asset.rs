@@ -11,7 +11,7 @@ use log::{debug};
 
 /// 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Asset {
     id: String,
     color: String,
@@ -52,37 +52,12 @@ impl DataType for Asset {
         let json = serde_json::to_string(self).unwrap();
         debug!("ToState::{}",&json.as_str());
         let buffer = json.into_bytes();
-
-
         State::from((self.id.clone(), buffer))
     }
+
     fn get_key(&self) -> String {
-        self.id.clone()
+        Asset::form_key(&self.id.clone())
     }
-    // fn from_state(&mut self, state: State) {
-    //     let b = state.value();
-    //     let str = match from_utf8(&b) {
-    //         Ok(a) => a,
-    //         Err(_) => panic!("Err"),
-    //     };
-    //     debug!("FromState:: {}",&str);
-    //     match serde_json::from_str(str) {
-    //         Ok(Asset {
-    //             ID,
-    //             Color,
-    //             Size,
-    //             Owner,
-    //             AppraisedValue,
-    //         }) => {
-    //             self.ID = ID;
-    //             self.Color = Color;
-    //             self.Size = Size;
-    //             self.Owner = Owner;
-    //             self.AppraisedValue = AppraisedValue;
-    //         }
-    //         Err(_) => panic!("Err"),
-    //     }
-    // }
 
     fn build_from_state(state: State) -> Self {
         let b = state.value();
@@ -94,32 +69,12 @@ impl DataType for Asset {
         debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
-}
 
-
-/// Implementing the Default trait
-///
-/// Consider using a 'builder' style api on the DataTYpe above
-impl Default for Asset {
-    fn default() -> Self {
-        Asset {
-            id: "".to_string(),
-            color: "".to_string(),
-            size: -1,
-            owner: "".to_string(),
-            appraised_value: -1,
-        }
+    fn form_key(k: &String) -> String {
+       format!("Asset::{}",k)
     }
 }
-// impl From<DataType> for State {
-//    fn from(a: MyAsset) -> Self {
 
-//       let key = a.get_key();
-//       let data = format!("{{\"value\":\"{}\"}}",a.get_value());
-
-//       Self::new(key , data.into() )
-//    }
-// }
 impl WireBufferFromReturnType<Asset> for WireBuffer {
     fn from_rt(self: &mut Self, s: Asset) {
         // we've got a wire buffer object and we need to set the bytes here from the string
@@ -127,5 +82,19 @@ impl WireBufferFromReturnType<Asset> for WireBuffer {
         debug!("wire buffer returning the value {}",json.as_str());
         let buffer = json.into_bytes();
         self.buffer = Some(buffer);
+    }
+}
+
+impl From<&WireBuffer> for Asset {
+    fn from(wb: &WireBuffer) -> Self {
+        match &wb.buffer {
+            Some(buffer) => {
+                match std::str::from_utf8(&buffer) {
+                    Ok(a) => serde_json::from_str(a).unwrap(),
+                    _ => unreachable!(),
+                }
+            }
+            None => panic!(),
+        }
     }
 }

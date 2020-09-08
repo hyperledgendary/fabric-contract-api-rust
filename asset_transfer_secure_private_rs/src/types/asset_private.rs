@@ -55,6 +55,9 @@ impl DataType for AssetPrivate {
         debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
+    fn form_key(k: &String) -> String {
+        todo!()
+    }
 }
 
 impl WireBufferFromReturnType<AssetPrivate> for WireBuffer {

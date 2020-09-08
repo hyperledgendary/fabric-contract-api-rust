@@ -2,6 +2,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 use fabric_ledger_protos::ledger_messages;
+use super::{Expression, StateBasedEndorsement, DataType};
+use crate::contract::LedgerError;
 
 ///
 /// A State is the combination of key and value that are contained within a collection.
@@ -63,9 +65,11 @@ impl State {
     }
 
     /// Sets the State Based Endorsment for this state
-    pub fn set_endorsment(&self /* TODO */) /* TODO */ {}
+    pub fn set_endorsment(&self, sbe: StateBasedEndorsement /* TODO */) /* TODO */ {}
 
-    pub fn get_endorsement(&self) /* TODO */ {}
+    pub fn get_endorsement(&self) -> Option<StateBasedEndorsement> {
+        todo!()
+    }
 }
 
 impl Default for State {
@@ -125,5 +129,28 @@ impl From<ledger_messages::State> for State {
 impl std::convert::From<State> for fabric_ledger_protos::ledger_messages::State {
     fn from(_: State) -> Self {
         todo!()
+    }
+}
+
+
+pub trait VerifyHashConsistency<T> {
+    fn verify_consistent(&self, o: T) -> Result<bool, LedgerError>;
+}
+
+impl VerifyHashConsistency<String> for State {
+    fn verify_consistent(&self, o: String) -> Result<bool, LedgerError> {
+        todo!()
+    }
+}
+
+impl VerifyHashConsistency<State> for State {
+    fn verify_consistent(&self, o: State) -> Result<bool, LedgerError> {
+        todo!()
+    }
+}
+
+impl<T: DataType> VerifyHashConsistency<T> for State {
+    fn verify_consistent(&self, o: T) -> Result<bool, LedgerError> {
+       todo!()
     }
 }

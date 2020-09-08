@@ -11,18 +11,17 @@ use log::{debug};
 
 /// 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Asset {
     id: String, 
     owner_org: String,
-    public_description: String,
-    on_the_market: bool
+    public_description: String
 }
 
 impl Asset {
-    pub fn new(id: String,owner_org: String,public_description:String,on_the_market:bool) -> Asset {
+    pub fn new(id: String,owner_org: String,public_description:String) -> Asset {
         Asset {
-            id,owner_org,public_description,on_the_market
+            id,owner_org,public_description
         }
     }
 
@@ -42,11 +41,6 @@ impl Asset {
         self.public_description.clone()
     }
 
-
-    pub fn is_on_market(&self) -> bool {
-        self.on_the_market
-    }
-
     pub fn get_id(&self) -> String {
         self.id.clone()
     }
@@ -56,15 +50,17 @@ impl Asset {
 ///
 /// This provides the ability to store the data in the ledger
 impl DataType for Asset {
+
+    /// Converts to a State
     fn to_state(&self) -> State {
-        let json = serde_json::to_string(self).unwrap();
-        debug!("ToState::{}",&json.as_str());
+        let json = serde_json::to_string(self).unwrap();       
         let buffer = json.into_bytes();
         State::from((self.id.clone(), buffer))
     }
 
+    /// Returns the key for this specific object as a string
     fn get_key(&self) -> String {
-        self.id.clone()
+        Asset::form_key(&self.id)
     }
 
     fn build_from_state(state: State) -> Self {
@@ -77,20 +73,9 @@ impl DataType for Asset {
         debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
-}
-
-
-/// Implementing the Default trait
-///
-/// Consider using a 'builder' style api on the DataTYpe above
-impl Default for Asset {
-    fn default() -> Self {
-        Asset {
-            id: "".to_string(),
-            public_description: "".to_string(),
-            on_the_market: false,
-            owner_org: "".to_string()
-        }
+    
+    fn form_key(k: &String) -> String {
+        format!("Asset#{}",k)
     }
 }
 
