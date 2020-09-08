@@ -43,16 +43,19 @@ impl Asset {
 =======
     id: String, 
     owner_org: String,
-    public_description: String,
-    on_the_market: bool
+    public_description: String
 }
 
 impl Asset {
-    pub fn new(id: String,owner_org: String,public_description:String,on_the_market:bool) -> Asset {
+    pub fn new(id: String,owner_org: String,public_description:String) -> Asset {
         Asset {
+<<<<<<< HEAD
             id,owner_org,public_description,on_the_market
 >>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
 >>>>>>> Examples update
+=======
+            id,owner_org,public_description
+>>>>>>> Update secure transfer
         }
     }
 
@@ -87,6 +90,7 @@ impl Asset {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     pub fn get_id(&self) -> String {
         self.id.clone()
 =======
@@ -95,6 +99,8 @@ impl Asset {
         self.on_the_market
     }
 
+=======
+>>>>>>> Update secure transfer
     pub fn get_id(&self) -> String {
         self.id.clone()
 >>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
@@ -107,6 +113,7 @@ impl Asset {
 /// This provides the ability to store the data in the ledger
 impl DataType for Asset {
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     /// Converts to a State
     fn to_state(&self) -> State {
@@ -116,10 +123,17 @@ impl DataType for Asset {
         let json = serde_json::to_string(self).unwrap();
         debug!("ToState::{}",&json.as_str());
 >>>>>>> Examples update
+=======
+
+    /// Converts to a State
+    fn to_state(&self) -> State {
+        let json = serde_json::to_string(self).unwrap();       
+>>>>>>> Update secure transfer
         let buffer = json.into_bytes();
         State::from((self.id.clone(), buffer))
     }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     /// Returns the key for this specific object as a string
     fn get_key(&self) -> String {
@@ -132,6 +146,11 @@ impl DataType for Asset {
         self.id.clone()
 >>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
 >>>>>>> Examples update
+=======
+    /// Returns the key for this specific object as a string
+    fn get_key(&self) -> String {
+        Asset::form_key(&self.id)
+>>>>>>> Update secure transfer
     }
 
     fn build_from_state(state: State) -> Self {
@@ -144,6 +163,7 @@ impl DataType for Asset {
         debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
+<<<<<<< HEAD
 <<<<<<< HEAD
     
     fn form_key(k: &String) -> String {
@@ -167,6 +187,11 @@ impl Default for Asset {
         }
 >>>>>>> Examples update:asset_transfer_secure_private_rs/src/types/asset.rs
 >>>>>>> Examples update
+=======
+    
+    fn form_key(k: &String) -> String {
+        format!("Asset#{}",k)
+>>>>>>> Update secure transfer
     }
 }
 

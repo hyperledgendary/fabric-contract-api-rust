@@ -6,6 +6,7 @@ pub use asset_private::AssetPrivate as AssetPrivate;
 
 mod price_agreement;
 <<<<<<< HEAD
+<<<<<<< HEAD
 pub use price_agreement::PriceAgreement as PriceAgreement;
 
 mod transfer_receipt;
@@ -13,3 +14,9 @@ pub use transfer_receipt::TransferReceipt as TransferReceipt;
 =======
 pub use price_agreement::PriceAgreement as PriceAgreement;
 >>>>>>> Examples update
+=======
+pub use price_agreement::PriceAgreement as PriceAgreement;
+
+mod transfer_receipt;
+pub use transfer_receipt::TransferReceipt as TransferReceipt;
+>>>>>>> Update secure transfer
