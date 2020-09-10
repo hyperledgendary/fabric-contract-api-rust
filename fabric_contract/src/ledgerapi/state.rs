@@ -1,9 +1,9 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
+use super::{DataType, StateBasedEndorsement};
+use crate::{contract::LedgerError, runtimeapi::LedgerService};
 use fabric_ledger_protos::ledger_messages;
-use super::{Expression, StateBasedEndorsement, DataType};
-use crate::contract::LedgerError;
 
 ///
 /// A State is the combination of key and value that are contained within a collection.
@@ -12,9 +12,11 @@ use crate::contract::LedgerError;
 ///
 ///  Represents the things that are contained within the Collections.
 ///
+#[derive(Default)]
 pub struct State {
     key: String,
     data: Vec<u8>,
+    collection_name: Option<String>,
 }
 
 impl State {
@@ -42,8 +44,12 @@ impl State {
     }
 
     /// Creates a new state
-    pub fn new(key: String, data: Vec<u8>) -> State {
-        State { key, data }
+    pub fn new(key: String, data: Vec<u8>, collection_name: String) -> State {
+        State {
+            key,
+            data,
+            collection_name: Some(collection_name),
+        }
     }
 
     /// Get the buffer that  this state
@@ -60,23 +66,34 @@ impl State {
     pub fn get_history(&self) /* -> TODO  Iterator of StateHistory */ {}
 
     /// gets the private hash for this stae
-    pub fn get_hash(&self) -> Vec<u8> {
-        todo!("get_hash")
+    pub fn get_hash(&self) ->Result<Vec<u8>,LedgerError> {
+        let name = self
+        .collection_name
+        .clone()
+        .ok_or(LedgerError::from("Put to a colletion first".to_string()))?;
+
+        LedgerService::get_hash(&self.key, &name)
+
     }
 
     /// Sets the State Based Endorsment for this state
-    pub fn set_endorsment(&self, sbe: StateBasedEndorsement /* TODO */) /* TODO */ {}
-
-    pub fn get_endorsement(&self) -> Option<StateBasedEndorsement> {
-        todo!()
+    pub fn set_endorsment(&self, sbe: StateBasedEndorsement) -> Result<(), LedgerError> {
+        let name = self
+            .collection_name
+            .clone()
+            .ok_or(LedgerError::from("Put to a colletion first".to_string()))?;
+        LedgerService::set_endorsement_policy(&self.key, &name, sbe)
     }
-}
 
-impl Default for State {
-    fn default() -> Self {
-        State {
-            key: "".to_string(),
-            data: vec![],
+    pub fn get_endorsement(&self) -> Result<Option<StateBasedEndorsement>, LedgerError> {
+        let name = self
+            .collection_name
+            .clone()
+            .ok_or(LedgerError::from("Put to a colletion first".to_string()))?;
+
+        match LedgerService::get_endorsement_policy(&self.key, &name) {
+            Ok(e) => Ok(Some(e)),
+            Err(e) => Err(e),
         }
     }
 }
@@ -104,7 +121,11 @@ impl From<()> for State {
 
 impl From<(String, Vec<u8>)> for State {
     fn from((a, b): (String, Vec<u8>)) -> Self {
-        Self { key: a, data: b }
+        Self {
+            key: a,
+            data: b,
+            collection_name: Option::None,
+        }
     }
 }
 
@@ -113,6 +134,17 @@ impl From<&ledger_messages::State> for State {
         Self {
             key: lms.get_key().to_string(),
             data: lms.get_value().to_vec(),
+            collection_name: Option::None,
+        }
+    }
+}
+
+impl From<(&ledger_messages::State, String)> for State {
+    fn from((lms, c): (&ledger_messages::State, String)) -> Self {
+        Self {
+            key: lms.get_key().to_string(),
+            data: lms.get_value().to_vec(),
+            collection_name: Some(c),
         }
     }
 }
@@ -122,6 +154,7 @@ impl From<ledger_messages::State> for State {
         Self {
             key: lms.get_key().to_string(),
             data: lms.get_value().to_vec(),
+            collection_name: Option::None,
         }
     }
 }
@@ -132,25 +165,28 @@ impl std::convert::From<State> for fabric_ledger_protos::ledger_messages::State 
     }
 }
 
+pub struct StateHash {
+    pub hash: Vec<u8>,
+}
 
 pub trait VerifyHashConsistency<T> {
     fn verify_consistent(&self, o: T) -> Result<bool, LedgerError>;
 }
 
-impl VerifyHashConsistency<String> for State {
-    fn verify_consistent(&self, o: String) -> Result<bool, LedgerError> {
+impl VerifyHashConsistency<StateHash> for StateHash {
+    fn verify_consistent(&self, o: StateHash) -> Result<bool, LedgerError> {
         todo!()
     }
 }
 
-impl VerifyHashConsistency<State> for State {
-    fn verify_consistent(&self, o: State) -> Result<bool, LedgerError> {
-        todo!()
-    }
-}
+// impl VerifyHashConsistency<State> for State {
+//     fn verify_consistent(&self, o: State) -> Result<bool, LedgerError> {
+//         todo!()
+//     }
+// }
 
-impl<T: DataType> VerifyHashConsistency<T> for State {
+impl<T: DataType> VerifyHashConsistency<T> for StateHash {
     fn verify_consistent(&self, o: T) -> Result<bool, LedgerError> {
-       todo!()
+        todo!()
     }
 }

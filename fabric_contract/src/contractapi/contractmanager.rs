@@ -3,9 +3,8 @@
  */
 #![allow(dead_code)]
 #![allow(unused_imports)]
-use crate::contractapi::context::*;
 use crate::contractapi::contract::*;
-use crate::{contract::ContractError, contractapi::contractdefn, dataapi::WireBuffer};
+use crate::{contract::ContractError, contractapi::contractdefn, dataapi::WireBuffer, blockchain::TransactionContext};
 
 use lazy_static::lazy_static;
 
@@ -17,8 +16,6 @@ use std::sync::Mutex;
 // Static reference to the ContractManager
 lazy_static! {
     static ref CONTRACT_MGR: Mutex<ContractManager> = Mutex::new(ContractManager::new());
-    //static ref CONTRACT_MGR: ContractManager = ContractManager::new();
-
 }
 
 /// Contract Manager structure that holds the list contract objects
@@ -43,17 +40,17 @@ impl ContractManager {
 
     fn evaluate(
         self: &mut ContractManager,
-        ctx: &Context,
+        ctx: &TransactionContext,
         contract_name: String,
         tx: String,
         args: &[Vec<u8>],
-        transient: &[Vec<u8>],
+        transient: &HashMap<String,Vec<u8>>,
     ) -> Result<WireBuffer, ContractError> {
         debug!("contractmanager::evaluate {} {}", contract_name, tx);
 
         match self.contracts.get(&contract_name) {
             Some(defn) => {
-                defn.invoke(ctx, tx, args /*,transient*/)
+                defn.invoke(ctx, tx, args, transient)
             }
             None => {
                 warn!(
@@ -75,10 +72,10 @@ impl ContractManager {
 
     /// Route the call to the correct contract
     pub fn route(
-        ctx: &Context,
+        ctx: &TransactionContext,
         tx: String,
         args: &[Vec<u8>],
-        transient: &[Vec<u8>],
+        transient: &HashMap<String,Vec<u8>>,
     ) -> Result<WireBuffer, ContractError> {
         trace!("contractmanager::route>>");
 

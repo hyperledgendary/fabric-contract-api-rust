@@ -7,7 +7,7 @@
 use super::DataType;
 use crate::ledgerapi::{state::*, statequerylist::*};
 use crate::{error::LedgerError, runtimeapi::ledgerservice::*};
-
+use std::fmt;
 
 /// Collection Name
 ///
@@ -24,11 +24,19 @@ pub enum CollectionName {
     Organization(String),
 }
 
+impl fmt::Display for CollectionName {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            CollectionName::World => write!(f, ""),
+            CollectionName::Private(p) => write!(f, "{:?}", p),
+            CollectionName::Organization(org) => write!(f, "_implicit_{:?}", org),
+        }
+    }
+}
+
 /// Key Queryhandler
 ///
 /// Enumeration to define the Key Range queries that can take place.
-/// TODO: Check if these are inclusive or execlusice
-/// TODO: Not included all as that could return just too much data
 ///
 pub enum KeyQueryHandler {
     /// Range(string,string) The start and end keys  
@@ -41,7 +49,7 @@ pub enum KeyQueryHandler {
     RangeTo(String),
 
     /// RangeAll(),  All composite keys. use with caution
-    RangeAll()
+    RangeAll(),
 }
 
 /// Specify the Rich Query Handler
@@ -50,15 +58,13 @@ pub enum RichQueryHandler {
     Query(String),
 }
 
-pub struct Collection{
+pub struct Collection {
     name: CollectionName,
 }
 
 impl Collection {
     pub fn new(name: CollectionName) -> Self {
-        Collection {
-           name,
-        }
+        Collection { name }
     }
 
     pub fn create<T>(&self, asset: T) -> Result<State, LedgerError>
@@ -66,16 +72,16 @@ impl Collection {
         T: DataType,
     {
         let s = asset.to_state();
-        LedgerService::create_state(s.key(), s.value())
+        LedgerService::create_state(s.key(), self.name.to_string(), s.value())
     }
 
     pub fn retrieve<T>(&self, key: &String) -> Result<T, LedgerError>
     where
         T: Default + DataType,
     {
-        let s = LedgerService::read_state(&T::form_key(key)).unwrap();
+        let s = LedgerService::read_state(&T::form_key(key), &self.name.to_string()).unwrap();
         // let mut asset = T::default();
-        // asset.from_state(s);     
+        // asset.from_state(s);
         Ok(T::build_from_state(s))
     }
 
@@ -83,53 +89,57 @@ impl Collection {
     where
         T: Default + DataType,
     {
-        let s = LedgerService::read_state( &T::form_key(key)).unwrap();
+        let s = LedgerService::read_state(&T::form_key(key), &self.name.to_string()).unwrap();
         // let mut asset = T::default();
-        // asset.from_state(s);     
+        // asset.from_state(s);
         Ok(T::build_from_state(s))
     }
 
-
-    pub fn update<T>(&self, asset: T) -> Result<State, LedgerError> where T: DataType,
+    pub fn update<T>(&self, asset: T) -> Result<State, LedgerError>
+    where
+        T: DataType,
     {
         let s = asset.to_state();
-        LedgerService::update_state(s.key(), s.value())
+        LedgerService::update_state(s.key(), self.name.to_string(), s.value())
     }
 
     /// Does this key exist
     pub fn state_exists(&self, key: &str) -> Result<bool, LedgerError> {
-        LedgerService::exists_state(&key.to_string())
+        LedgerService::exists_state(&key.to_string(), self.name.to_string())
     }
 
     /// Return the state for this key
     ///
     pub fn retrieve_state(&self, key: &String) -> Result<State, LedgerError> {
-        LedgerService::read_state(&key)
+        LedgerService::read_state(&key, &self.name.to_string())
     }
 
     /// Return the state has ONLY for this key
     ///
-    pub fn retrieve_state_hash(&self, key: &String) -> Result<State, LedgerError> {
-       todo!()
+    pub fn retrieve_state_hash(&self, key: &String) -> Result<StateHash, LedgerError> {
+        Ok(StateHash {
+            hash: LedgerService::get_hash(&key, &self.name.to_string())?,
+        })
     }
 
     /// Creates the state
     ///
     /// If it it already exists, this is an error
     pub fn create_state(&self, key: String, data: Vec<u8>) -> Result<State, LedgerError> {
-        LedgerService::create_state(key, data)
+        let state = LedgerService::create_state(key, self.name.to_string(), data); 
+        state
     }
 
     /// Update the states
     ///
     /// If it doesn't exist, this is an error
     pub fn update_state(&self, key: String, data: Vec<u8>) -> Result<State, LedgerError> {
-        LedgerService::update_state(key, data)
+        LedgerService::update_state(key, self.name.to_string(), data)
     }
 
     /// Deletes the key
     pub fn delete_state(&self, key: &String) -> Result<(), LedgerError> {
-        LedgerService::delete_state(&key)
+        LedgerService::delete_state(&key, self.name.to_string())
     }
 
     /// Performs a key range query
@@ -142,18 +152,30 @@ impl Collection {
     /// let collection = Ledger::access_ledger().get_collection(CollectionName::World);
     /// collection.get_states(KeyQueryHandler::Range("Car001","Car002"));
     ///
-    pub fn get_states(&self,handler: KeyQueryHandler) -> Result<StateQueryList, LedgerError> {
-
+    pub fn get_states(&self, handler: KeyQueryHandler) -> Result<StateQueryList, LedgerError> {
         let states = match handler {
-            KeyQueryHandler::Range(start_key,end_key) => LedgerService::get_range_states(start_key.as_str(), end_key.as_str()),
-            KeyQueryHandler::RangeTo(end_key) => LedgerService::get_range_states("", end_key.as_str()),
-            KeyQueryHandler::RangeFrom(start_key) => LedgerService::get_range_states(start_key.as_str(), ""),
-            KeyQueryHandler::RangeAll() => LedgerService::get_range_states("", ""),
+            KeyQueryHandler::Range(start_key, end_key) => LedgerService::get_range_states(
+                start_key.as_str(),
+                end_key.as_str(),
+                &self.name.to_string(),
+            ),
+            KeyQueryHandler::RangeTo(end_key) => {
+                LedgerService::get_range_states("", end_key.as_str(), &self.name.to_string())
+            }
+            KeyQueryHandler::RangeFrom(start_key) => {
+                LedgerService::get_range_states(start_key.as_str(), "", &self.name.to_string())
+            }
+            KeyQueryHandler::RangeAll() => {
+                LedgerService::get_range_states("", "", &self.name.to_string())
+            }
         }?;
         Ok(StateQueryList::new(states))
     }
 
-    pub fn query_states(&self,handler: RichQueryHandler) -> Result<(), LedgerError> {
+    /// Rich query support - query is sent to CouchDB
+    /// 
+    /// NOT IMPLEMENTED (yet)
+    pub fn query_states(&self, handler: RichQueryHandler) -> Result<(), LedgerError> {
         todo!("getstates");
     }
 }

@@ -20,7 +20,7 @@ pub struct AssetPrivate {
 }
 
 impl AssetPrivate {
-    pub fn new(id: String, appraised_value: u32,colour: String,itemcode:String, description: String) -> AssetPrivate {
+    pub fn new(id: String, appraised_value: u32, itemcode:String, description: String) -> AssetPrivate {
         AssetPrivate {
             id,
             appraised_value,
@@ -55,8 +55,9 @@ impl DataType for AssetPrivate {
         debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
+
     fn form_key(k: &String) -> String {
-        todo!()
+       format!("AssetPrivate#{}",k)
     }
 }
 

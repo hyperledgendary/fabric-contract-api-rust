@@ -2,15 +2,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #![allow(dead_code)]
-#![allow(unused_imports)]
+
 use std::collections::HashMap;
 
 use crate::contractapi::contract::*;
 use crate::contractapi::transaction;
-use crate::{contract::ContractError, dataapi::WireBufferFromReturnType};
-use crate::{contractapi::context::*, dataapi::serializer::*, dataapi::WireBuffer};
+use crate::{blockchain::TransactionContext, dataapi::serializer::*, dataapi::WireBuffer};
+use crate::{contract::ContractError};
 
-use log::{debug, trace};
+use log::{debug};
 
 /// Internal definition of a contract
 
@@ -35,9 +35,6 @@ impl ContractDefn {
             debug!("Function {:?}", t);
             cd.add_tx_fn(t);
         }
-
-        // last thing that we need to do is setup the data converter that
-        // is required for this contract
 
         cd
     }
@@ -64,26 +61,40 @@ impl ContractDefn {
 
     pub fn invoke(
         self: &ContractDefn,
-        ctx: &Context,
+        ctx: &TransactionContext,
         name: String,
         args: &[Vec<u8>],
+        transient: &HashMap<String, Vec<u8>>,
     ) -> Result<WireBuffer, ContractError> {
-        // trace!(">> invoke {} {:#?}",name, args);
+       
         debug!("Invoking tx fn {} {:#?} {}", name, args, args.len());
 
         let txfn = self.get_txfn(&name[..])?;
+        let transient_ids = txfn.get_transient_ids();
         let mut updated_args = Vec::<WireBuffer>::new();
         // got the tx fn, now to loop over the supplied args
         for (pos, p) in txfn.get_parameters().iter().enumerate() {
-            debug!("{} {:?}",pos,p);
-            updated_args.push(WireBuffer::new(
-                args[pos].clone(),
-                p.type_schema, /*,Box::new(JSONConverter {})*/
-            ));
+            debug!("{} {:?}", pos, p);
+            // if the parameter is in the transient list, then get it from the hashmap instead
+            if transient_ids.contains(&p.name){
+                let temp_buffer = transient.get::<_>(&p.name).unwrap().clone();
+                updated_args.push(WireBuffer::new(
+                    temp_buffer,
+                    p.type_schema, /*,Box::new(JSONConverter {})*/
+                ));
+
+            } else {
+                updated_args.push(WireBuffer::new(
+                    args[pos].clone(),
+                    p.type_schema, /*,Box::new(JSONConverter {})*/
+                ));
+            }
         }
 
-        let buffer = self.contract.route3(name, updated_args, txfn.get_return())?;
-        debug!("Returned buffer {:?}",&buffer);
+        let buffer = self
+            .contract
+            .route3(name, updated_args, txfn.get_return())?;
+        debug!("Returned buffer {:?}", &buffer);
         Ok(buffer)
     }
 }
@@ -92,11 +103,11 @@ impl ContractDefn {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockall::{automock, mock, predicate::*};
     use crate::contractapi::transaction::*;
     use crate::data::TypeSchema;
     use claim::assert_ok;
-    
+    use mockall::{mock, predicate::*};
+
     mock! {
         TestContract {}
         // First trait to implement on C
@@ -117,14 +128,13 @@ mod tests {
     impl Contract for MockTestContract {
         fn name(&self) -> String {
             "TestContract".to_string()
-        }            
+        }
     }
 
     #[test]
     fn new_defn() {
-
         let contract = MockTestContract::new();
-        let mut b=  Box::new(contract);
+        let mut b = Box::new(contract);
 
         let mut tx_fns = Vec::<TransactionFn>::new();
         let mut txfn1 = TransactionFnBuilder::new();
@@ -135,6 +145,5 @@ mod tests {
         b.expect_get_fn_metadata().return_const(tx_fns);
         let contract_defn = ContractDefn::new(b);
         assert_ok!(contract_defn.get_txfn("testfn"));
-        
     }
 }

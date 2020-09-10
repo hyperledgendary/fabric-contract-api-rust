@@ -58,6 +58,7 @@ pub struct TransactionFn {
     name: String,
     return_type: TypeSchema,
     parameters: Vec<ParameterDefn>,
+    transient_ids: Vec<String>,
 }
 
 impl fmt::Display for TransactionFn {
@@ -75,6 +76,7 @@ impl TransactionFn {
                 format: Option::None,
             },
             parameters: vec![],
+            transient_ids: vec![],
         }
     }
 
@@ -89,6 +91,10 @@ impl TransactionFn {
     pub fn get_parameters(&self) -> Vec<ParameterDefn> {
         self.parameters.clone()
     }
+
+    pub fn get_transient_ids(&self) -> Vec<String> {
+        self.transient_ids.clone()
+    }
 }
 
 #[derive(Default, Debug, Clone)]
@@ -96,6 +102,7 @@ pub struct TransactionFnBuilder {
     name: String,
     return_type: TypeSchema,
     parameters: Vec<ParameterDefn>,
+    transient_ids: Vec<String>,
 }
 
 impl TransactionFnBuilder {
@@ -115,11 +122,16 @@ impl TransactionFnBuilder {
         self.parameters.push(ParameterDefn::from(arg));
     }
 
+    pub fn add_transient_id(&mut self, arg: &str) {
+        self.transient_ids.push(arg.to_string());
+    }
+
     pub fn build(self) -> TransactionFn {
         TransactionFn {
             name: self.name,
             return_type: self.return_type,
             parameters: self.parameters,
+            transient_ids: self.transient_ids,
         }
     }
 }

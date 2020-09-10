@@ -32,7 +32,7 @@ impl Asset {
     }
 
     pub fn get_owner(&self) -> String {
-        self.owner_org.clone()
+        self.owner.clone()
     }
 
     pub fn update_owner(&mut self, owner: String) -> () {
@@ -77,24 +77,6 @@ impl DataType for Asset {
 
     fn form_key(k: &String) -> String {
        format!("Asset::{}",k)
-    }
-}
-/// Implementing the Default trait
-///
-/// Consider using a 'builder' style api on the DataTYpe above
-impl Default for Asset {
-    fn default() -> Self {
-        Asset {
-            id: "".to_string(),
-            public_description: "".to_string(),
-            on_the_market: false,
-            owner_org: "".to_string()
-        }
-    }
-
-    fn form_key(k: &String) -> String {
-       format!("Asset::{}",k)
-
     }
 }
 

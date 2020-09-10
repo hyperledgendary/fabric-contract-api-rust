@@ -113,7 +113,6 @@ pub mod runtime {
 /// TODO: Split this into two modules?
 ///
 pub mod contract {
-    pub use crate::contractapi::context::Context;
     pub use crate::contractapi::contract::Contract;
     pub use crate::contractapi::contract::Metadata;
     pub use crate::contractapi::contract::Routing;
@@ -143,5 +142,5 @@ pub mod contract {
 /// - Invoking chaincode on other channels
 pub mod blockchain {
     pub use crate::blockchainapi::clientidentity::ClientIdentity;
-    pub use crate::blockchainapi::transaction::Transaction;
+    pub use crate::blockchainapi::transactioncontext::TransactionContext;
 }

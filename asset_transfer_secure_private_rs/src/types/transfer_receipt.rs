@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 use fabric_contract::contract::*;
-use fabric_contract::{blockchain::Transaction, data::*};
+use fabric_contract::{blockchain::TransactionContext, data::*};
 use serde::{Deserialize, Serialize};
 use std::str::from_utf8;
 
@@ -18,7 +18,7 @@ pub struct TransferReceipt {
 
 impl TransferReceipt {
     pub fn new(id: String) -> Self {
-        let tx = Transaction::current_transaction();
+        let tx = TransactionContext::current_transaction();
         TransferReceipt {
             id,
             txid: tx.get_id(),
