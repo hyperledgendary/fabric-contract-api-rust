@@ -4,8 +4,7 @@
 #![allow(dead_code)]
 
 //! This is the runtime componet that marshalls the WAPC calls
-use crate::contractapi::context::Context;
-use crate::contractapi::contractmanager::*;
+use crate::{blockchain::TransactionContext, contractapi::contractmanager::*};
 use protobuf::{parse_from_bytes, Message};
 use std::cell::RefCell;
 use std::str;
@@ -74,7 +73,7 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
     let args = invoke_request.get_args();
     let transient_args = invoke_request.get_transient_args();
     let request_ctx = invoke_request.get_context();
-    set_context(Context::new(request_ctx));
+    set_context(TransactionContext::new(request_ctx));
     let ctx = get_context();
 
     // pass over to the contract manager to route
@@ -103,14 +102,14 @@ fn handle_tx_invoke(msg: &[u8]) -> CallResult {
 }
 
 thread_local! {
-    pub static CONTEXT: RefCell<Context>
+    pub static CONTEXT: RefCell<TransactionContext>
     = RefCell::new( Default::default() );
 }
 
-fn set_context(name: Context) {
+fn set_context(name: TransactionContext) {
     CONTEXT.with(|ctx| *ctx.borrow_mut() = name);
 }
 
-pub fn get_context() -> Context {
+pub fn get_context() -> TransactionContext {
     CONTEXT.with(|ctx| ctx.borrow().clone())
 }

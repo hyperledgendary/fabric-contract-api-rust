@@ -31,6 +31,10 @@ impl Asset {
         }
     }
 
+    pub fn get_owner(&self) -> String {
+        self.owner.clone()
+    }
+
     pub fn update_owner(&mut self, owner: String) -> () {
         self.owner = owner;
     }
@@ -69,6 +73,7 @@ impl DataType for Asset {
         debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
+
 
     fn form_key(k: &String) -> String {
        format!("Asset::{}",k)

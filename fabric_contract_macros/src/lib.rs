@@ -19,8 +19,8 @@ extern crate proc_macro;
 // AST.
 use quote::{format_ident, quote, ToTokens};
 use syn::{
-    parse_macro_input, punctuated::Punctuated, AttributeArgs, FnArg, ItemFn, Pat, Type, TypePath,
-    TypeReference,
+    parse_macro_input, punctuated::Punctuated, AttributeArgs, FnArg, ItemFn, NestedMeta, Pat, Type,
+    TypePath, TypeReference,
 };
 
 // DevNote: Most basic attribute procedural macro, keep here for reference and debug
@@ -60,7 +60,7 @@ use syn::{
 /// This trait relies on the transaction functions also being marked with the `#[transaction]`
 /// macro.
 ///
-/// If you wished you could provide the implementations of these macros yourself, but it is 
+/// If you wished you could provide the implementations of these macros yourself, but it is
 /// recommended to not do this unless you really have to.
 #[proc_macro_attribute]
 pub fn contract_impl(
@@ -90,16 +90,17 @@ pub fn contract_impl(
             let method = method.clone();
             let name = &method.sig.ident;
 
-            let mut is_transaction=false;
+            let mut is_transaction = false;
             for attr in method.attrs.iter() {
-                if attr.path.segments.len() == 1
-                    && &attr.path.segments[0].ident == "Transaction" {
-                        is_transaction=true;
-                } 
+                if attr.path.segments.len() == 1 && &attr.path.segments[0].ident == "Transaction" {
+                    is_transaction = true;
+                }
             }
 
-
-            if name != "new"  && !name.to_string().starts_with("invoke") && !name.to_string().starts_with("md") && is_transaction
+            if name != "new"
+                && !name.to_string().starts_with("invoke")
+                && !name.to_string().starts_with("md")
+                && is_transaction
             {
                 method_fns.push(syn::Ident::new(&format!("invoke_{}", name), name.span()));
                 method_md.push(syn::Ident::new(&format!("md_{}", name), name.span()));
@@ -184,8 +185,43 @@ pub fn transaction(
     let psitem = parse_macro_input!(input as ItemFn);
     let txargs = parse_macro_input!(args as AttributeArgs);
 
+    let mut path = None;
+    let mut guards = Vec::new();
+    
+    for arg in txargs {
+        match arg {
+            NestedMeta::Lit(syn::Lit::Str(lit)) => match path {
+                None => {
+                    path = Some(lit);
+                }
+                _ => {}
+            },
+            NestedMeta::Meta(syn::Meta::NameValue(nv)) => {
+                if nv.path.is_ident("transient") {
+                    if let syn::Lit::Str(lit) = nv.lit {
+                        // guards.push(syn::Ident::new(&lit.value(), proc_macro2::Span::call_site()));
 
-
+                        guards.push(quote! {
+                            tx.add_transient_id(#lit);
+                        });
+                    } else {
+                        // return Err(syn::Error::new_spanned(
+                        //     nv.lit,
+                        //     "Attribute guard expects literal string!",
+                        // ));
+                        // println!("Unkown 1");
+                    }
+                } else {
+                    // don't care
+                    // println!("Unkow");
+                }
+            }
+            arg => {
+                // don't really care
+            }
+        }
+    }
+    // println!("{:#?}", guards);
 
 
     let name = psitem.sig.ident.clone();
@@ -251,7 +287,7 @@ pub fn transaction(
             tx.name(#name_as_literal);
 
             #(#metadata_args)*
-
+            #(#guards)*
             tx.build()
         }
     };

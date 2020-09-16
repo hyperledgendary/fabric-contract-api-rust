@@ -38,6 +38,7 @@ impl DataType for PriceAgreement {
 
     fn get_key(&self) -> String {
         PriceAgreement::form_key(&self.id)
+
     }
 
     fn build_from_state(state: State) -> Self {
@@ -50,6 +51,7 @@ impl DataType for PriceAgreement {
         debug!("build_from_state:: {}",&str);
         serde_json::from_str(str).unwrap()
     }
+
     
     fn form_key(k: &String) -> String {
         format!("PriceAgreement#{}",k)

@@ -1,12 +1,9 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-#![allow(unused_imports)]
-use super::contractdefn::ContractDefn;
 use crate::{
-    blockchain::Transaction,
+    blockchain::TransactionContext,
     contract::ContractError,
-    contractapi::context::*,
     dataapi::{TypeSchema, WireBuffer},
     prelude::TransactionFn,
 };
@@ -38,7 +35,7 @@ pub trait Contract: Routing + Metadata {
 
     /// Verify the client MSPID and the Peers MSPID are the same
     fn get_verified_client_org(&self) -> Result<String, ContractError> {
-        let tx = Transaction::current_transaction();
+        let tx = TransactionContext::current_transaction();
 
         let peers_msp = tx.get_peer_mspid();
         let client_msp = tx.get_submitting_identity()?.get_mspid();

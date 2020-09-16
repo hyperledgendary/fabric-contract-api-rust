@@ -1,8 +1,9 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-#![allow(dead_code)]
+
 use crate::blockchainapi::clientidentity::ClientIdentity;
+use fabric_ledger_protos::common_messages::TransactionContext as TxCtx;
 
 /// Represents a transaction
 ///
@@ -15,7 +16,7 @@ use crate::blockchainapi::clientidentity::ClientIdentity;
 ///
 /// ```
 /// pub fn myTransactionFn(){
-///   let tx = fabric_contract::blockchain::Transaction::current_transaction();
+///   let tx = fabric_contract::blockchain::TransactionContext::current_transaction();
 ///
 ///   let id = tx.get_id();
 ///   let timestamp = tx.get_timestamp();
@@ -23,18 +24,28 @@ use crate::blockchainapi::clientidentity::ClientIdentity;
 /// }
 /// ```
 ///  
-pub struct Transaction {}
+#[derive(Default,Clone)]
+pub struct TransactionContext {
+    tx_id: std::string::String,
+    channel_id: std::string::String,
+    // timestamp: String,
 
-impl Transaction {
-    fn new() -> Transaction {
-        Transaction {}
+}
+
+impl TransactionContext {
+    pub fn new(ctx: &TxCtx) -> TransactionContext {
+        TransactionContext {
+            channel_id: ctx.channel_id.clone(),
+            tx_id: ctx.transaction_id.clone(),
+            // timestamp: 
+        }
     }
 
     /// Gets the transaction id
     ///
     /// Full transaction id
     pub fn get_id(&self) -> String {
-        todo!("get_id")
+        self.tx_id.clone()
     }
 
     /// Gets the timestamp of this transaction
@@ -42,6 +53,10 @@ impl Transaction {
     /// Format is ISO - need better type here
     pub fn get_timestamp(&self) -> String {
         todo!("get_id")
+    }
+
+    pub fn get_channelid(&self) -> std::string::String {
+        self.channel_id.clone()
     }
 
     /// The MSP Identifier of the originating organization
@@ -56,7 +71,7 @@ impl Transaction {
     }
 
     /// Get the current transaction
-    pub fn current_transaction() -> Transaction {
+    pub fn current_transaction() -> TransactionContext {
         todo!("get_id")
     }
 }

@@ -13,10 +13,12 @@ use log::{debug};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Asset {
+
     id: String, 
     owner_org: String,
     public_description: String
 }
+
 
 impl Asset {
     pub fn new(id: String,owner_org: String,public_description:String) -> Asset {
@@ -29,8 +31,8 @@ impl Asset {
         self.owner_org.clone()
     }
 
-    pub fn update_owner(&mut self, owner: String) -> () {
-        self.owner_org = owner;
+    pub fn update_owner(&mut self, owner_org: String) -> () {
+        self.owner_org = owner_org;
     }
 
     pub fn set_public_description(&mut self, desc: String) -> () {
@@ -43,7 +45,9 @@ impl Asset {
 
     pub fn get_id(&self) -> String {
         self.id.clone()
+
     }
+
 }
 
 /// Very important to implement the DataType Trait for the Asset
@@ -78,6 +82,7 @@ impl DataType for Asset {
         format!("Asset#{}",k)
     }
 }
+
 
 impl WireBufferFromReturnType<Asset> for WireBuffer {
     fn from_rt(self: &mut Self, s: Asset) {

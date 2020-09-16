@@ -34,13 +34,29 @@ impl AssetTransfer {
     }
 
     /// CreateAsset issues a new asset.
-    /// 
+    ///
     /// - Public information is put to the world state
     /// - Private data put to the organization's collection
     /// - Endorsement added to public state to permit only owning organization
     ///   to modify
     /// - Must be submitted to the peer of client's organization
-    /// 
+    /// Verify the client MSPID and the Peers MSPID are the same
+    fn get_verified_client_org(&self) -> Result<String, ContractError> {
+        let tx = fabric_contract::blockchain::TransactionContext::current_transaction();
+
+        let peers_msp = tx.get_peer_mspid();
+        let client_msp = tx.get_submitting_identity()?.get_mspid();
+        if peers_msp != client_msp {
+            Err(ContractError::from(
+                "Mismatch of Organization names".to_string(),
+            ))
+        } else {
+            Ok(client_msp)
+        }
+    }
+
+    /// CreateAsset issues a new asset to the world state with given details.
+
     #[Transaction(submit, transient = "asset_properties")]
     pub fn create_asset(
         &self,
@@ -48,9 +64,11 @@ impl AssetTransfer {
         public_description: String,
         asset_properties: AssetPrivate,
     ) -> Result<(), ContractError> {
+
         
         let owner_org = self.get_verified_client_org()?;
-        
+
+
         // get the collection that is backed by the world state
         let asset_collection = Ledger::access_ledger().get_collection(CollectionName::World);
 
@@ -59,41 +77,41 @@ impl AssetTransfer {
             Ok(false) => (),
             Err(e) => return Err(ContractError::from(e)),
         }
-        
+
         let asset = Asset::new(id, owner_org.clone(), public_description);
         let state = asset_collection.create(asset)?;
 
         // Set the endorsement policy such that an owner org peer is required to endorse future updates
-        state.set_endorsment(StateBasedEndorsement::build(&[&Principal(
+        state.set_endorsment(StateBasedEndorsement::build(Principal(
             owner_org.clone(),
             ROLE::PEER,
-        )]));
+        )))?;
 
         // add to the organizations implicity colletion
         let private_asset_collection =
-           Ledger::access_ledger().get_collection(CollectionName::Organization(owner_org.clone()));
+            Ledger::access_ledger().get_collection(CollectionName::Organization(owner_org.clone()));
         private_asset_collection.create(asset_properties)?;
 
         Ok(())
     }
 
     /// Change the public description of an already created asset
-    /// 
+    ///
     #[Transaction]
     pub fn change_public_description(
         &self,
         asset_id: String,
         public_desc: String,
     ) -> Result<(), ContractError> {
-
         self.get_verified_client_org()?;
 
-        let world = Ledger::access_ledger().get_collection(CollectionName::World);
-        let mut asset = world.retrieve::<Asset>(&asset_id)?;
+        let asset_collection = Ledger::access_ledger().get_collection(CollectionName::World);
+        let mut asset = asset_collection.retrieve::<Asset>(&asset_id)?;
+
 
         asset.set_public_description(public_desc);
-        world.update(asset)?;
-
+        asset_collection.update(asset)?;
+      
         Ok(())
     }
 
@@ -163,7 +181,7 @@ impl AssetTransfer {
         buyer_orgid: String,
         asset_properties: AssetPrivate
     ) -> Result<(), ContractError> {
-        let tx = fabric_contract::blockchain::Transaction::current_transaction();
+        let tx = fabric_contract::blockchain::TransactionContext::current_transaction();
         let client_msp = tx.get_submitting_identity()?.get_mspid();
         
         let collection_seller = Ledger::access_ledger().get_collection(CollectionName::Organization(client_msp.clone()));
@@ -205,10 +223,11 @@ impl AssetTransfer {
         asset.update_owner(buyer_orgid.clone());
 
         // 2) Set the endorsement policy such that new owner org peer is required to endorse future updates
-        state.set_endorsment(StateBasedEndorsement::build(&[&Principal(
+        let s: State = asset.to_state();
+        s.set_endorsment(StateBasedEndorsement::build(Principal(
             buyer_orgid.clone(),
             ROLE::PEER,
-        )]));
+        )))?;
 
         // 3) add receipts to the private collections of buyer and seller
         collection_seller.create(TransferReceipt::new(asset_id.clone()))?;
@@ -216,4 +235,5 @@ impl AssetTransfer {
 
         Ok(())
     }
+
 }
