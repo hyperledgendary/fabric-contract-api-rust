@@ -12,9 +12,10 @@ This guide will start up a 1 Organization, 1 Peer Fabric Network and start the c
 
 This is what we're going to be starting up and running,
 
-‹Image TBC›
+![](MicrofabBuilder.png)
 
 - MicroFab will provide the Fabric v2 runtime, into which we are going to deploy Wasm chaincode. We'll use the 'peer' cli commands to do this. 
+- We're using a customized version of Microfab to include a Wasm Chaincode Builder. This builder uses the Chaincode Builder feature introduced in Fabric v2.
 - The chaincode here consists of a Wasm binary.
 - The Wasm binary will have been built from the Rust `basic_contract_rs`
 
@@ -32,7 +33,8 @@ This is what we're going to be starting up and running,
 
 We need Fabric Version 2 cli binaries, you may already have these so can skip this.  
 
-If not, to get the `peer` commands (rather than the docker images or samples directory).
+If not, to get just the `peer` commands (rather than the docker images or samples directory).
+Let's assume that `~/github.com` is your working directory.
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/bootstrap.sh | bash -s -- 2.2.0 1.4.4 0.4.18 -s -d
@@ -65,7 +67,7 @@ As we've cloned the whole repo, we've also got the Rust Contract crates source a
 
 ### Start Microfab
 
-First setup an environment variable:
+It's best to do this from another terminal window, director is not important. First setup an environment variable:
 
 ```bash
 export MICROFAB_CONFIG='{
@@ -89,27 +91,31 @@ export MICROFAB_CONFIG='{
 Then issue this docker command to run MicroFab
 
 ```bash
-docker run --name microfab --rm -d -p 8080:8080 -e MICROFAB_CONFIG="${MICROFAB_CONFIG}" hyperledgendary/microfab
+docker run --name microfab --rm -p 8080:8080 -e MICROFAB_CONFIG="${MICROFAB_CONFIG}" hyperledgendary/microfab
 ```
+
+To run in detached mode add `-d` and then use `docker logs -f microfab` to get the logs.
 
 ### Get the MicroFab configuration
 
-When applications (including the Peer commands ) run they need a local identity in a wallet and a gateway connection profile. In this case there's a helpful script that can pull out all the information needed. 
+When applications (including the Peer commands) run they need a local identity in a wallet and a gateway connection profile. In this case there's a helpful script that can pull out all the information needed - it needs Node.js 12.
 
-Run this in your working directory - some sub-directories will be created. 
+Run this in your working directory - some sub-directories will be created. These contain the configuration required for using the `peer` commands, as well as the gateway connection profile and wallets for client applications.
 
 ```bash
 npm install -g @hyperledgendary/weftility
 curl -s http://console.127-0-0-1.nip.io:8080/ak/api/v1/components | weft microfab -w ./_wallets -p ./_gateways -m ./_msp -f
 ```
 
-Then setup some environment variables for the peer commands; these are
+The tool will print out some environment variables for the peer commands; these will be something like this.
 
 ```bash
 export CORE_PEER_LOCALMSPID=AmpretiaMSP                                       
 export CORE_PEER_ADDRESS=ampretiapeer-api.127-0-0-1.nip.io:8080
-export CORE_PEER_MSPCONFIGPATH="${WORKING_DIR}/_msp/Ampretia/ampretiaadmin/msp"
+export CORE_PEER_MSPCONFIGPATH="/home/<yourid>/github.com/_msp/Ampretia/ampretiaadmin/msp"
 ```
+
+Copy what is output by the tool and run them in your current terminal.
 
 ## Contract Deploy
 
@@ -141,14 +147,18 @@ Install this Wasm chaincode package.
 peer lifecycle chaincode install wasmftw.tgz
 ```
 
-It's important to keep the output from this command as it will be needed in the next step
+It's important to keep the output from this command as it will be needed in the next step. It's generally easier to set an environment variablem, for example.
+
+```
+export PACKAGE_ID=wasmftw:834e64c62be5b4b2682feb4214ff9e29efb6c4ecb13d7a36019bf1ddbfdeafed
+```
 
 ### Approve and commit the Wasm chaincode
 
 Approve the chaincode, making sure the `package-id` matches the chaincode code package identifier from the install command
 
 ```
-peer lifecycle chaincode approveformyorg -o orderer-api.127-0-0-1.nip.io:8080 --channelID minifignet --name wasmftw --version 1 --sequence 1 --waitForEvent --package-id wasmftw:88fcf69b9ee0f9bb74b931fd0b526415cb14e111d98910e9c2d421f711cbdc46
+peer lifecycle chaincode approveformyorg -o orderer-api.127-0-0-1.nip.io:8080 --channelID minifignet --name wasmftw --version 1 --sequence 1 --waitForEvent --package-id ${PACKAGE_ID}
 ```
 
 Commit the chaincode
