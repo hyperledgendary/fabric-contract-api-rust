@@ -55,7 +55,7 @@ impl AssetContract {
         info!("# asset_exists");
 
         let world = Ledger::access_ledger().get_collection(CollectionName::World);
-        Ok(world.state_exists(&asset_id)?)
+        Ok(world.state_exists(MyAsset::form_key(&asset_id).as_str()  )?)
     }
 
     /// Creates a new asset, with supplied id, and value

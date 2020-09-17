@@ -38,7 +38,7 @@ impl DataType for MyAsset {
     fn to_state(&self) -> State {
         let json = serde_json::to_string(self).unwrap();
         let buffer = json.into_bytes();
-        State::from((self.id.clone(), buffer))
+        State::from((MyAsset::form_key(&self.id.clone()), buffer))
     }
 
     fn get_key(&self) -> String {
