@@ -260,7 +260,6 @@
 <span class="doccomment">/// TODO: Split this into two modules?</span>
 <span class="doccomment">///</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">contract</span> {
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">context</span>::<span class="ident">Context</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contract</span>::<span class="ident">Contract</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contract</span>::<span class="ident">Metadata</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">contractapi</span>::<span class="ident">contract</span>::<span class="ident">Routing</span>;
@@ -269,8 +268,9 @@
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">collection</span>::<span class="ident">CollectionName</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">collection</span>::<span class="ident">KeyQueryHandler</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">ledger</span>::<span class="ident">Ledger</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">state</span>::<span class="ident">State</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">state</span>::<span class="kw-2">*</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">statequerylist</span>::<span class="ident">StateQueryList</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::<span class="ident">endorsement</span>::<span class="kw-2">*</span>;
 
     <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">fabric_contract_macros</span>::<span class="ident">contract_impl</span> <span class="kw">as</span> <span class="ident">Contract_Impl</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">fabric_contract_macros</span>::<span class="ident">transaction</span> <span class="kw">as</span> <span class="ident">Transaction</span>;
@@ -289,7 +289,7 @@
 <span class="doccomment">/// - Invoking chaincode on other channels</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">blockchain</span> {
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">blockchainapi</span>::<span class="ident">clientidentity</span>::<span class="ident">ClientIdentity</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">blockchainapi</span>::<span class="ident">transaction</span>::<span class="ident">Transaction</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">blockchainapi</span>::<span class="ident">transactioncontext</span>::<span class="ident">TransactionContext</span>;
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "fabric_contract";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
