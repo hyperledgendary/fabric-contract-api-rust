@@ -182,7 +182,7 @@
         <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;# asset_exists&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">world</span> <span class="op">=</span> <span class="ident">Ledger</span>::<span class="ident">access_ledger</span>().<span class="ident">get_collection</span>(<span class="ident">CollectionName</span>::<span class="ident">World</span>);
-        <span class="prelude-val">Ok</span>(<span class="ident">world</span>.<span class="ident">state_exists</span>(<span class="kw-2">&amp;</span><span class="ident">asset_id</span>)<span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>(<span class="ident">world</span>.<span class="ident">state_exists</span>(<span class="ident">MyAsset</span>::<span class="ident">form_key</span>(<span class="kw-2">&amp;</span><span class="ident">asset_id</span>).<span class="ident">as_str</span>()  )<span class="question-mark">?</span>)
     }
 
     <span class="doccomment">/// Creates a new asset, with supplied id, and value</span>
@@ -224,30 +224,30 @@
     <span class="comment">// Counts the number of assets</span>
     <span class="comment">//</span>
     <span class="comment">//An example of how to use iterators</span>
-    <span class="comment">//#[Transaction(evaluate)]</span>
-    <span class="comment">// pub fn count_assets(&amp;self) -&gt; Result&lt;String, ContractError&gt; {</span>
-    <span class="comment">//     // get the collection that is backed by the world state</span>
-    <span class="comment">//     let world = Ledger::access_ledger().get_collection(CollectionName::World);</span>
+    <span class="attribute">#[<span class="ident">Transaction</span>(<span class="ident">evaluate</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count_assets</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">ContractError</span><span class="op">&gt;</span> {
+        <span class="comment">// get the collection that is backed by the world state</span>
+        <span class="kw">let</span> <span class="ident">world</span> <span class="op">=</span> <span class="ident">Ledger</span>::<span class="ident">access_ledger</span>().<span class="ident">get_collection</span>(<span class="ident">CollectionName</span>::<span class="ident">World</span>);
 
-    <span class="comment">//     // Create a KeyQueryHandler, to start at the query 000</span>
-    <span class="comment">//     let key_handler = KeyQueryHandler::RangeFrom(&quot;000&quot;.to_string());</span>
+        <span class="comment">// Create a KeyQueryHandler, to start at the query 000</span>
+        <span class="kw">let</span> <span class="ident">key_handler</span> <span class="op">=</span> <span class="ident">KeyQueryHandler</span>::<span class="ident">RangeFrom</span>(<span class="string">&quot;000&quot;</span>.<span class="ident">to_string</span>());
 
-    <span class="comment">//     // execute the query</span>
-    <span class="comment">//     let all_000 = world.get_states(key_handler)?;</span>
+        <span class="comment">// execute the query</span>
+        <span class="kw">let</span> <span class="ident">all_000</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">get_states</span>(<span class="ident">key_handler</span>)<span class="question-mark">?</span>;
 
-    <span class="comment">//     // Return the count</span>
-    <span class="comment">//     let count = all_000.into_iter().count();</span>
-    <span class="comment">//     Ok(format!(&quot;Number of 00 agents is {}&quot;, count).to_string())</span>
-    <span class="comment">// }</span>
+        <span class="comment">// Return the count</span>
+        <span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">all_000</span>.<span class="ident">into_iter</span>().<span class="ident">count</span>();
+        <span class="prelude-val">Ok</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Number of 00 agents is {}&quot;</span>, <span class="ident">count</span>).<span class="ident">to_string</span>())
+    }
 
-    <span class="comment">// // #[Transaction(evaluate)]</span>
-    <span class="comment">// pub fn the_answer(&amp;self) -&gt; Result&lt;i32,ContractError&gt;{</span>
-    <span class="comment">//     Ok(self.what_is_the_answer())</span>
-    <span class="comment">// }</span>
+    <span class="attribute">#[<span class="ident">Transaction</span>(<span class="ident">evaluate</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">the_answer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i32</span>,<span class="ident">ContractError</span><span class="op">&gt;</span>{
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">what_is_the_answer</span>())
+    }
 
-    <span class="comment">// fn what_is_the_answer(&amp;self) -&gt; i32{</span>
-    <span class="comment">//     42</span>
-    <span class="comment">// }</span>
+    <span class="kw">fn</span> <span class="ident">what_is_the_answer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span>{
+        <span class="number">42</span>
+    }
 
    
 }

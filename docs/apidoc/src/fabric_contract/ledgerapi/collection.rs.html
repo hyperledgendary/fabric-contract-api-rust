@@ -161,6 +161,45 @@
 <span id="161">161</span>
 <span id="162">162</span>
 <span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -171,7 +210,7 @@
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">DataType</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ledgerapi</span>::{<span class="ident">state</span>::<span class="kw-2">*</span>, <span class="ident">statequerylist</span>::<span class="kw-2">*</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error</span>::<span class="ident">LedgerError</span>, <span class="ident">runtimeapi</span>::<span class="ident">ledgerservice</span>::<span class="kw-2">*</span>};
-
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
 <span class="doccomment">/// Collection Name</span>
 <span class="doccomment">///</span>
@@ -188,11 +227,19 @@
     <span class="ident">Organization</span>(<span class="ident">String</span>),
 }
 
+<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">CollectionName</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">CollectionName</span>::<span class="ident">World</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;&quot;</span>),
+            <span class="ident">CollectionName</span>::<span class="ident">Private</span>(<span class="ident">p</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{:?}&quot;</span>, <span class="ident">p</span>),
+            <span class="ident">CollectionName</span>::<span class="ident">Organization</span>(<span class="ident">org</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;_implicit_{:?}&quot;</span>, <span class="ident">org</span>),
+        }
+    }
+}
+
 <span class="doccomment">/// Key Queryhandler</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Enumeration to define the Key Range queries that can take place.</span>
-<span class="doccomment">/// TODO: Check if these are inclusive or execlusice</span>
-<span class="doccomment">/// TODO: Not included all as that could return just too much data</span>
 <span class="doccomment">///</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">KeyQueryHandler</span> {
     <span class="doccomment">/// Range(string,string) The start and end keys  </span>
@@ -205,7 +252,7 @@
     <span class="ident">RangeTo</span>(<span class="ident">String</span>),
 
     <span class="doccomment">/// RangeAll(),  All composite keys. use with caution</span>
-    <span class="ident">RangeAll</span>()
+    <span class="ident">RangeAll</span>(),
 }
 
 <span class="doccomment">/// Specify the Rich Query Handler</span>
@@ -214,15 +261,13 @@
     <span class="ident">Query</span>(<span class="ident">String</span>),
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Collection</span>{
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Collection</span> {
     <span class="ident">name</span>: <span class="ident">CollectionName</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Collection</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="ident">CollectionName</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">Collection</span> {
-           <span class="ident">name</span>,
-        }
+        <span class="ident">Collection</span> { <span class="ident">name</span> }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">asset</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">State</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span>
@@ -230,53 +275,74 @@
         <span class="ident">T</span>: <span class="ident">DataType</span>,
     {
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">asset</span>.<span class="ident">to_state</span>();
-        <span class="ident">LedgerService</span>::<span class="ident">create_state</span>(<span class="ident">s</span>.<span class="ident">key</span>(), <span class="ident">s</span>.<span class="ident">value</span>())
+        <span class="ident">LedgerService</span>::<span class="ident">create_state</span>(<span class="ident">s</span>.<span class="ident">key</span>(), <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">s</span>.<span class="ident">value</span>())
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">retrieve</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Default</span> <span class="op">+</span> <span class="ident">DataType</span>,
     {
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">LedgerService</span>::<span class="ident">read_state</span>(<span class="ident">key</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">LedgerService</span>::<span class="ident">read_state</span>(<span class="kw-2">&amp;</span><span class="ident">T</span>::<span class="ident">form_key</span>(<span class="ident">key</span>), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>()).<span class="ident">unwrap</span>();
         <span class="comment">// let mut asset = T::default();</span>
-        <span class="comment">// asset.from_state(s);     </span>
+        <span class="comment">// asset.from_state(s);</span>
         <span class="prelude-val">Ok</span>(<span class="ident">T</span>::<span class="ident">build_from_state</span>(<span class="ident">s</span>))
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">asset</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">State</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">DataType</span>,
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">retrieve_hash</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">T</span>: <span class="ident">Default</span> <span class="op">+</span> <span class="ident">DataType</span>,
+    {
+        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">LedgerService</span>::<span class="ident">read_state</span>(<span class="kw-2">&amp;</span><span class="ident">T</span>::<span class="ident">form_key</span>(<span class="ident">key</span>), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>()).<span class="ident">unwrap</span>();
+        <span class="comment">// let mut asset = T::default();</span>
+        <span class="comment">// asset.from_state(s);</span>
+        <span class="prelude-val">Ok</span>(<span class="ident">T</span>::<span class="ident">build_from_state</span>(<span class="ident">s</span>))
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">asset</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">State</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">T</span>: <span class="ident">DataType</span>,
     {
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">asset</span>.<span class="ident">to_state</span>();
-        <span class="ident">LedgerService</span>::<span class="ident">update_state</span>(<span class="ident">s</span>.<span class="ident">key</span>(), <span class="ident">s</span>.<span class="ident">value</span>())
+        <span class="ident">LedgerService</span>::<span class="ident">update_state</span>(<span class="ident">s</span>.<span class="ident">key</span>(), <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">s</span>.<span class="ident">value</span>())
     }
 
     <span class="doccomment">/// Does this key exist</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">state_exists</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span> {
-        <span class="ident">LedgerService</span>::<span class="ident">exists_state</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>.<span class="ident">to_string</span>())
+        <span class="ident">LedgerService</span>::<span class="ident">exists_state</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>.<span class="ident">to_string</span>(), <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>())
     }
 
     <span class="doccomment">/// Return the state for this key</span>
     <span class="doccomment">///</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">retrieve_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">State</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span> {
-        <span class="ident">LedgerService</span>::<span class="ident">read_state</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>)
+        <span class="ident">LedgerService</span>::<span class="ident">read_state</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>())
+    }
+
+    <span class="doccomment">/// Return the state has ONLY for this key</span>
+    <span class="doccomment">///</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">retrieve_state_hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">StateHash</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">StateHash</span> {
+            <span class="ident">hash</span>: <span class="ident">LedgerService</span>::<span class="ident">get_hash</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>())<span class="question-mark">?</span>,
+        })
     }
 
     <span class="doccomment">/// Creates the state</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// If it it already exists, this is an error</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="ident">String</span>, <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">State</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span> {
-        <span class="ident">LedgerService</span>::<span class="ident">create_state</span>(<span class="ident">key</span>, <span class="ident">data</span>)
+        <span class="kw">let</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">LedgerService</span>::<span class="ident">create_state</span>(<span class="ident">key</span>, <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">data</span>); 
+        <span class="ident">state</span>
     }
 
     <span class="doccomment">/// Update the states</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// If it doesn&#39;t exist, this is an error</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="ident">String</span>, <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">State</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span> {
-        <span class="ident">LedgerService</span>::<span class="ident">update_state</span>(<span class="ident">key</span>, <span class="ident">data</span>)
+        <span class="ident">LedgerService</span>::<span class="ident">update_state</span>(<span class="ident">key</span>, <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">data</span>)
     }
 
     <span class="doccomment">/// Deletes the key</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LedgerError</span><span class="op">&gt;</span> {
-        <span class="ident">LedgerService</span>::<span class="ident">delete_state</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>)
+        <span class="ident">LedgerService</span>::<span class="ident">delete_state</span>(<span class="kw-2">&amp;</span><span class="ident">key</span>, <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>())
     }
 
     <span class="doccomment">/// Performs a key range query</span>
@@ -289,18 +355,30 @@
     <span class="doccomment">/// let collection = Ledger::access_ledger().get_collection(CollectionName::World);</span>
     <span class="doccomment">/// collection.get_states(KeyQueryHandler::Range(&quot;Car001&quot;,&quot;Car002&quot;));</span>
     <span class="doccomment">///</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_states</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,<span class="ident">handler</span>: <span class="ident">KeyQueryHandler</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">StateQueryList</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span> {
-
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_states</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">handler</span>: <span class="ident">KeyQueryHandler</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">StateQueryList</span>, <span class="ident">LedgerError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">states</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">handler</span> {
-            <span class="ident">KeyQueryHandler</span>::<span class="ident">Range</span>(<span class="ident">start_key</span>,<span class="ident">end_key</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LedgerService</span>::<span class="ident">get_range_states</span>(<span class="ident">start_key</span>.<span class="ident">as_str</span>(), <span class="ident">end_key</span>.<span class="ident">as_str</span>()),
-            <span class="ident">KeyQueryHandler</span>::<span class="ident">RangeTo</span>(<span class="ident">end_key</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LedgerService</span>::<span class="ident">get_range_states</span>(<span class="string">&quot;&quot;</span>, <span class="ident">end_key</span>.<span class="ident">as_str</span>()),
-            <span class="ident">KeyQueryHandler</span>::<span class="ident">RangeFrom</span>(<span class="ident">start_key</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LedgerService</span>::<span class="ident">get_range_states</span>(<span class="ident">start_key</span>.<span class="ident">as_str</span>(), <span class="string">&quot;&quot;</span>),
-            <span class="ident">KeyQueryHandler</span>::<span class="ident">RangeAll</span>() <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LedgerService</span>::<span class="ident">get_range_states</span>(<span class="string">&quot;&quot;</span>, <span class="string">&quot;&quot;</span>),
+            <span class="ident">KeyQueryHandler</span>::<span class="ident">Range</span>(<span class="ident">start_key</span>, <span class="ident">end_key</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LedgerService</span>::<span class="ident">get_range_states</span>(
+                <span class="ident">start_key</span>.<span class="ident">as_str</span>(),
+                <span class="ident">end_key</span>.<span class="ident">as_str</span>(),
+                <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>(),
+            ),
+            <span class="ident">KeyQueryHandler</span>::<span class="ident">RangeTo</span>(<span class="ident">end_key</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">LedgerService</span>::<span class="ident">get_range_states</span>(<span class="string">&quot;&quot;</span>, <span class="ident">end_key</span>.<span class="ident">as_str</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>())
+            }
+            <span class="ident">KeyQueryHandler</span>::<span class="ident">RangeFrom</span>(<span class="ident">start_key</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">LedgerService</span>::<span class="ident">get_range_states</span>(<span class="ident">start_key</span>.<span class="ident">as_str</span>(), <span class="string">&quot;&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>())
+            }
+            <span class="ident">KeyQueryHandler</span>::<span class="ident">RangeAll</span>() <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">LedgerService</span>::<span class="ident">get_range_states</span>(<span class="string">&quot;&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>.<span class="ident">to_string</span>())
+            }
         }<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">StateQueryList</span>::<span class="ident">new</span>(<span class="ident">states</span>))
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">query_states</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,<span class="ident">handler</span>: <span class="ident">RichQueryHandler</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LedgerError</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Rich query support - query is sent to CouchDB</span>
+    <span class="doccomment">/// </span>
+    <span class="doccomment">/// NOT IMPLEMENTED (yet)</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">query_states</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">handler</span>: <span class="ident">RichQueryHandler</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">LedgerError</span><span class="op">&gt;</span> {
         <span class="macro">todo</span><span class="macro">!</span>(<span class="string">&quot;getstates&quot;</span>);
     }
 }

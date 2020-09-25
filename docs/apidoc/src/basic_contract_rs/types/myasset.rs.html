@@ -80,6 +80,9 @@
 <span id="80">80</span>
 <span id="81">81</span>
 <span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * SPDX-License-Identifier: Apache-2.0
@@ -90,38 +93,28 @@
 <span class="comment">// Use the required crates</span>
 <span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">contract</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">fabric_contract</span>::<span class="ident">data</span>::<span class="kw-2">*</span>;
-
+<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">from_utf8</span>;
 <span class="doccomment">/// Basic definition of the asset object</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Using Options here as this makes is possible to use the</span>
-<span class="doccomment">/// Default trait to create a blank object. We may in future consider</span>
-<span class="doccomment">/// adding another method to the DataType trait instead; we may be able</span>
-<span class="doccomment">/// to remove the use of Option</span>
+<span class="doccomment">/// </span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MyAsset</span> {
-    <span class="ident">uid</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">value</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="ident">id</span>: <span class="ident">String</span>,
+    <span class="ident">value</span>: <span class="ident">String</span>
 }
 
 <span class="doccomment">/// Standard Implementation</span>
 <span class="kw">impl</span> <span class="ident">MyAsset</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">uid</span>: <span class="ident">String</span>, <span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MyAsset</span> {
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">id</span>: <span class="ident">String</span>, <span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MyAsset</span> {
         <span class="ident">MyAsset</span> {
-            <span class="ident">uid</span>: <span class="prelude-val">Some</span>(<span class="ident">uid</span>),
-            <span class="ident">value</span>: <span class="prelude-val">Some</span>(<span class="ident">value</span>),
+            <span class="ident">id</span>,
+            <span class="ident">value</span>,
         }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_value</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>()
-    }
-}
-
-<span class="doccomment">/// TODO: Do we need both this and the from_state below?</span>
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">State</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MyAsset</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">s</span>: <span class="ident">State</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">key</span>();
-        <span class="kw">let</span> <span class="ident">value</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from_utf8</span>(<span class="ident">s</span>.<span class="ident">value</span>()).<span class="ident">unwrap</span>();
-        <span class="ident">MyAsset</span>::<span class="ident">new</span>(<span class="ident">key</span>, <span class="ident">value</span>)
+        <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">clone</span>()
     }
 }
 
@@ -129,37 +122,50 @@
 <span class="doccomment">/// by the contract</span>
 <span class="kw">impl</span> <span class="ident">DataType</span> <span class="kw">for</span> <span class="ident">MyAsset</span> {
     <span class="kw">fn</span> <span class="ident">to_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">State</span> {
-        <span class="ident">State</span>::<span class="ident">from</span>((
-            <span class="self">self</span>.<span class="ident">uid</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>(),
-            <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>().<span class="ident">into_bytes</span>(),
-        ))
+        <span class="kw">let</span> <span class="ident">json</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">to_string</span>(<span class="self">self</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">json</span>.<span class="ident">into_bytes</span>();
+        <span class="ident">State</span>::<span class="ident">from</span>((<span class="ident">MyAsset</span>::<span class="ident">form_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">id</span>.<span class="ident">clone</span>()), <span class="ident">buffer</span>))
     }
 
     <span class="kw">fn</span> <span class="ident">get_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">uid</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>()
+       <span class="ident">MyAsset</span>::<span class="ident">form_key</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">id</span>)
     }
 
-    <span class="comment">// fn from_state(&amp;mut self, state: State) {</span>
-    <span class="comment">//     self.uid = Some(state.key());</span>
-    <span class="comment">//     self.value = Some(String::from_utf8(state.value()).unwrap());</span>
-    <span class="comment">// }</span>
-
     <span class="kw">fn</span> <span class="ident">build_from_state</span>(<span class="ident">state</span>: <span class="ident">State</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">MyAsset</span> {
-            <span class="ident">uid</span>: <span class="prelude-val">Some</span>(<span class="ident">state</span>.<span class="ident">key</span>()),
-            <span class="ident">value</span>: <span class="prelude-val">Some</span>(<span class="ident">String</span>::<span class="ident">from_utf8</span>(<span class="ident">state</span>.<span class="ident">value</span>()).<span class="ident">unwrap</span>()),
-        }
+        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">value</span>();
+
+        <span class="kw">let</span> <span class="ident">str</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">from_utf8</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>) {
+            <span class="prelude-val">Ok</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>,
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Err&quot;</span>),
+        };
+        <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">str</span>).<span class="ident">unwrap</span>()
+    }
+
+    <span class="kw">fn</span> <span class="ident">form_key</span>(<span class="ident">k</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;MyAsset::{}&quot;</span>,<span class="ident">k</span>)
     }
 }
 
-<span class="doccomment">/// Implementing the Default trait</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Consider using a &#39;builder&#39; style api on the DataTYpe above</span>
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">MyAsset</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">MyAsset</span> {
-            <span class="ident">uid</span>: <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>,
-            <span class="ident">value</span>: <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>,
+<span class="kw">impl</span> <span class="ident">WireBufferFromReturnType</span><span class="op">&lt;</span><span class="ident">MyAsset</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">WireBuffer</span> {
+    <span class="kw">fn</span> <span class="ident">from_rt</span>(<span class="self">self</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="ident">s</span>: <span class="ident">MyAsset</span>) {
+        <span class="comment">// we&#39;ve got a wire buffer object and we need to set the bytes here from the string</span>
+        <span class="kw">let</span> <span class="ident">json</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>).<span class="ident">unwrap</span>();
+        
+        <span class="kw">let</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">json</span>.<span class="ident">into_bytes</span>();
+        <span class="self">self</span>.<span class="ident">buffer</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">buffer</span>);
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WireBuffer</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MyAsset</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">wb</span>: <span class="kw-2">&amp;</span><span class="ident">WireBuffer</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">wb</span>.<span class="ident">buffer</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">buffer</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">match</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">from_utf8</span>(<span class="kw-2">&amp;</span><span class="ident">buffer</span>) {
+                    <span class="prelude-val">Ok</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">a</span>).<span class="ident">unwrap</span>(),
+                    <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+                }
+            }
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
         }
     }
 }
